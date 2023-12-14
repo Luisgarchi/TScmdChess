@@ -13,10 +13,10 @@ export class MoveVector {
     
     /* Constructor */ 
 
-    constructor(rankComponent:number, fileComponent: number, restricted: number, activated?: boolean){
+    constructor(rankComponent:number, fileComponent: number, restricted?: number, activated?: boolean){
         this._rankComponent = rankComponent
         this._fileComponent = fileComponent
-        this._restricted = restricted
+        this._restricted = (typeof activated === 'undefined') ? 0 : restricted
         this._activated = (typeof activated === 'undefined') ? true : activated
     }
 

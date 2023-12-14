@@ -226,6 +226,11 @@ describe('Pawn Movement Mechanics', () => {
 })
 
 
+const serialise = function(position) {
+    return position.serialise()
+}
+
+
 
 describe('Method - findReachablePositions',() => {
 
@@ -241,7 +246,7 @@ describe('Method - findReachablePositions',() => {
 
         const returnedResults = piece.movement.findReachablePositions(piece, board)
 
-        expect(returnedResults).toEqual(expect.arrayContaining(testPositions))
+        expect(returnedResults.map(serialise)).toEqual(expect.arrayContaining(testPositions))
         expect(returnedResults.length).toEqual(testPositions.length)
     })
 
@@ -258,7 +263,7 @@ describe('Method - findReachablePositions',() => {
 
         const returnedResults = piece.movement.findReachablePositions(piece, board)
 
-        expect(returnedResults).toEqual(expect.arrayContaining(testPositions))
+        expect(returnedResults.map(serialise)).toEqual(expect.arrayContaining(testPositions))
         expect(returnedResults.length).toEqual(testPositions.length)
     })
 
@@ -274,7 +279,7 @@ describe('Method - findReachablePositions',() => {
 
         const returnedResults = piece.movement.findReachablePositions(piece, board)
 
-        expect(returnedResults).toEqual(expect.arrayContaining(testPositions))
+        expect(returnedResults.map(serialise)).toEqual(expect.arrayContaining(testPositions))
         expect(returnedResults.length).toEqual(testPositions.length)
     })
 
@@ -291,7 +296,7 @@ describe('Method - findReachablePositions',() => {
 
         const returnedResults = piece.movement.findReachablePositions(piece, board)
 
-        expect(returnedResults).toEqual(expect.arrayContaining(testPositions))
+        expect(returnedResults.map(serialise)).toEqual(expect.arrayContaining(testPositions))
         expect(returnedResults.length).toEqual(testPositions.length)
     })
 
@@ -307,7 +312,7 @@ describe('Method - findReachablePositions',() => {
 
         const returnedResults = piece.movement.findReachablePositions(piece, board)
 
-        expect(returnedResults).toEqual(expect.arrayContaining(testPositions))
+        expect(returnedResults.map(serialise)).toEqual(expect.arrayContaining(testPositions))
         expect(returnedResults.length).toEqual(testPositions.length)
     })
 
@@ -324,7 +329,7 @@ describe('Method - findReachablePositions',() => {
 
         const returnedResults = piece.movement.findReachablePositions(piece, board)
 
-        expect(returnedResults).toEqual(expect.arrayContaining(testPositions))
+        expect(returnedResults.map(serialise)).toEqual(expect.arrayContaining(testPositions))
         expect(returnedResults.length).toEqual(testPositions.length)
     })
 
@@ -339,7 +344,7 @@ describe('Method - findReachablePositions',() => {
 
         const returnedResults = piece.movement.findReachablePositions(piece, board)
 
-        expect(returnedResults).toEqual(expect.arrayContaining(testPositions))
+        expect(returnedResults.map(serialise)).toEqual(expect.arrayContaining(testPositions))
         expect(returnedResults.length).toEqual(testPositions.length)
     })
 
@@ -355,7 +360,7 @@ describe('Method - findReachablePositions',() => {
 
         const returnedResults = piece.movement.findReachablePositions(piece, board)
 
-        expect(returnedResults).toEqual(expect.arrayContaining(testPositions))
+        expect(returnedResults.map(serialise)).toEqual(expect.arrayContaining(testPositions))
         expect(returnedResults.length).toEqual(testPositions.length)
     })
 
@@ -371,7 +376,7 @@ describe('Method - findReachablePositions',() => {
 
         const returnedResults = piece.movement.findReachablePositions(piece, board)
 
-        expect(returnedResults).toEqual(expect.arrayContaining(testPositions))
+        expect(returnedResults.map(serialise)).toEqual(expect.arrayContaining(testPositions))
         expect(returnedResults.length).toEqual(testPositions.length)
     })
 
@@ -388,7 +393,7 @@ describe('Method - findReachablePositions',() => {
 
         const returnedResults = piece.movement.findReachablePositions(piece, board)
 
-        expect(returnedResults).toEqual(expect.arrayContaining(testPositions))
+        expect(returnedResults.map(serialise)).toEqual(expect.arrayContaining(testPositions))
         expect(returnedResults.length).toEqual(testPositions.length)
     })
 
@@ -406,7 +411,7 @@ describe('Method - findReachablePositions',() => {
 
         const returnedResults = piece.movement.findReachablePositions(piece, board)
 
-        expect(returnedResults).toEqual(expect.arrayContaining(testPositions))
+        expect(returnedResults.map(serialise)).toEqual(expect.arrayContaining(testPositions))
         expect(returnedResults.length).toEqual(testPositions.length)
     })
 
@@ -425,7 +430,7 @@ describe('Method - findReachablePositions',() => {
 
         const returnedResults = piece.movement.findReachablePositions(piece, board)
 
-        expect(returnedResults).toEqual(expect.arrayContaining(testPositions))
+        expect(returnedResults.map(serialise)).toEqual(expect.arrayContaining(testPositions))
         expect(returnedResults.length).toEqual(testPositions.length)
     })
 
@@ -440,7 +445,7 @@ describe('Method - findReachablePositions',() => {
 
         const returnedResults = piece.movement.findReachablePositions(piece, board)
 
-        expect(returnedResults).toEqual(expect.arrayContaining(testPositions))
+        expect(returnedResults.map(serialise)).toEqual(expect.arrayContaining(testPositions))
         expect(returnedResults.length).toEqual(testPositions.length)
     })
 
@@ -456,7 +461,7 @@ describe('Method - findReachablePositions',() => {
 
         const returnedResults = piece.movement.findReachablePositions(piece, board)
 
-        expect(returnedResults).toEqual(expect.arrayContaining(testPositions))
+        expect(returnedResults.map(serialise)).toEqual(expect.arrayContaining(testPositions))
         expect(returnedResults.length).toEqual(testPositions.length)
     })
 
