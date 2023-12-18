@@ -1,9 +1,9 @@
-import { Piece } from './Piece'
-import { Position } from '../board_mechanics/Position'
-import { MoveMechanics } from '../board_mechanics/MoveMechanics'
-import { factoryBishopMechanics } from '../piece_mechanics/BishopMovement'
-import { getChessPieceSymbol } from '../utils/utf8encodings'
-import { type ColourPlayers, type NamesOfPieces } from '../chess_settings'
+import { Piece } from '../Piece'
+import { Position } from '../../board_mechanics/Position'
+import { PieceMechanics } from '../../board_mechanics/PieceMechanics'
+import { factoryBishopMechanics } from './BishopMovement'
+import { getChessPieceSymbol } from '../../utils/utf8encodings'
+import { type ColourPlayers, type NamesOfPieces } from '../../chess_settings'
 
 
 export class Bishop extends Piece {
@@ -23,7 +23,7 @@ export class Bishop extends Piece {
         const symbol: string = getChessPieceSymbol(colour, type)
 
         // Define the movement Mechanics
-        const movement: MoveMechanics = factoryBishopMechanics()
+        const movement: PieceMechanics = factoryBishopMechanics()
 
         // Construct the object
         super(type, colour, symbol, position, points, movement)        

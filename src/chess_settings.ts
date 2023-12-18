@@ -1,4 +1,4 @@
-import { Pawn } from "./pieces/Pawn"
+import { Pawn } from "./pieces/pawn/Pawn"
 
 export type ChessPiece = Pawn 
 

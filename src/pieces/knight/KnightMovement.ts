@@ -1,13 +1,11 @@
-import { MoveVector } from "../board_mechanics/MoveVector"
-import { ChessBoard } from "../boards/ChessBoard"
-import { Knight } from "../pieces/Knight"   
-import { MoveMechanics, type PieceVectorMechanics } from "../board_mechanics/MoveMechanics"
-
+import { MoveVector } from "../../board_mechanics/MoveVector"
+import { PieceMechanics, type VectorMechanics } from "../../board_mechanics/PieceMechanics"
+import { genericChessPieceMovement } from "../../piece_mechanics/genericMovement"
 
 
 /* Factory function */
 
-export function factoryKnightMechanics(): MoveMechanics {
+export function factoryKnightMechanics(): PieceMechanics {
 
     // Knights can move only once along a unit vector in a single move
     const movementUnrestricted: number = 1
@@ -17,43 +15,67 @@ export function factoryKnightMechanics(): MoveMechanics {
 
     // 1) Vector for moving Knight diagonally north north east
     const northNorthEastVector: MoveVector = new MoveVector(2, 1, movementUnrestricted)
-    const northNorthEastMechanics: PieceVectorMechanics = [northNorthEastVector, constantMovenet]
+    const northNorthEastMechanics: VectorMechanics = [
+        northNorthEastVector, 
+        genericChessPieceMovement
+    ]
 
     // 2) Vector for moving Knight diagonally north east east
     const northEastEastVector: MoveVector = new MoveVector(1, 2, movementUnrestricted)
-    const northEastEastMechanics: PieceVectorMechanics = [northEastEastVector, constantMovenet]
+    const northEastEastMechanics: VectorMechanics = [
+        northEastEastVector, 
+        genericChessPieceMovement
+    ]
 
 
     // 3) Vector for moving Knight diagonally north north west
     const northNorthWestVector: MoveVector = new MoveVector(2, -1, movementUnrestricted)
-    const northNorthWestMechanics: PieceVectorMechanics = [northNorthWestVector, constantMovenet]
+    const northNorthWestMechanics: VectorMechanics = [
+        northNorthWestVector, 
+        genericChessPieceMovement
+    ]
 
     // 4) Vector for moving Knight diagonally north west west
     const northWestWestVector: MoveVector = new MoveVector(1, -2, movementUnrestricted)
-    const northWestWestMechanics: PieceVectorMechanics = [northWestWestVector, constantMovenet]
+    const northWestWestMechanics: VectorMechanics = [
+        northWestWestVector, 
+        genericChessPieceMovement
+    ]
 
 
     // 5) Vector for moving Knight diagonally south south east
     const southSouthEastVector: MoveVector = new MoveVector(-2, 1, movementUnrestricted)
-    const southSouthEastMechanics: PieceVectorMechanics = [southSouthEastVector, constantMovenet]
+    const southSouthEastMechanics: VectorMechanics = [
+        southSouthEastVector,
+        genericChessPieceMovement
+    ]
 
     // 6) Vector for moving Knight diagonally south east east
     const southEastEastVector: MoveVector = new MoveVector(-1, 2, movementUnrestricted)
-    const southEastEastMechanics: PieceVectorMechanics = [southEastEastVector, constantMovenet]
+    const southEastEastMechanics: VectorMechanics = [
+        southEastEastVector, 
+        genericChessPieceMovement
+    ]
 
 
     // 7) Vector for moving Knight diagonally south south west
     const southSouthWestVector: MoveVector = new MoveVector(-2, -1, movementUnrestricted)
-    const southSouthWestMechanics: PieceVectorMechanics = [southSouthWestVector, constantMovenet]
+    const southSouthWestMechanics: VectorMechanics = [
+        southSouthWestVector, 
+        genericChessPieceMovement
+    ]
 
     // 8) Vector for moving Knight diagonally south west west
     const southWestWestVector: MoveVector = new MoveVector(-1, -2, movementUnrestricted)
-    const southWestWestMechanics: PieceVectorMechanics = [southWestWestVector, constantMovenet]
+    const southWestWestMechanics: VectorMechanics = [
+        southWestWestVector, 
+        genericChessPieceMovement
+    ]
 
 
 
     // Combine into an array
-    const knightMechanics: PieceVectorMechanics[] = [
+    const knightMechanics: VectorMechanics[] = [
         northNorthEastMechanics, 
         northEastEastMechanics, 
         northNorthWestMechanics,
@@ -64,16 +86,5 @@ export function factoryKnightMechanics(): MoveMechanics {
         southWestWestMechanics
     ]
 
-    return new MoveMechanics(knightMechanics)
-}
-
-
-
-/* Define callback functions for movement mechanics used in factory function */
-
-export const constantMovenet = function (vector: MoveVector, piece: Knight, board: ChessBoard){
-
-    /* Knights always move the same. No further logic required for Knight movement mechanics*/
-
-    return
+    return new PieceMechanics(knightMechanics)
 }

@@ -1,9 +1,9 @@
-import { Piece } from './Piece'
-import { Position } from '../board_mechanics/Position'
-import { MoveMechanics } from '../board_mechanics/MoveMechanics'
-import { factoryRookMechanics } from '../piece_mechanics/RookMovement'
-import { getChessPieceSymbol } from '../utils/utf8encodings'
-import { type ColourPlayers, type NamesOfPieces } from '../chess_settings'
+import { Piece } from '../Piece'
+import { Position } from '../../board_mechanics/Position'
+import { PieceMechanics } from '../../board_mechanics/PieceMechanics'
+import { factoryRookMechanics } from './RookMovement'
+import { getChessPieceSymbol } from '../../utils/utf8encodings'
+import { type ColourPlayers, type NamesOfPieces } from '../../chess_settings'
 
 
 export class Rook extends Piece {
@@ -23,7 +23,7 @@ export class Rook extends Piece {
         const symbol: string = getChessPieceSymbol(colour, type)
 
         // Define the movement Mechanics
-        const movement: MoveMechanics = factoryRookMechanics()
+        const movement: PieceMechanics = factoryRookMechanics()
 
         // Construct the object
         super(type, colour, symbol, position, points, movement)        

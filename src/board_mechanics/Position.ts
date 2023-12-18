@@ -1,7 +1,5 @@
 import { MoveVector } from "./MoveVector"
 import { fileToNum, numToFile} from "../utils/notation" 
-import { BoardNotationObject, BOARD_DIMENSIONS } from "../utils/notation"
-
 
 
 export class Position {
@@ -10,15 +8,16 @@ export class Position {
     
     public _file: string
     public _rank: number
-    private _boardDimensions: BoardNotationObject
-
 
     /* Constructor */ 
 
     constructor(file: string, rank: number){
         this._file = file
         this._rank = rank
-        this._boardDimensions = BOARD_DIMENSIONS
+    }
+
+    public static compare(positionA: Position, positionB: Position): boolean {
+        return ((positionA.file == positionB.file) && (positionA.rank == positionB.rank))
     }
 
     /* Getters */
@@ -45,11 +44,11 @@ export class Position {
         return this._file + this._rank.toString()
     }
     
-
+    /*
     findPositionsAlongVector(vector: MoveVector): Position[] {
 
-        /* Function that accepts a move vector and returns an array of Positions that are
-        located along the vector. The starting position this not included in the array. */ 
+        // Function that accepts a move vector and returns an array of Positions that are
+        // located along the vector. The starting position this not included in the array. 
         
         const positions: Position[] = []
 
@@ -87,5 +86,5 @@ export class Position {
             }
         return positions
     }
-
+    */
 }

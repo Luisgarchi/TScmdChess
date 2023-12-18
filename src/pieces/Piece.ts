@@ -1,6 +1,6 @@
 import { ColourPlayers, NamesOfPieces } from '../chess_settings'
 import { Position } from "../board_mechanics/Position"
-import { MoveMechanics } from '../board_mechanics/MoveMechanics';
+import { PieceMechanics } from '../board_mechanics/PieceMechanics';
 
 interface PieceInterface{
     _type: NamesOfPieces
@@ -8,7 +8,7 @@ interface PieceInterface{
     _symbol: string
     _position: Position
     _points: Number
-    _movement: MoveMechanics
+    _movement: PieceMechanics
 
     readonly type: NamesOfPieces
     readonly colour: ColourPlayers
@@ -27,7 +27,7 @@ export abstract class Piece implements PieceInterface{
     readonly _symbol: string
     _position: Position
     readonly _points: Number
-    _movement: MoveMechanics
+    _movement: PieceMechanics
 
 
     /* Constructor */
@@ -38,7 +38,7 @@ export abstract class Piece implements PieceInterface{
         pieceSymbol: string, 
         position: Position, 
         points: Number,
-        movement: MoveMechanics
+        movement: PieceMechanics
     ){
         this._type = type
         this._colour = colour
@@ -69,7 +69,7 @@ export abstract class Piece implements PieceInterface{
         return this._points
     }
 
-    public get movement(): MoveMechanics{
+    public get movement(): PieceMechanics{
         return this._movement
     }
 

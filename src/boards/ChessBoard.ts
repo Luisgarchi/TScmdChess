@@ -1,5 +1,8 @@
 import { ChessPiece } from "../chess_settings"
-import { Pawn } from "../pieces/Pawn"
+import { Pawn } from "../pieces/pawn/Pawn"
+
+import { BoardNotationObject, BOARD_DIMENSIONS} from "../utils/notation"
+
 
 export class ChessBoard {
     
@@ -7,12 +10,14 @@ export class ChessBoard {
 
     private _pieces: ChessPiece[]
     private _history: any[]
+    private _boardDimensions: BoardNotationObject
 
 
     /* Constructor */
     
     constructor(pieces: ChessPiece[]){
         this._pieces = pieces
+        this._boardDimensions = BOARD_DIMENSIONS
     }
 
     public get pieces(): ChessPiece[] {
@@ -21,6 +26,10 @@ export class ChessBoard {
 
     public get history(): any[] {
         return this._history
+    }
+
+    public get boardDimensions(): BoardNotationObject {
+        return this._boardDimensions
     }
 
 
