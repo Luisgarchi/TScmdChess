@@ -1,11 +1,11 @@
 import { ChessPiece } from "../chess_settings"
 import ChessBoardError from "../errors/ChessBoardError"
 import { Position } from "../notation/boardNotation/Position"
-
+import { Board } from "./Board"
 import { BoardNotationObject, BOARD_DIMENSIONS} from "../utils/notation"
+import { fileToNum } from "../utils/notation"
 
-
-export class ChessBoard {
+export class ChessBoard extends Board{
     
     /* Properties */
 
@@ -18,13 +18,16 @@ export class ChessBoard {
     /* Constructor */
     
     constructor(pieces?: ChessPiece[], capturedPieces?:ChessPiece[], history?:any){
+
+        super(8, 8, 1, 5)
+
         this._pieces =  [] 
         if (typeof pieces != 'undefined'){
             this.addPieces(pieces)
         }
 
-        this._capturedPieces = (typeof pieces === 'undefined') ? [] : capturedPieces
-        this._history = (typeof pieces === 'undefined') ? [] : history
+        this._capturedPieces = (typeof capturedPieces === 'undefined') ? [] : capturedPieces
+        this._history = (typeof history === 'undefined') ? [] : history
         
         this._boardDimensions = BOARD_DIMENSIONS
     }
@@ -59,6 +62,13 @@ export class ChessBoard {
 
         // Add piece to the pieces array
         this._pieces.push(piece)
+
+        // Add the character on the board representation
+        const startRow: number = piece.position.rank
+        const startCol: number = fileToNum(piece.position.file)
+        const symbol: string = piece.symbol
+
+        this.addCharacter(symbol, startRow, startCol)
     }
 
     addPieces(pieces: ChessPiece[]): void {
@@ -91,7 +101,11 @@ export class ChessBoard {
         
         // Get the piece at the starting position
         const piece: ChessPiece = this.pieceAt(startPosition)
-        
+
+        // throw error if there is not a piece at start position
+        if (!piece){
+            throw new ChessBoardError(`Can not move piece when there is no piece at '${startPosition.serialise()}'`)
+        }
 
         // Double check there is not already a piece at the end position
         const otherPiece: ChessPiece | undefined = this.pieceAt(endPosition)
@@ -103,7 +117,17 @@ export class ChessBoard {
 
         // Update the pieces position to the end position
         piece.updatePosition = endPosition
+
+        // Move the character on the board representation
+        const startRow: number = startPosition.rank
+        const startCol: number = fileToNum(startPosition.file)
+
+        const endRow: number = endPosition.rank
+        const endCol: number = fileToNum(endPosition.file)
+        
+        this.moveCharacter(startRow, startCol, endRow, endCol)
     }
+
 
     capturePiece(position: Position) : void{
 
@@ -119,8 +143,19 @@ export class ChessBoard {
 
                 // add the piece to the captured piece array
                 this._capturedPieces.push(piece)
+
+                // Move the character on the board representation
+                const startRow: number = position.rank
+                const startCol: number = fileToNum(position.file)
+
+                this.removeCharacter(startRow, startCol)
+
+                // Exit the function
                 return
             }
         }
+
+        // throw error if there is no piece to be captured
+        throw new ChessBoardError(`Can not capture. No piece at position '${position.serialise()}'.`)
     }
 }

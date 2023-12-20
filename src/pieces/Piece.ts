@@ -1,4 +1,4 @@
-import { ColourPlayers, NamesOfPieces } from '../chess_settings'
+import { ChessPiece, ColourPlayers, NamesOfPieces } from '../chess_settings'
 import { Position } from "../notation/boardNotation/Position"
 import { PieceMechanics } from '../notation/boardNotation/PieceMechanics';
 

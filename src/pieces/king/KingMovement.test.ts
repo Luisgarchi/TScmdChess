@@ -1,6 +1,6 @@
-import { ChessBoard } from "../boards/ChessBoard";
-import { King } from "../pieces/king/King";
-import { Position } from "../notation/boardNotation/Position";
+import { ChessBoard } from "../../boards/ChessBoard";
+import { King } from "./King";
+import { Position } from "../../notation/boardNotation/Position";
 
 
 describe('Method - findReachablePositions', () => {

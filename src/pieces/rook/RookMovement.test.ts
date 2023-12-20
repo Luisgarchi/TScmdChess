@@ -1,6 +1,6 @@
-import { ChessBoard } from "../boards/ChessBoard";
-import { Rook } from "../pieces/rook/Rook";
-import { Position } from "../notation/boardNotation/Position";
+import { ChessBoard } from "../../boards/ChessBoard";
+import { Rook } from "./Rook";
+import { Position } from "../../notation/boardNotation/Position";
 
 
 

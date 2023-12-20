@@ -10,6 +10,4 @@ export class ChessGame {
     5) 
     */
 
-
-
 }
