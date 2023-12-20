@@ -1,6 +1,6 @@
 import { ChessBoard } from "../boards/ChessBoard";
 import { Bishop } from "../pieces/bishop/Bishop";
-import { Position } from "../board_mechanics/Position";
+import { Position } from "../notation/boardNotation/Position";
 
 
 

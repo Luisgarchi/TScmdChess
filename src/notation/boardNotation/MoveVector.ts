@@ -1,4 +1,4 @@
-import {greatestCommonDivisor} from "../utils/math"
+import {greatestCommonDivisor} from "../../utils/math"
 
 
 export class MoveVector {

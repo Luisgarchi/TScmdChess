@@ -1,6 +1,6 @@
 import { ChessBoard } from "../boards/ChessBoard";
 import { Knight } from "../pieces/knight/Knight";
-import { Position } from "../board_mechanics/Position";
+import { Position } from "../notation/boardNotation/Position";
 
 
 describe('Method - findReachablePositions', () => {

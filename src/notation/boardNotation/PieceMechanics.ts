@@ -1,7 +1,7 @@
 import { Position }   from "./Position";
 import { MoveVector } from "./MoveVector";
-import { ChessPiece } from "../chess_settings";
-import { ChessBoard } from "../boards/ChessBoard";
+import { ChessPiece } from "../../chess_settings";
+import { ChessBoard } from "../../boards/ChessBoard";
 
 
 /* Define the type for a callback function that modifies the vector 

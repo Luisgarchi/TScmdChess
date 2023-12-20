@@ -1,8 +1,8 @@
-import { Position } from "../board_mechanics/Position";
-import { MoveVector } from "../board_mechanics/MoveVector";
+import { Position } from "../notation/boardNotation/Position";
+import { MoveVector } from "../notation/boardNotation/MoveVector";
 import { ChessPiece } from "../chess_settings";
 import { ChessBoard } from "../boards/ChessBoard";
-import { PositionsAlongVector } from "../board_mechanics/PieceMechanics";
+import { PositionsAlongVector } from "../notation/boardNotation/PieceMechanics";
 import { fileToNum, numToFile } from "../utils/notation";
 import { ColourPlayers } from "../chess_settings";
 

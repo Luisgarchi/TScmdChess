@@ -1,14 +1,14 @@
-import { PositionsAlongVector } from "../../../board_mechanics/PieceMechanics"
-import { MoveVector } from "../../../board_mechanics/MoveVector"
+import { PositionsAlongVector } from "../../../notation/boardNotation/PieceMechanics"
+import { MoveVector } from "../../../notation/boardNotation/MoveVector"
 import { ChessBoard } from "../../../boards/ChessBoard"
 import { ChessPiece } from "../../../chess_settings"
 import { Pawn } from "../Pawn"
-import { Position } from "../../../board_mechanics/Position"
+import { Position } from "../../../notation/boardNotation/Position"
 
 import { 
     allVectorPositionsOnBoard,
     filterPositionsRestricted 
-} from "../../../piece_mechanics/genericMovement"
+} from "../../genericMovement"
 
 
 export const pawnVerticalMovement: PositionsAlongVector =  function(

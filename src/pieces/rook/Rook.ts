@@ -1,6 +1,6 @@
 import { Piece } from '../Piece'
-import { Position } from '../../board_mechanics/Position'
-import { PieceMechanics } from '../../board_mechanics/PieceMechanics'
+import { Position } from '../../notation/boardNotation/Position'
+import { PieceMechanics } from '../../notation/boardNotation/PieceMechanics'
 import { factoryRookMechanics } from './RookMovement'
 import { getChessPieceSymbol } from '../../utils/utf8encodings'
 import { type ColourPlayers, type NamesOfPieces } from '../../chess_settings'

@@ -1,5 +1,5 @@
-import { MoveVector } from "../../board_mechanics/MoveVector"
-import { PieceMechanics, type VectorMechanics } from "../../board_mechanics/PieceMechanics"
+import { MoveVector } from "../../notation/boardNotation/MoveVector"
+import { PieceMechanics, type VectorMechanics } from "../../notation/boardNotation/PieceMechanics"
 import { type ColourPlayers } from "../../chess_settings"
 import { pawnVerticalMovement } from "./pawn_movement/pawn_vertical"
 import { pawnCapture } from "./pawn_movement/pawn_capture"

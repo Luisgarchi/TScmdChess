@@ -1,7 +1,7 @@
 import { ChessBoard } from "../boards/ChessBoard";
 import { Pawn } from "../pieces/pawn/Pawn";
-import { Position } from "../board_mechanics/Position";
-import { MoveVector } from "../board_mechanics/MoveVector";
+import { Position } from "../notation/boardNotation/Position";
+import { MoveVector } from "../notation/boardNotation/MoveVector";
 
 
 

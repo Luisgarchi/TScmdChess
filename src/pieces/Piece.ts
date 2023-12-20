@@ -1,6 +1,6 @@
 import { ColourPlayers, NamesOfPieces } from '../chess_settings'
-import { Position } from "../board_mechanics/Position"
-import { PieceMechanics } from '../board_mechanics/PieceMechanics';
+import { Position } from "../notation/boardNotation/Position"
+import { PieceMechanics } from '../notation/boardNotation/PieceMechanics';
 
 interface PieceInterface{
     _type: NamesOfPieces
@@ -73,6 +73,8 @@ export abstract class Piece implements PieceInterface{
         return this._movement
     }
 
-    
+    public set updatePosition(newPosition: Position){
+        this._position = newPosition
+    }
 }
 

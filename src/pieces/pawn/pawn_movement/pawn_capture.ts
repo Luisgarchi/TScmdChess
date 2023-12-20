@@ -1,12 +1,12 @@
-import { MoveVector } from "../../../board_mechanics/MoveVector"
-import { PositionsAlongVector } from "../../../board_mechanics/PieceMechanics"
-import { Position } from "../../../board_mechanics/Position"
+import { MoveVector } from "../../../notation/boardNotation/MoveVector"
+import { PositionsAlongVector } from "../../../notation/boardNotation/PieceMechanics"
+import { Position } from "../../../notation/boardNotation/Position"
 import { ChessBoard } from "../../../boards/ChessBoard"
 import { ChessPiece } from "../../../chess_settings"
 import { 
     allVectorPositionsOnBoard, 
     filterPositionsRestricted 
-} from "../../../piece_mechanics/genericMovement"
+} from "../../genericMovement"
 
 
 

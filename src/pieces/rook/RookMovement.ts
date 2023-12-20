@@ -1,6 +1,6 @@
-import { MoveVector } from "../../board_mechanics/MoveVector"
-import { PieceMechanics, type VectorMechanics } from "../../board_mechanics/PieceMechanics"
-import { genericChessPieceMovement } from "../../piece_mechanics/genericMovement"
+import { MoveVector } from "../../notation/boardNotation/MoveVector"
+import { PieceMechanics, type VectorMechanics } from "../../notation/boardNotation/PieceMechanics"
+import { genericChessPieceMovement } from "../genericMovement"
 
 
 /* Factory function */
