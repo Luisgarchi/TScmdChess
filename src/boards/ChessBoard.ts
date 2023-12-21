@@ -48,15 +48,22 @@ export class ChessBoard extends Board{
         return this._boardDimensions
     }
 
+    
+    addPieces(pieces: ChessPiece[]): void {
+        
+        // Add an array of pieces
+        for(let i = 0; i < pieces.length; i++){
+            this.addPiece(pieces[i])
+        }
+    }
+
+
     addPiece(piece: ChessPiece): void {
 
-        // Add a new piece to the board
+        // Check there is not already another piece at the end position
+        let otherPiece: ChessPiece
 
-        // Check there is not a piece already on the position
-        const otherPiece: ChessPiece | undefined = this.pieceAt(piece.position)
-
-        // Throw error if there is a piece, since there can not be 2 on same position
-        if (otherPiece){
+        if (this.isPieceAt(piece.position)){
             throw new ChessBoardError(`Two piece can not be on the same position '${piece.position.serialise()}'`)
         }
 
@@ -71,15 +78,8 @@ export class ChessBoard extends Board{
         this.addCharacter(symbol, startRow, startCol)
     }
 
-    addPieces(pieces: ChessPiece[]): void {
-        
-        // Add an array of pieces
-        for(let i = 0; i < pieces.length; i++){
-            this.addPiece(pieces[i])
-        }
-    }
-
-    pieceAt(position: Position): ChessPiece {
+    
+    getPiece(position: Position): ChessPiece {
         
         /* Find and return the piece located at provided position
         If there is no piece present return undefined */
@@ -94,38 +94,48 @@ export class ChessBoard extends Board{
                 return piece
             }
         }
-        return undefined
+        throw new ChessBoardError(`Can not get piece at position ${position.serialise()}. No piece found.`)
     }
 
-    movePiece(startPosition: Position, endPosition: Position): void{
-        
-        // Get the piece at the starting position
-        const piece: ChessPiece = this.pieceAt(startPosition)
+    isPieceAt(position: Position): boolean {
 
-        // throw error if there is not a piece at start position
-        if (!piece){
-            throw new ChessBoardError(`Can not move piece when there is no piece at '${startPosition.serialise()}'`)
+        // Return true / false if there is a piece at said location
+
+        // Iterate over all the piece on the board
+        for (let i = 0; i < this._pieces.length; i++) {
+
+            const piece : ChessPiece = this._pieces[i]
+
+            // Check if a piece matches is on the required position
+            if (Position.compare(piece.position, position)) {
+                return true
+            }
         }
+        return false
+    }
+    
 
-        // Double check there is not already a piece at the end position
-        const otherPiece: ChessPiece | undefined = this.pieceAt(endPosition)
+    movePiece(piece: ChessPiece, endPosition: Position): void{
 
-        // throw error if there is a piece, since there can not be 2 on same position
-        if (otherPiece){
+        // Check there is not already another piece at the end position
+
+
+        if (this.isPieceAt(endPosition)){
             throw new ChessBoardError(`Two piece can not be on the same position '${endPosition.serialise()}'`)
         }
 
-        // Update the pieces position to the end position
-        piece.updatePosition = endPosition
-
-        // Move the character on the board representation
-        const startRow: number = startPosition.rank
-        const startCol: number = fileToNum(startPosition.file)
+        // Get numerical representation of rows and columns for board
+        const startRow: number = piece.position.rank
+        const startCol: number = fileToNum(piece.position.file)
 
         const endRow: number = endPosition.rank
         const endCol: number = fileToNum(endPosition.file)
         
-        this.moveCharacter(startRow, startCol, endRow, endCol)
+        // Move the character on the board representation
+        this.moveCharacter(startRow, startCol, endRow, endCol)        
+        
+        // Update the pieces position to the end position
+        piece.updatePosition = endPosition
     }
 
 

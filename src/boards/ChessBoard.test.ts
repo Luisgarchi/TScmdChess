@@ -7,7 +7,7 @@ import ChessBoardError from "../errors/ChessBoardError";
 
 
 
-describe('Method - pieceAt', () => {
+describe('Method - getPiece', () => {
 
     test('Find a piece', () => {
 
@@ -17,7 +17,7 @@ describe('Method - pieceAt', () => {
 
         const board: ChessBoard = new ChessBoard([piece])
 
-        const foundPiece : ChessPiece = board.pieceAt(testPosition)
+        const foundPiece : ChessPiece = board.getPiece(testPosition)
 
         expect(foundPiece === piece).toBe(true)
     })
@@ -28,9 +28,7 @@ describe('Method - pieceAt', () => {
 
         const board: ChessBoard = new ChessBoard()
 
-        const foundPiece : ChessPiece = board.pieceAt(testPosition)
-
-        expect(foundPiece === undefined).toBe(true)
+        expect(() => board.getPiece(testPosition)).toThrow(ChessBoardError)
     })
 
 })
@@ -49,23 +47,9 @@ describe('Method - movePiece', () => {
 
         const board: ChessBoard = new ChessBoard([piece])
 
-        board.movePiece(startPosition, endPosition)
+        board.movePiece(piece, endPosition)
 
         expect(Position.compare(piece.position, endPosition)).toBe(true)
-    })
-
-
-    test('No piece at starting position',() => {
-
-        const startPosition: Position = new Position('c', 4)
-        const wrongPosition: Position = new Position('e', 8)
-
-        const endPosition: Position = new Position('g', 5)
-
-        const piece: ChessPiece = new Bishop('white', wrongPosition)
-
-        const board: ChessBoard = new ChessBoard([piece])
-        expect(() => board.movePiece(startPosition, endPosition)).toThrow(ChessBoardError)
     })
 
 
@@ -79,7 +63,7 @@ describe('Method - movePiece', () => {
         const blockingPiece: ChessPiece = new Bishop('white', endPosition)
         
         const board: ChessBoard = new ChessBoard([piece, blockingPiece])
-        expect(() => board.movePiece(startPosition, endPosition)).toThrow(ChessBoardError)
+        expect(() => board.movePiece(piece, endPosition)).toThrow(ChessBoardError)
     })
 
 })
