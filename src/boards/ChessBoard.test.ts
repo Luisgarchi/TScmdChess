@@ -80,7 +80,7 @@ describe('Method - capturePiece', () => {
 
         const board: ChessBoard = new ChessBoard([piece])
 
-        board.capturePiece(startPosition)
+        board.removePiece(piece)
 
         expect(board.pieces.length == 0).toBe(true)
         expect(board.capturedPieces[0] === piece).toBe(true)
@@ -93,10 +93,11 @@ describe('Method - capturePiece', () => {
         const wrongPosition: Position = new Position('f', 2)
 
         const piece: ChessPiece = new Bishop('white', startPosition)
+        const wrongPiece: ChessPiece = new Bishop('white', wrongPosition)
 
         const board: ChessBoard = new ChessBoard([piece])
 
-        expect(() => board.capturePiece(wrongPosition)).toThrow(ChessBoardError)
+        expect(() => board.removePiece(wrongPiece)).toThrow(ChessBoardError)
     })
 
 })

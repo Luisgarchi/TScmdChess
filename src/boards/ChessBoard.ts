@@ -139,20 +139,22 @@ export class ChessBoard extends Board{
     }
 
 
-    capturePiece(position: Position) : void{
+    removePiece(piece: ChessPiece) : void{
+
+        const position: Position = piece.position
 
         // Find the piece at the position to be captured
         for (let i = 0; i < this._pieces.length; i++) {
 
-            const piece : ChessPiece = this._pieces[i]
+            const checkPiece : ChessPiece = this._pieces[i]
 
             // Check if a piece matches is on the required position
-            if (Position.compare(piece.position, position)) {
+            if (Position.compare(checkPiece.position, position)) {
                 // remove the piece from the pieces array
                 this._pieces.splice(i, 1)
 
                 // add the piece to the captured piece array
-                this._capturedPieces.push(piece)
+                this._capturedPieces.push(checkPiece)
 
                 // Move the character on the board representation
                 const startRow: number = position.rank
@@ -166,6 +168,6 @@ export class ChessBoard extends Board{
         }
 
         // throw error if there is no piece to be captured
-        throw new ChessBoardError(`Can not capture. No piece at position '${position.serialise()}'.`)
+        throw new ChessBoardError(`No piece on board at position '${position.serialise()}'.`)
     }
 }

@@ -7,9 +7,11 @@ export class Position {
 
     /* Constructor */ 
 
-    constructor(file: string, rank: number){
-        this._file = file
-        this._rank = rank
+    constructor(file: string, rank?: number){
+
+        this._rank = (typeof rank === 'undefined') ? Number(file[1]) : rank
+        this._file = (typeof rank === 'undefined') ? file[0] : file
+        
     }
 
     public static compare(positionA: Position, positionB: Position): boolean {

@@ -21,7 +21,7 @@ export const START_RANK : number = 1
 
 // Starting Pieces
 
-function initialiseStartingPieces(): ChessPiece[] {
+export function initialiseStartingChessPieces(): ChessPiece[] {
 
     // Define Array to contain all pieces
     const pieces = []
@@ -60,4 +60,3 @@ function initialiseStartingPieces(): ChessPiece[] {
     return pieces
 }
 
-export const STARTING_PIECES: ChessPiece[] = initialiseStartingPieces()

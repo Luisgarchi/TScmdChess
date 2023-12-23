@@ -1,9 +1,16 @@
 import { UCI } from "./notation/moveNotation/UCI";
 import { ChessBoard } from "./boards/ChessBoard";
 import { Position } from "./notation/boardNotation/Position";
-import { ChessPiece, ColourPlayers, STARTING_PIECES } from "./chess_settings";
+import { ChessPiece, ColourPlayers, initialiseStartingChessPieces } from "./chess_settings";
 import PromptSync from "prompt-sync";
+
 import ChessGameError from "./errors/ChessGameError";
+import { Piece } from "./pieces/Piece";
+
+import { Knight } from "./pieces/knight/Knight";
+import { Bishop } from "./pieces/bishop/Bishop";
+import { Queen } from "./pieces/queen/Queen";
+import { Rook } from "./pieces/rook/Rook";
 
 export class ChessGame {
 
@@ -16,14 +23,16 @@ export class ChessGame {
     5) 
     */
 
-    private chessBoard: ChessBoard
-    private history: any[]
-    private UCI: UCI
+    public board: ChessBoard
+    public history: any[]
+    public UCI: UCI
 
 
-    constructor(){
+    constructor(startingPieces?: ChessPiece[]){
 
-        this.chessBoard = new ChessBoard(STARTING_PIECES)
+        const pieces: ChessPiece[] = (typeof startingPieces === 'undefined') ? initialiseStartingChessPieces() : startingPieces
+
+        this.board = new ChessBoard(pieces)
         this.UCI = new UCI()
         this.history = []
     }
@@ -36,18 +45,16 @@ export class ChessGame {
 
         const prompt = PromptSync();
 
-        let isValidUCI: boolean = false
         let isValidMove: boolean = false
         
         let move: string
 
-        while ((!isValidUCI) || (!isValidMove)){
+        while (!isValidMove){
 
             move = prompt("Enter move: ")
 
             try {
-                isValidUCI = this.UCI.validate(move)
-                isValidMove = this.executeBoardMove(move, colour)
+                isValidMove = this.makeMove(move, colour)
             }
             catch (error){
                 console.log(error)
@@ -58,72 +65,127 @@ export class ChessGame {
     }
 
 
+    makeMove(move: string, colour: ColourPlayers): boolean{
 
+        // 1) Wrap everything in a try catch
+        try{
+            // 2) Check if the UCI notation is valid 
+            this.UCI.validate(move)
 
+            // Get start and end position
+            const start: Position = new Position(move.slice(0,2))
+            const end: Position = new Position(move.slice(2, 4))
 
-    executeBoardMove(move: string, colour: ColourPlayers): boolean {
-
-        try {
-
-            // Get start and end positions as string
-            const start: string = move.slice(0,2)
-            const end: string = move.slice(2, 4)
-
-            // Convert start and end Positions into a Position object
-            const startPosition: Position = new Position(start[0], Number(start[1]))
-            const endPosition: Position = new Position(end[0], Number(end[1]))
-
-            // Get start piece
-            const piece: ChessPiece = this.chessBoard.pieceAt(startPosition)
-
-            // Check that the piece being moved is of the same colour as the player making the move
-            const isMovingPieceCorrectColour: boolean = this.isPiecePlayer(startPosition, colour)
-
-            // Check that the piece can move to the end position
-            const isLegalMove: boolean = this.legalMove(piece, endPosition)
-
-
-
+            // 3) Check that there is a piece at start Position
+            const isPieceAt: boolean = this.board.isPieceAt(start)
+            if (!isPieceAt){
+                throw new ChessGameError(`Can not get piece at position ${start.serialise()}. No piece found.`)
+            }
             
-        
+            // Get the piece
+            const piece: ChessPiece = this.board.getPiece(start)
+
+            // 4) Check if the piece is the same colour as the player
+            const isMovePieceColour: boolean = this.isPiecePlayers(piece, colour) 
+            if(!isMovePieceColour){
+                throw new ChessGameError(`${colour} Player can not move a ${piece.colour} piece`)
+            }
+
+            // 5) Check if moving piece to end position is a legal move
+            const isLegalMove: boolean = this.legalMove(piece, end)
+            if(!isLegalMove){
+                throw new ChessGameError(`Illegal move, ${piece.type} at ${piece.position.serialise()} can not move to ${end.serialise()}`)
+            }
+            
+            // 6) Check if moving to the end results in capture
+            const isCapture: boolean = this.board.isPieceAt(end)
+
+            if (isCapture){
+
+                // Get the piece to be captured
+                const capturedPiece : ChessPiece = this.board.getPiece(end)
+
+                // Handle the capture on the board
+                this.board.removePiece(capturedPiece)
+            }
+
+            // 7) handle promotion
+            if (move.length == 5){
+                const promoteSymbol: string = move[4]
+                this.promote(piece, promoteSymbol, end)
+            }
+            // 8) Move piece normally
+            else {
+                this.board.movePiece(piece, end)
+            }
+            
+            // The move was successful
+            return true
         }
-        catch (error){
+        catch (error) {
             throw error
         }
     }
-
-
-    isPiecePlayer(position: Position, colour: ColourPlayers) : boolean {
-
-        const piece = this.chessBoard.pieceAt(position)
+    
+    isPiecePlayers(piece: ChessPiece, colour: ColourPlayers) : boolean {
 
         if (piece.colour == colour){
             return true
         }
         else {
-            throw new ChessGameError(`${colour} Player can not move a ${piece.colour} piece`)
+            return false
         }
     }
 
     legalMove(piece: ChessPiece, endPosition: Position): boolean {
         
-        const piecesLegalMoves: Position[] = piece.movement.findReachablePositions(piece, this.chessBoard)
+        // Get all the positions a piece can move to
+        const piecesLegalMoves: Position[] = piece.movement.findReachablePositions(piece, this.board)
 
+        // Convert all the positions into a string for comparison
         const serialise = function(position: Position) {
             return position.serialise()
         }
 
         const serialisedMoves: string[] = piecesLegalMoves.map(serialise)
+
+        // Convert the endPosition into a string
         const serialisedEndPosition : string = endPosition.serialise()
 
+        // Make the comparison
         const isLegal: boolean = serialisedMoves.includes(serialisedEndPosition)
 
-        if (serialisedEndPosition){
+        // Return true or throw error
+        if (isLegal){
             return true
         }
         else {
-            throw new ChessGameError(`Illegal move, ${piece.type} at ${piece.position.serialise()} can not move to ${serialisedEndPosition}`)
+            return false
         }
-        
     }
+
+    promote(piece: ChessPiece, promoteSymbol: string, position: Position): void{
+
+        const colour: ColourPlayers = piece.colour
+        let promotePiece: ChessPiece
+
+        if (promoteSymbol == 'q'){
+            promotePiece = new Queen(colour, position)
+        }
+        else if (promoteSymbol == 'r'){
+            promotePiece = new Rook(colour, position)
+        }
+        else if (promoteSymbol == 'b'){
+            promotePiece = new Bishop(colour, position)
+        }
+        else if (promoteSymbol == 'n'){
+            promotePiece = new Knight(colour, position)
+        }
+
+        this.board.removePiece(piece)
+        this.board.addPiece(promotePiece)
+    }
+
+    
+
 }
