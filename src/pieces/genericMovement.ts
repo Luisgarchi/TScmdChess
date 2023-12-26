@@ -92,8 +92,6 @@ export const filterBlockingPieces = function(
     Logic: A piece can move to a new position if it is not blocked by a piece
     of the same colour, if there is a piece of a different colour, it can move to 
     said square by capturing the piece but not any further along the vector */
-        
-    let positionsSerialised: string[] = positions.map((position) => position.serialise())
 
     const boardPieces: ChessPiece[] = board.pieces
 
@@ -102,19 +100,18 @@ export const filterBlockingPieces = function(
         // Get the current piece position and colour
         const blockingPiece: ChessPiece = boardPieces[i]
         const blockingPosition: Position = blockingPiece.position
-        const blockingPositionSerialised: string = blockingPosition.serialise()
         const blockingColour: ColourPlayers = blockingPiece.colour
 
 
         // Only positions that lie on the vector
-        if (positionsSerialised.includes(blockingPositionSerialised)){
+        if (Position.includes(positions, blockingPosition)){
 
             // Find the index of the blocking piece
-            function matchingIndex(piecesPosition){
-                return piecesPosition == blockingPositionSerialised
+            function matchingIndex(piecesPosition: Position){
+                return Position.compare(piecesPosition, blockingPosition)
             }
 
-            const index = positionsSerialised.findIndex(matchingIndex)
+            const index = positions.findIndex(matchingIndex)
             
             // Handle logic for same and different coloured pieces
             if (piece.colour == blockingColour){
@@ -123,13 +120,11 @@ export const filterBlockingPieces = function(
                 if (index == 0){
                     return []
                 }
-                positionsSerialised = positionsSerialised.slice(0, index)
                 positions = positions.slice(0, index)
             }
             else{
 
                 // Different colour piece can move to the position by capturing
-                positionsSerialised = positionsSerialised.slice(0, index + 1)
                 positions = positions.slice(0, index + 1)
             }
         }

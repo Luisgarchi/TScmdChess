@@ -20,6 +20,255 @@ const piecePropertiesTest = function(piece: ChessPiece) {
 } 
 
 
+describe('Method - isCheck', () => {
+
+    test('Simple check', () => {
+
+        // Define colour of king
+        const colour: ColourPlayers = 'white'
+
+        // Define a king
+        const kingInCheck = new King(colour, new Position('c1'))
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            kingInCheck,
+            new Rook('black', new Position('c8'))
+
+        ]
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Test
+        const result: boolean = chess.isCheck(colour)
+        const expected: boolean = true
+
+        expect(result).toEqual(expected)
+    })
+
+    test('Double check', () => {
+
+        // Define colour of king
+        const colour: ColourPlayers = 'black'
+
+        // Define a king
+        const kingInCheck = new King(colour, new Position('d8'))
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            kingInCheck,
+            new Rook('white', new Position('d3')),
+            new Bishop('white', new Position('f6'))
+
+        ]
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Test
+        const result: boolean = chess.isCheck(colour)
+        const expected: boolean = true
+
+        expect(result).toEqual(expected)
+    })
+
+    
+    test('Not in check simple', () => {
+
+        // Define colour of king
+        const colour: ColourPlayers = 'black'
+
+        // Define a king
+        const kingInCheck = new King(colour, new Position('g3'))
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            kingInCheck
+        ]
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Test
+        const result: boolean = chess.isCheck(colour)
+        const expected: boolean = false
+
+        expect(result).toEqual(expected)
+    })
+
+
+    test('Not in check', () => {
+
+        // Define colour of king
+        const colour: ColourPlayers = 'white'
+
+        // Define a king
+        const kingInCheck = new King(colour, new Position('c1'))
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            kingInCheck,
+            new Rook('black', new Position('c6')),
+            new Rook('black', new Position('d8')),
+            new Queen('black', new Position('a4')),
+            new Bishop('black', new Position('a3')),
+            new Knight('black', new Position('b2')),
+            new Knight('black', new Position('e3')),
+            new Rook('black', new Position('f2')),
+            new Bishop('black', new Position('f5')),
+            new Pawn('white', new Position('c3')),
+        ]
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Test
+        const result: boolean = chess.isCheck(colour)
+        const expected: boolean = false
+
+        expect(result).toEqual(expected)
+    })
+})
+
+
+
+
+describe('method - checkingPieces', () => {
+
+
+    test('No checking pieces', () => {
+
+        // Define colour of king
+        const colour: ColourPlayers = 'black'
+
+        // Define a king
+        const king= new King(colour, new Position('g3'))
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            king
+        ]
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Test
+        const result: ChessPiece[] = chess.checkingPieces(colour)
+
+        expect(result).toHaveLength(0)
+    })
+
+    
+    test('One checking piece', () => {
+
+        // Define colour of king
+        const colour: ColourPlayers = 'white'
+
+        // Define a king
+        const king = new King(colour, new Position('g1'))
+
+        const checkingPiece = new Knight('black', new Position('e2'))
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            king,
+            checkingPiece
+        ]
+        
+        const checkingPieces = [
+            checkingPiece
+        ]
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Test
+        const result: ChessPiece[] = chess.checkingPieces(colour)
+        
+        expect(result).toEqual(expect.arrayContaining(checkingPieces.map(piecePropertiesTest)))
+        expect(result.length).toEqual(checkingPieces.length)
+    })
+
+    test('Two checking pieces', () => {
+
+        // Define colour of king
+        const colour: ColourPlayers = 'black'
+
+        // Define a king
+        const king = new King(colour, new Position('h5'))
+
+        const checkingPieceA= new Queen('white', new Position('h4'))
+        const checkingPieceB= new Bishop('white', new Position('f3'))
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            king,
+            checkingPieceA,
+            checkingPieceB
+        ]
+        
+        const checkingPieces = [
+            checkingPieceA,
+            checkingPieceB
+        ]
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Test
+        const result: ChessPiece[] = chess.checkingPieces(colour)
+        
+        expect(result).toEqual(expect.arrayContaining(checkingPieces.map(piecePropertiesTest)))
+        expect(result.length).toEqual(checkingPieces.length)
+    })
+
+    
+    test('Multiple checking pieces', () => {
+
+        // Define colour of king
+        const colour: ColourPlayers = 'white'
+
+        // Define a king
+        const king = new King(colour, new Position('d4'))
+
+        const checkingPieceA = new Queen('black', new Position('d1'))
+        const checkingPieceB = new Rook('black', new Position('a4'))
+        const checkingPieceC = new Pawn('black', new Position('c5'))
+        const checkingPieceD = new Knight('black', new Position('e2'))
+        const checkingPieceE = new Bishop('black', new Position('h8'))
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            king,
+            checkingPieceA,
+            checkingPieceB,
+            checkingPieceC,
+            checkingPieceD,
+            checkingPieceE
+        ]
+        
+        const checkingPieces = [
+            checkingPieceA,
+            checkingPieceB,
+            checkingPieceC,
+            checkingPieceD,
+            checkingPieceE
+        ]
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Test
+        const result: ChessPiece[] = chess.checkingPieces(colour)
+        
+        expect(result).toEqual(expect.arrayContaining(checkingPieces.map(piecePropertiesTest)))
+        expect(result.length).toEqual(checkingPieces.length)
+    })
+})
+
+
+
 
 describe('Method - makeMove', () => {
 

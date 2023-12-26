@@ -11,6 +11,7 @@ import { Knight } from "./pieces/knight/Knight";
 import { Bishop } from "./pieces/bishop/Bishop";
 import { Queen } from "./pieces/queen/Queen";
 import { Rook } from "./pieces/rook/Rook";
+import { King } from "./pieces/king/King";
 
 export class ChessGame {
 
@@ -142,26 +143,8 @@ export class ChessGame {
         // Get all the positions a piece can move to
         const piecesLegalMoves: Position[] = piece.movement.findReachablePositions(piece, this.board)
 
-        // Convert all the positions into a string for comparison
-        const serialise = function(position: Position) {
-            return position.serialise()
-        }
-
-        const serialisedMoves: string[] = piecesLegalMoves.map(serialise)
-
-        // Convert the endPosition into a string
-        const serialisedEndPosition : string = endPosition.serialise()
-
         // Make the comparison
-        const isLegal: boolean = serialisedMoves.includes(serialisedEndPosition)
-
-        // Return true or throw error
-        if (isLegal){
-            return true
-        }
-        else {
-            return false
-        }
+       return Position.includes(piecesLegalMoves, endPosition)
     }
 
     promote(piece: ChessPiece, promoteSymbol: string, position: Position): void{
@@ -185,6 +168,44 @@ export class ChessGame {
         this.board.removePiece(piece)
         this.board.addPiece(promotePiece)
     }
+
+    isCheck(colour: ColourPlayers): boolean {
+
+        // Get the 'colour' king 
+        const king: King = this.board.getKing(colour)
+        
+        // Check if the king is in check
+        return king.isInCheck(this.board)
+    }
+
+    checkingPieces(colour: ColourPlayers): ChessPiece[]{
+
+        // Return an array of all the pieces checking the 'colour' king
+
+        // Get the 'colour' king 
+        const king: King = this.board.getKing(colour)
+
+        // Return an array of checking pieces
+        return king.getCheckingPieces(this.board)
+    }
+
+    isCheckMate(colour: ColourPlayers): boolean {
+
+        // Get the 'colour' king 
+        const king: King = this.board.getKing(colour)
+
+        // get king legal positions it can move to
+        const kingLegalSquares: Position[] = king.legalSquaresMove(this.board)
+        
+
+        return true
+    }
+
+    //kingLegalSquares(): Position[] {
+
+    //}
+
+
 
     
 

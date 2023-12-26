@@ -1,9 +1,10 @@
-import { ChessPiece } from "../chess_settings"
+import { ChessPiece, ColourPlayers } from "../chess_settings"
 import ChessBoardError from "../errors/ChessBoardError"
 import { Position } from "../notation/boardNotation/Position"
 import { Board } from "./Board"
 import { BoardNotationObject, BOARD_DIMENSIONS} from "../utils/notation"
 import { fileToNum } from "../utils/notation"
+import { King } from "../pieces/king/King"
 
 export class ChessBoard extends Board{
     
@@ -169,5 +170,20 @@ export class ChessBoard extends Board{
 
         // throw error if there is no piece to be captured
         throw new ChessBoardError(`No piece on board at position '${position.serialise()}'.`)
+    }
+
+    getKing(colour: ColourPlayers): King {
+        
+        // Get the King of the specified colour
+        const king: King | undefined = this.pieces.find(
+            (piece) => (piece instanceof King) && (piece.colour == colour)
+        ) as King
+        
+        // Throw an error if there is no king of that colour
+        if (typeof king === 'undefined'){
+            throw new ChessBoardError(`Chess board missing King of colour ${colour}`)
+        }
+
+        return king
     }
 }

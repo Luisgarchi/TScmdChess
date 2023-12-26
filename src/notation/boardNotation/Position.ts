@@ -18,6 +18,20 @@ export class Position {
         return ((positionA.file == positionB.file) && (positionA.rank == positionB.rank))
     }
 
+    public static includes(positions: Position[], position: Position): boolean {
+        
+        for (let i = 0; i < positions.length; i++){
+
+            const checkPosition: Position = positions[i]
+
+            if (this.compare(checkPosition, position)){
+                return true
+            }
+        }
+        return false
+    }
+
+
     /* Getters */
     get file() {
         return this._file

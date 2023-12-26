@@ -66,7 +66,7 @@ export class PieceMechanics {
 */
     findReachablePositions(piece: ChessPiece, board: ChessBoard): Position[] {
 
-        /* Return the serialised positions a piece can move to in a move */
+        /* Return the positions a piece can move to in a move */
 
         // Initialize the correct vectors based on the piece and chess board
         //this.initializeVectorMechanics(piece, board)
