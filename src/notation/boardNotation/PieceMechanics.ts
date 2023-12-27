@@ -98,5 +98,30 @@ export class PieceMechanics {
         return allPositions
     }
 
+    findCheckingVectorPositions(piece: ChessPiece, endPosition: Position, board: ChessBoard): Position[] {
+        
+        const activeVectors: VectorMechanics[] = this._moveMechanics.filter(
+            (mechanics) => mechanics[0].activated
+        )
+
+        for (let i = 0; i < activeVectors.length; i++){
+
+            // get the vector
+            const vector: MoveVector = this._moveMechanics[i][0]
+
+            // get the associated function used to find positions along said vector
+            const findPositions: PositionsAlongVector = this._moveMechanics[i][1]
+
+            // find the positions along vector for the current piece on the board
+            const positionsVector: Position[] = findPositions(vector, piece, board)
+
+            if (Position.includes(positionsVector, endPosition)){
+                return positionsVector
+            }
+
+        }
+        throw new Error(`Can not find the positions along a vector that indlude ${endPosition.serialise()}`)
+    }
+
 
 }

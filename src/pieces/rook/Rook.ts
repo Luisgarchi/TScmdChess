@@ -29,4 +29,8 @@ export class Rook extends Piece {
         super(type, colour, symbol, position, points, movement)        
         
     }
+
+    public makeCopy(): Rook{
+        return new Rook(this.colour, new Position(this.position.serialise()))
+    }
 }

@@ -172,6 +172,18 @@ export class ChessBoard extends Board{
         throw new ChessBoardError(`No piece on board at position '${position.serialise()}'.`)
     }
 
+    copyPieces(): ChessPiece[]{
+
+        const piecesCopy: ChessPiece[] = []
+
+        for (let i = 0; i < this.pieces.length; i++){
+            
+            const currentPiece: ChessPiece = this.pieces[i]
+            piecesCopy.push(currentPiece.makeCopy()) 
+        }
+        return piecesCopy
+    }
+
     getKing(colour: ColourPlayers): King {
         
         // Get the King of the specified colour

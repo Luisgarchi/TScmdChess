@@ -12,12 +12,75 @@ import { Rook } from "./pieces/rook/Rook"
 
 
 
+
 const piecePropertiesTest = function(piece: ChessPiece) {
     return expect.objectContaining({
         position: expect.objectContaining({rank: piece.position.rank, file: piece.position.file}), 
         colour : piece.colour, 
         type: piece.type})
 } 
+
+
+const positionPropertyTest = function(position: Position){
+    return expect.objectContaining({rank: position.rank, file: position.file})
+}
+
+
+
+describe('kingLegalSquaresMove', () => {
+
+    test('Only 3 legal moves', () => {
+
+        const king = new King('white', new Position('b2'))
+
+        const pieces: ChessPiece[] = [
+            king,
+            new Queen('black', new Position('c4'))
+        ]
+
+        const chess: ChessGame = new ChessGame(pieces)
+
+        const legalPositions : Position[] = [
+            new Position('a1'),
+            new Position('a3'),
+            new Position('b1'),
+        ]
+
+        const results: Position[] = chess.kingLegalSquaresMove(king)
+
+        expect(results).toEqual(expect.arrayContaining(legalPositions.map(positionPropertyTest)))
+        expect(results.length).toEqual(legalPositions.length)
+    })
+
+    test('Only 1 legal moves', () => {
+
+        const king = new King('black', new Position('f6'))
+
+        const pieces: ChessPiece[] = [
+            king,
+            new Queen('white', new Position('g1')),
+            new Bishop('white', new Position('h7')),
+            new Knight('white', new Position('d8')),
+            new Pawn('white', new Position('f5')),
+            new Pawn('black', new Position('e5'))
+        ]
+
+        const chess: ChessGame = new ChessGame(pieces)
+
+        const legalPositions : Position[] = [
+            new Position('e7'),
+        ]
+
+        const results: Position[] = chess.kingLegalSquaresMove(king)
+
+        expect(results).toEqual(expect.arrayContaining(legalPositions.map(positionPropertyTest)))
+        expect(results.length).toEqual(legalPositions.length)
+    })
+
+
+})
+
+
 
 
 describe('Method - isCheck', () => {

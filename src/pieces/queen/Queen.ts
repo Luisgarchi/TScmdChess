@@ -29,4 +29,8 @@ export class Queen extends Piece {
         super(type, colour, symbol, position, points, movement)        
         
     }
+
+    public makeCopy(): Queen{
+        return new Queen(this.colour, new Position(this.position.serialise()))
+    }
 }

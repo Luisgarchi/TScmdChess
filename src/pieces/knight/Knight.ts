@@ -29,4 +29,8 @@ export class Knight extends Piece {
         super(type, colour, symbol, position, points, movement)        
         
     }
+
+    public makeCopy(): Knight{
+        return new Knight(this.colour, new Position(this.position.serialise()))
+    }
 }

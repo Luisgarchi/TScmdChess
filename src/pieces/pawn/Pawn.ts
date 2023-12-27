@@ -29,4 +29,8 @@ export class Pawn extends Piece {
         super(type, colour, symbol, position, points, movement)        
         
     }
+
+    public makeCopy(): Pawn{
+        return new Pawn(this.colour, new Position(this.position.serialise()))
+    }
 }

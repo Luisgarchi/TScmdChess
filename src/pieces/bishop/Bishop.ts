@@ -29,4 +29,8 @@ export class Bishop extends Piece {
         super(type, colour, symbol, position, points, movement)        
         
     }
+
+    public makeCopy(): Bishop{
+        return new Bishop(this.colour, new Position(this.position.serialise()))
+    }
 }

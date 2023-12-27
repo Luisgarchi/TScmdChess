@@ -189,24 +189,95 @@ export class ChessGame {
         return king.getCheckingPieces(this.board)
     }
 
+
     isCheckMate(colour: ColourPlayers): boolean {
 
         // Get the 'colour' king 
         const king: King = this.board.getKing(colour)
 
-        // get king legal positions it can move to
-        const kingLegalSquares: Position[] = king.legalSquaresMove(this.board)
-        
+        // Check that the king in question is in check
+        const isCheck: boolean = king.isInCheck(this.board)
 
-        return true
+        // If the king is not in check then it can not be in check mate
+        if (!isCheck){
+            return false
+        }
+
+        // Get king legal positions it can move to
+        const kingLegalSquares: Position[] = this.kingLegalSquaresMove(king)
+
+        if (kingLegalSquares.length >= 1){
+            return false
+        }
+
+        // If tehre are no legal moves, Check if another piece can block
+        const checkingPieces: ChessPiece[] = this.checkingPieces(colour)
+
+        // If king is in check with no legal moves and there is more than one checking piece it is mate
+        if (checkingPieces.length > 1){
+            return true
+        }
+
+        // Get the checking piece and see if it can be blocked by a piece
+        const checkingPiece: ChessPiece = checkingPieces[0]
+
+        return this.canBlock(checkingPiece, king.position)
     }
 
-    //kingLegalSquares(): Position[] {
-
-    //}
-
-
-
     
+
+    canBlock(checkingPiece: ChessPiece, position: Position): boolean {
+
+        const blockingPositons: Position[] = checkingPiece.movement.findCheckingVectorPositions(checkingPiece, position, this.board)
+
+        // remove the last position because it is the positon of the king
+        blockingPositons.splice(blockingPositons.length - 1, 1)
+
+        // Add the starting position of the checking piece since it can be captured
+        blockingPositons.push(checkingPiece.position)
+
+        // check if any piece of different colour can block (piece must not be pinned)
+
+    }  
+
+
+
+    kingLegalSquaresMove(king: King): Position[] {
+
+        // Get all of the square the king can move to
+        const allSquares: Position[] = king.movement.findReachablePositions(king, this.board)
+
+        const startPosition : string = king.position.serialise()
+        
+        // Iterate over all the positions the king can move to
+        let index: number = 0
+        
+        while(index < allSquares.length){
+
+            // Initialise a new test chess game instance
+            const testGame: ChessGame = new ChessGame(this.board.copyPieces())
+
+            // Get parse the move 
+            const endPosition: string = allSquares[index].serialise()
+            const move: string = startPosition + endPosition
+
+            // Make the move
+            testGame.makeMove(move, king.colour)
+
+            // Boolean variable checks if move is legal
+            const isCheck: boolean = testGame.isCheck(king.colour)
+
+            // Remove the current index
+            if (isCheck){
+                allSquares.splice(index, 1)
+            }
+            // Increment index if it is legal (check next position)
+            else {
+                index ++
+            }
+        }
+        return allSquares
+    }
+
 
 }
