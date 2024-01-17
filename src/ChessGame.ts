@@ -12,6 +12,7 @@ import { Bishop } from "./pieces/bishop/Bishop";
 import { Queen } from "./pieces/queen/Queen";
 import { Rook } from "./pieces/rook/Rook";
 import { King } from "./pieces/king/King";
+import { Pawn } from "./pieces/pawn/Pawn";
 
 export class ChessGame {
 
@@ -68,14 +69,23 @@ export class ChessGame {
 
     makeMove(move: string, colour: ColourPlayers): boolean{
 
+        let piece: ChessPiece
+        let isLegalRegularMove: boolean 
+        let isLegalCastles: boolean
+        let isLegalEnpassant: boolean
+        let isCapture: boolean
+        let start: Position
+        let end: Position
+
+
         // 1) Wrap everything in a try catch
         try{
             // 2) Check if the UCI notation is valid 
             this.UCI.validate(move)
 
             // Get start and end position
-            const start: Position = new Position(move.slice(0,2))
-            const end: Position = new Position(move.slice(2, 4))
+            start = new Position(move.slice(0,2))
+            end = new Position(move.slice(2, 4))
 
             // 3) Check that there is a piece at start Position
             const isPieceAt: boolean = this.board.isPieceAt(start)
@@ -84,7 +94,7 @@ export class ChessGame {
             }
             
             // Get the piece
-            const piece: ChessPiece = this.board.getPiece(start)
+            piece = this.board.getPiece(start)
 
             // 4) Check if the piece is the same colour as the player
             const isMovePieceColour: boolean = this.isPiecePlayers(piece, colour) 
@@ -93,39 +103,45 @@ export class ChessGame {
             }
 
             // 5) Check if moving piece to end position is a legal move
-            const isLegalMove: boolean = this.legalMove(piece, end)
+            isLegalRegularMove = this.legalRegularMove(piece, end)
+            isLegalCastles = this.legalCastles()
+            isLegalEnpassant = this.legalEnpassant()
+
+            const isLegalMove: boolean = isLegalRegularMove || isLegalCastles || isLegalEnpassant
+
             if(!isLegalMove){
                 throw new ChessGameError(`Illegal move, ${piece.type} at ${piece.position.serialise()} can not move to ${end.serialise()}`)
             }
-            
-            // 6) Check if moving to the end results in capture
-            const isCapture: boolean = this.board.isPieceAt(end)
-
-            if (isCapture){
-
-                // Get the piece to be captured
-                const capturedPiece : ChessPiece = this.board.getPiece(end)
-
-                // Handle the capture on the board
-                this.board.removePiece(capturedPiece)
-            }
-
-            // 7) handle promotion
-            if (move.length == 5){
-                const promoteSymbol: string = move[4]
-                this.promote(piece, promoteSymbol, end)
-            }
-            // 8) Move piece normally
-            else {
-                this.board.movePiece(piece, end)
-            }
-            
-            // The move was successful
-            return true
         }
         catch (error) {
             throw error
         }
+
+
+        // 6) Check if moving to the end results in capture
+        isCapture = this.board.isPieceAt(end)
+        
+        if (isCapture){
+
+            // Get the piece to be captured
+            const capturedPiece : ChessPiece = this.board.getPiece(end)
+
+            // Handle the capture on the board
+            this.board.removePiece(capturedPiece)
+        }
+
+        // 7) handle promotion
+        if (move.length == 5){
+            const promoteSymbol: string = move[4]
+            this.promote(piece, promoteSymbol, end)
+        }
+        // 8) Move piece normally
+        else {
+            this.board.movePiece(piece, end)
+        }
+        
+        // The move was successful
+        return true
     }
     
     isPiecePlayers(piece: ChessPiece, colour: ColourPlayers) : boolean {
@@ -138,7 +154,7 @@ export class ChessGame {
         }
     }
 
-    legalMove(piece: ChessPiece, endPosition: Position): boolean {
+    legalRegularMove(piece: ChessPiece, endPosition: Position): boolean {
         
         // Get all the positions a piece can move to
         const piecesLegalMoves: Position[] = piece.movement.findReachablePositions(piece, this.board)
@@ -146,6 +162,93 @@ export class ChessGame {
         // Make the comparison
        return Position.includes(piecesLegalMoves, endPosition)
     }
+
+
+    legalCastles(piece: ChessPiece, endPosition: Position): boolean {
+
+        // 1) Check that the start piece is a king
+        if (!(piece instanceof King)){
+            return false
+        }
+
+        // 2) Check that the king is in the starting position
+        const kingPosition: Position = (piece.colour == 'white') ? new Position('e1') : new Position('e8')
+        
+        if (this.board.isPieceAt(kingPosition)){
+
+            const potentialKing: ChessPiece = this.board.getPiece(kingPosition)
+
+            // Chess that piece is a king of correct colour
+            if (!(
+                (potentialKing instanceof King) || 
+                (potentialKing.colour == piece.colour)
+                )){
+                return false
+            }
+        }
+
+        // 3) Check for the correct castling notation 
+        // king side castle is on g file, queen side castle is c file
+        if (piece.colour == 'white'){
+            if (!['g1', 'c1'].includes(endPosition.serialise())){
+                return false
+            }
+        }
+        else {
+            if (!['g8', 'c8'].includes(endPosition.serialise())){
+                return false
+            }
+        }
+
+        // 4) Check that rook is in starting position
+        // Mapping to get position where rook should be for castling.
+        // The rook position (from second half of UCI notation)
+
+        const madUCItoCastlePosition = new Map();
+        madUCItoCastlePosition.set('g1', 'h1');
+        madUCItoCastlePosition.set('g8', 'h8');
+        madUCItoCastlePosition.set('c1', 'a1');
+        madUCItoCastlePosition.set('c8', 'a8');
+
+        // Get the rook position
+        const rookPosition: Position = new Position(madUCItoCastlePosition.get(endPosition.serialise()))
+        
+        // Check that there is a piece at said position
+        if (!(this.board.isPieceAt(rookPosition))){
+            return false
+        }
+
+        // check that said piece is a rook
+        const potentialRook: ChessPiece = this.board.getPiece(endPosition)
+
+        if (!(potentialRook instanceof Rook)){
+            return false
+        }
+
+        // Check that rook is the starting rook
+        const rook = potentialRook as Rook
+        if (!(Position.compare(rook.startingPosition, rookPosition))){
+            return false
+        }
+
+        // 5) Check that rook and king have not been moved.
+        const mustNotHaveMoved: string[] = [rookPosition.serialise(), kingPosition.serialise()]
+
+        for (let i = 0; i < this.history.length; i++){
+
+            const movingPiecePosition: string = this.history[i].slice(0,2)
+            if (mustNotHaveMoved.includes(movingPiecePosition)){
+                return false
+            }
+        }
+
+        // 6) Check that no pieces blocks the positions between the king and the rook
+
+        // 7) Check that no pieces control the positions between teh king and the rook
+        
+
+    }
+
 
     promote(piece: ChessPiece, promoteSymbol: string, position: Position): void{
 

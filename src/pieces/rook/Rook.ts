@@ -8,6 +8,8 @@ import { type ColourPlayers, type NamesOfPieces } from '../../chess_settings'
 
 export class Rook extends Piece {
 
+    _startingPosition: Position
+
     /* Constructor */
     constructor(colour: ColourPlayers, position: Position){
 
@@ -26,8 +28,14 @@ export class Rook extends Piece {
         const movement: PieceMechanics = factoryRookMechanics()
 
         // Construct the object
-        super(type, colour, symbol, position, points, movement)        
+        super(type, colour, symbol, position, points, movement)
+
+        this._startingPosition = position
         
+    }
+
+    public get startingPosition(): Position{
+        return this._startingPosition
     }
 
     public makeCopy(): Rook{
