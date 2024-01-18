@@ -14,6 +14,8 @@ import { Rook } from "./pieces/rook/Rook";
 import { King } from "./pieces/king/King";
 import { Pawn } from "./pieces/pawn/Pawn";
 
+import { fileToNum, numToFile } from "./utils/notation";
+
 export class ChessGame {
 
     /* 
@@ -104,8 +106,8 @@ export class ChessGame {
 
             // 5) Check if moving piece to end position is a legal move
             isLegalRegularMove = this.legalRegularMove(piece, end)
-            isLegalCastles = this.legalCastles()
-            isLegalEnpassant = this.legalEnpassant()
+            isLegalCastles = this.legalCastles(piece, end)
+            //isLegalEnpassant = this.legalEnpassant()
 
             const isLegalMove: boolean = isLegalRegularMove || isLegalCastles || isLegalEnpassant
 
@@ -178,7 +180,7 @@ export class ChessGame {
 
             const potentialKing: ChessPiece = this.board.getPiece(kingPosition)
 
-            // Chess that piece is a king of correct colour
+            // Check that piece is a king of correct colour
             if (!(
                 (potentialKing instanceof King) || 
                 (potentialKing.colour == piece.colour)
@@ -187,9 +189,17 @@ export class ChessGame {
             }
         }
 
-        // 3) Check for the correct castling notation 
+        const king: King = piece as King
+
+        // 3) Check that the king is not in check
+        if (this.isCheck(king.colour)){
+            return false
+        }
+
+    
+        // 4) Check for the correct castling notation 
         // king side castle is on g file, queen side castle is c file
-        if (piece.colour == 'white'){
+        if (king.colour == 'white'){
             if (!['g1', 'c1'].includes(endPosition.serialise())){
                 return false
             }
@@ -200,7 +210,7 @@ export class ChessGame {
             }
         }
 
-        // 4) Check that rook is in starting position
+        // 5) Check that rook is in starting position
         // Mapping to get position where rook should be for castling.
         // The rook position (from second half of UCI notation)
 
@@ -219,19 +229,20 @@ export class ChessGame {
         }
 
         // check that said piece is a rook
-        const potentialRook: ChessPiece = this.board.getPiece(endPosition)
+        const potentialRook: ChessPiece = this.board.getPiece(rookPosition)
 
         if (!(potentialRook instanceof Rook)){
             return false
         }
 
         // Check that rook is the starting rook
-        const rook = potentialRook as Rook
+        const rook: Rook = potentialRook as Rook
+
         if (!(Position.compare(rook.startingPosition, rookPosition))){
             return false
         }
 
-        // 5) Check that rook and king have not been moved.
+        // 6) Check that rook and king have not been moved.
         const mustNotHaveMoved: string[] = [rookPosition.serialise(), kingPosition.serialise()]
 
         for (let i = 0; i < this.history.length; i++){
@@ -242,11 +253,59 @@ export class ChessGame {
             }
         }
 
-        // 6) Check that no pieces blocks the positions between the king and the rook
+        // 7) Check that no pieces blocks the positions between the king and the rook
+        // - get the positions inbetween the king and rook
+        const rank: number = king.position.rank
 
-        // 7) Check that no pieces control the positions between teh king and the rook
+        const kingFile: number = fileToNum(king.position.file)
+        const rookFile: number = fileToNum(rook.position.file)
+
+        const small: number = (kingFile > rookFile) ? rookFile : kingFile
+        const big: number = (kingFile > rookFile) ? kingFile : rookFile
+
+        const files: number[] = []
+
+        const n: number = big - small
+        for (let i = 1; i < n; i++){
+            files.push(small + i)
+        }
+
+        const positionsInbetween: Position[] = files.map((x) => new Position(numToFile(x), rank))
+
+        // Check to see if any pieces are on these positions
+        const allPieces: ChessPiece[] = this.board.pieces
+
+        for (let i = 0; i < allPieces.length; i++){
+
+            const potentialBlockPiecePosition: Position = allPieces[i].position
+            if (Position.includes(positionsInbetween, potentialBlockPiecePosition)){
+                return false
+            }
+        }
+
+        // 8) Check that no pieces control the positions between teh king and the rook
+
+        // filter for opposite coloured pieces
+        const diffColourPieces: ChessPiece[] = this.board.pieces.filter(
+            (piece) => piece.colour != king.colour)
         
+        // check for each piece all the positions it controls
+        for (let i = 0; i < diffColourPieces.length; i++){
 
+            const checkPiece: ChessPiece = diffColourPieces[i]
+            const allPositions: Position[] = checkPiece.movement.findReachablePositions(checkPiece, this.board)
+            
+            // Check if any of those positions are inbetween the king and the rook
+            for (let j = 0; j < positionsInbetween.length; j++){
+                const individualInbetween: Position = positionsInbetween[j]
+                if (Position.includes(allPositions, individualInbetween)){
+                    return false
+                }                
+            }
+        }
+    
+        // 9) All the conditions have been met and so castling is a legal move
+        return true
     }
 
 
@@ -307,13 +366,13 @@ export class ChessGame {
         }
 
         // Get king legal positions it can move to
-        const kingLegalSquares: Position[] = this.kingLegalSquaresMove(king)
+        const kingLegalSquares: Position[] = this.kingCheckLegalSquaresMove(king)
 
         if (kingLegalSquares.length >= 1){
             return false
         }
 
-        // If tehre are no legal moves, Check if another piece can block
+        // If there are no legal moves, Check if another piece can block
         const checkingPieces: ChessPiece[] = this.checkingPieces(colour)
 
         // If king is in check with no legal moves and there is more than one checking piece it is mate
@@ -324,14 +383,14 @@ export class ChessGame {
         // Get the checking piece and see if it can be blocked by a piece
         const checkingPiece: ChessPiece = checkingPieces[0]
 
-        return this.canBlock(checkingPiece, king.position)
+        return this.canBlockOrCapture(checkingPiece, king)
     }
 
     
 
-    canBlock(checkingPiece: ChessPiece, position: Position): boolean {
+    canBlockOrCapture(checkingPiece: ChessPiece, kingInCheck: King): boolean {
 
-        const blockingPositons: Position[] = checkingPiece.movement.findCheckingVectorPositions(checkingPiece, position, this.board)
+        const blockingPositons: Position[] = checkingPiece.movement.findCheckingVectorPositions(checkingPiece, kingInCheck.position, this.board)
 
         // remove the last position because it is the positon of the king
         blockingPositons.splice(blockingPositons.length - 1, 1)
@@ -339,13 +398,62 @@ export class ChessGame {
         // Add the starting position of the checking piece since it can be captured
         blockingPositons.push(checkingPiece.position)
 
-        // check if any piece of different colour can block (piece must not be pinned)
+        // check if any piece can block (piece must not be pinned)
+        kingInCheck
+
+        // Get all the pieces of the same colour that can potentially block or capture
+        const potentialBlockingPieces: ChessPiece[] = this.board.pieces.filter(
+            (piece) =>  (piece.colour == kingInCheck.colour) && 
+                        (!(piece instanceof King))
+        )
+
+        // Iterate over all potential blocking pieces
+        for (let i = 0; i < potentialBlockingPieces.length; i++){
+
+            const potentialBlockPiece: ChessPiece = potentialBlockingPieces[i]
+
+            // Get all the positions said piece can move to
+            const potentialBlockPositions: Position[] = potentialBlockPiece.movement.findReachablePositions(potentialBlockPiece, this.board)
+
+            // Check if the any of the reachable positions is one along the blocking vector 
+            for (let j = 0; j < blockingPositons.length; j++){
+
+                const blockingPositionAlongCheck: Position = blockingPositons[j]
+                
+                if (Position.includes(potentialBlockPositions, blockingPositionAlongCheck)){
+                    
+                    // All thats left to check is if the pieceis not pinned
+
+                    // Initialise a new test chess game instance
+                    const testGame: ChessGame = new ChessGame(this.board.copyPieces())
+
+                    // Parse the move 
+                    const startPosition: string = potentialBlockPiece.position.serialise()
+                    const endPosition: string = blockingPositionAlongCheck.serialise()
+                    const move: string = startPosition + endPosition
+
+                    // Make the move
+                    testGame.makeMove(move, kingInCheck.colour)
+
+                    // Boolean variable checks if move is legal
+                    const isPinned: boolean = testGame.isCheck(kingInCheck.colour)
+
+                    if (!isPinned){
+                        return true
+                    }
+                }      
+            }
+        }
+
+        // No piece was found that can block or capture so return false
+        return false
+
 
     }  
 
 
 
-    kingLegalSquaresMove(king: King): Position[] {
+    kingCheckLegalSquaresMove(king: King): Position[] {
 
         // Get all of the square the king can move to
         const allSquares: Position[] = king.movement.findReachablePositions(king, this.board)

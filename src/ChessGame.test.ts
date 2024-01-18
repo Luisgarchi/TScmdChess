@@ -27,7 +27,7 @@ const positionPropertyTest = function(position: Position){
 
 
 
-describe('kingLegalSquaresMove', () => {
+describe('kingCheckLegalSquaresMove', () => {
 
     test('Only 3 legal moves', () => {
 
@@ -46,7 +46,7 @@ describe('kingLegalSquaresMove', () => {
             new Position('b1'),
         ]
 
-        const results: Position[] = chess.kingLegalSquaresMove(king)
+        const results: Position[] = chess.kingCheckLegalSquaresMove(king)
 
         expect(results).toEqual(expect.arrayContaining(legalPositions.map(positionPropertyTest)))
         expect(results.length).toEqual(legalPositions.length)
@@ -71,7 +71,7 @@ describe('kingLegalSquaresMove', () => {
             new Position('e7'),
         ]
 
-        const results: Position[] = chess.kingLegalSquaresMove(king)
+        const results: Position[] = chess.kingCheckLegalSquaresMove(king)
 
         expect(results).toEqual(expect.arrayContaining(legalPositions.map(positionPropertyTest)))
         expect(results.length).toEqual(legalPositions.length)
@@ -80,6 +80,64 @@ describe('kingLegalSquaresMove', () => {
 
 })
 
+
+describe('legalCastles', () => {
+
+    test('Check that moving king',() => {
+
+        // Define colour to move
+        const colour: ColourPlayers = 'white'
+
+        // Define piece to move and end position
+        const pieceToMove: ChessPiece = new Pawn(colour, new Position('e2'))
+
+        const endPosition: Position = new Position('e3')
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            new King(colour, new Position('e1')),
+            pieceToMove
+        ]
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Test
+        const result: boolean = chess.legalCastles(pieceToMove, endPosition)
+        const expected: boolean = false
+
+        expect(result).toEqual(expected)
+    })
+
+    test('King in start position - black and true',() => {
+
+        // Define colour to move
+        const colour: ColourPlayers = 'black'
+
+        // Define king and rook
+        const king: ChessPiece = new King(colour, new Position('e8'))
+        const rook: ChessPiece = new Rook(colour, new Position('h8'))
+
+        const endPosition: Position = new Position('g8')
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            king,
+            rook
+        ]
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Test
+        const result: boolean = chess.legalCastles(king, endPosition)
+        const expected: boolean = true
+
+        expect(result).toEqual(expected)
+    })
+
+
+})
 
 
 
@@ -365,7 +423,6 @@ describe('Method - makeMove', () => {
     
 
     describe('Pawn', () => {
-        
 
         describe('Normal movement', () => {
 
@@ -604,9 +661,6 @@ describe('Method - makeMove', () => {
 
         })
 
-
-
-
         describe('Promotion', () => {
 
 
@@ -834,10 +888,6 @@ describe('Method - makeMove', () => {
 
         })
 
-
-
-
-
         describe('Promote and capture', () => {
 
             test('White capture promote Queen f7e8q', () => {
@@ -898,7 +948,6 @@ describe('Method - makeMove', () => {
             })
 
         })
-
 
         describe('Blocked', () => {
 
@@ -1022,8 +1071,6 @@ describe('Method - makeMove', () => {
             })
         })
 
-
-
         describe('Illegal',() => {
 
 
@@ -1104,13 +1151,10 @@ describe('Method - makeMove', () => {
             })
 
         })
-
-
     })
     
 
     describe('Knight', () => {
-
 
         describe('Normal movement', () => {
 
@@ -1350,14 +1394,11 @@ describe('Method - makeMove', () => {
             })
 
         })
-
-
     })
 
 
 
     describe('Bishop', () => {
-
 
         describe('Normal movement', () => {
 
@@ -1597,13 +1638,10 @@ describe('Method - makeMove', () => {
             })
 
         })
-
-
     })
 
 
     describe('Rook', () => {
-
 
         describe('Normal movement', () => {
 
@@ -1850,7 +1888,6 @@ describe('Method - makeMove', () => {
 
     describe('Queen', () => {
 
-
         describe('Normal movement', () => {
 
 
@@ -2092,7 +2129,6 @@ describe('Method - makeMove', () => {
 
 
     describe('King', () => {
-
 
         describe('Normal movement', () => {
 
