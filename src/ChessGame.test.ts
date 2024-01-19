@@ -83,57 +83,751 @@ describe('kingCheckLegalSquaresMove', () => {
 
 describe('legalCastles', () => {
 
-    test('Check that moving king',() => {
+    describe('Basic castling criteria', () => {
 
-        // Define colour to move
-        const colour: ColourPlayers = 'white'
+        test('King is moving piece (false)',() => {
 
-        // Define piece to move and end position
-        const pieceToMove: ChessPiece = new Pawn(colour, new Position('e2'))
+            // Define colour to move
+            const colour: ColourPlayers = 'white'
 
-        const endPosition: Position = new Position('e3')
+            // Define piece to move and end position
+            const pieceToMove: ChessPiece = new Pawn(colour, new Position('e2'))
 
-        // Define starting pieces on board
-        const pieces: ChessPiece[] = [
-            new King(colour, new Position('e1')),
-            pieceToMove
-        ]
+            const endPosition: Position = new Position('e3')
 
-        // Init game
-        const chess: ChessGame = new ChessGame(pieces)
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                new King(colour, new Position('e1')),
+                pieceToMove
+            ]
 
-        // Test
-        const result: boolean = chess.legalCastles(pieceToMove, endPosition)
-        const expected: boolean = false
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
 
-        expect(result).toEqual(expected)
+            // Test
+            const result: boolean = chess.legalCastles(pieceToMove, endPosition)
+            const expected: boolean = false
+
+            expect(result).toEqual(expected)
+        })
+
+        describe('Not in starting square', () => {
+
+            test('King is not in starting square',() => {
+
+                // Define colour to move
+                const colour: ColourPlayers = 'black'
+
+                // Define king and rook
+                const king: ChessPiece = new King(colour, new Position('e5'))
+                const rook: ChessPiece = new Rook(colour, new Position('h8'))
+
+                const endPosition: Position = new Position('g8')
+
+                // Define starting pieces on board
+                const pieces: ChessPiece[] = [
+                    king,
+                    rook
+                ]
+
+                // Init game
+                const chess: ChessGame = new ChessGame(pieces)
+
+                // Test
+                const result: boolean = chess.legalCastles(king, endPosition)
+                const expected: boolean = false
+
+                expect(result).toEqual(expected)
+            })
+
+            test('Rook is not in starting square',() => {
+
+                // Define colour to move
+                const colour: ColourPlayers = 'white'
+
+                // Define king and rook
+                const king: ChessPiece = new King(colour, new Position('e1'))
+                const rook: ChessPiece = new Rook(colour, new Position('a2'))
+
+                const endPosition: Position = new Position('c3')
+
+                // Define starting pieces on board
+                const pieces: ChessPiece[] = [
+                    king,
+                    rook
+                ]
+
+                // Init game
+                const chess: ChessGame = new ChessGame(pieces)
+
+                // Test
+                const result: boolean = chess.legalCastles(king, endPosition)
+                const expected: boolean = false
+
+                expect(result).toEqual(expected)
+            })
+        })
+
+        describe('In start square has moved', () => {
+
+            test(`King is in starting square but has moved - 1 
+            (King starts on original square)'`,() => {
+
+                // Define colour to move
+                const colour: ColourPlayers = 'white'
+
+                // Define king and rook
+                const king: ChessPiece = new King(colour, new Position('e1'))
+                const rook: ChessPiece = new Rook(colour, new Position('h1'))
+
+                const endPosition: Position = new Position('g1')
+
+                // Define starting pieces on board
+                const pieces: ChessPiece[] = [
+                    king,
+                    rook
+                ]
+
+                // Init game
+                const chess: ChessGame = new ChessGame(pieces)
+
+                // Move king to initial square
+                const move: string = 'e1e2'
+                chess.makeMove(move, colour)
+                const undoMove: string = 'e2e1'
+                chess.makeMove(undoMove, colour)
+
+                // Test
+                const result: boolean = chess.legalCastles(king, endPosition)
+                const expected: boolean = false
+
+                expect(result).toEqual(expected)
+            })
+
+            test(`King is in starting square but has moved - 2 
+                    (King does not start on original square)'`,() => {
+
+                // Define colour to move
+                const colour: ColourPlayers = 'black'
+
+                // Define king and rook
+                const king: ChessPiece = new King(colour, new Position('e7'))
+                const rook: ChessPiece = new Rook(colour, new Position('a8'))
+
+                const endPosition: Position = new Position('c8')
+
+                // Define starting pieces on board
+                const pieces: ChessPiece[] = [
+                    king,
+                    rook
+                ]
+
+                // Init game
+                const chess: ChessGame = new ChessGame(pieces)
+
+                // Move king to initial square
+                const move: string = 'e7e8'
+                chess.makeMove(move, colour)
+
+                // Test
+                const result: boolean = chess.legalCastles(king, endPosition)
+                const expected: boolean = false
+
+                expect(result).toEqual(expected)
+            })
+
+            test(`Rook is in starting square but has moved - 1 
+            (Rook starts on original square)'`,() => {
+
+                // Define colour to move
+                const colour: ColourPlayers = 'black'
+
+                // Define king and rook
+                const king: ChessPiece = new King(colour, new Position('e8'))
+                const rook: ChessPiece = new Rook(colour, new Position('a8'))
+
+                const endPosition: Position = new Position('c8')
+
+                // Define starting pieces on board
+                const pieces: ChessPiece[] = [
+                    king,
+                    rook
+                ]
+
+                // Init game
+                const chess: ChessGame = new ChessGame(pieces)
+
+                // Move king to initial square
+                const move: string = 'a8d8'
+                chess.makeMove(move, colour)
+                const undoMove: string = 'd8a8'
+                chess.makeMove(undoMove, colour)
+
+                // Test
+                const result: boolean = chess.legalCastles(king, endPosition)
+                const expected: boolean = false
+
+                expect(result).toEqual(expected)
+            })
+
+            test(`Rook is in starting square but has moved - 2 
+            (Rook does not start on original square)'`,() => {
+
+                // Define colour to move
+                const colour: ColourPlayers = 'white'
+
+                // Define king and rook
+                const king: ChessPiece = new King(colour, new Position('e1'))
+                const rook: ChessPiece = new Rook(colour, new Position('h8'))
+
+                const endPosition: Position = new Position('c8')
+
+                // Define starting pieces on board
+                const pieces: ChessPiece[] = [
+                    king,
+                    rook
+                ]
+
+                // Init game
+                const chess: ChessGame = new ChessGame(pieces)
+
+                // Move king to initial square
+                const move: string = 'h8h1'
+                chess.makeMove(move, colour)
+
+                // Test
+                const result: boolean = chess.legalCastles(king, endPosition)
+                const expected: boolean = false
+
+                expect(result).toEqual(expected)
+            })
+
+        })
+
     })
 
-    test('King in start position - black and true',() => {
+    describe('Castling squares controlled by opponent', () => {
+        
+        test('White queenside controlled by oppoenent', () => {
+            
+            // Define colour to move
+            const colour: ColourPlayers = 'white'
+            const differentColour: ColourPlayers = 'black' 
 
-        // Define colour to move
-        const colour: ColourPlayers = 'black'
+            // Define pieces
+            const king: ChessPiece = new King(colour, new Position('e1'))
+            const rook: ChessPiece = new Rook(colour, new Position('a1'))
 
-        // Define king and rook
-        const king: ChessPiece = new King(colour, new Position('e8'))
-        const rook: ChessPiece = new Rook(colour, new Position('h8'))
+            const enemy: ChessPiece = new Bishop(differentColour, new Position('f5'))
 
-        const endPosition: Position = new Position('g8')
+            // King moves to end position
+            const endPosition: Position = new Position('c1')
 
-        // Define starting pieces on board
-        const pieces: ChessPiece[] = [
-            king,
-            rook
-        ]
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook,
+                enemy
+            ]
 
-        // Init game
-        const chess: ChessGame = new ChessGame(pieces)
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
 
-        // Test
-        const result: boolean = chess.legalCastles(king, endPosition)
-        const expected: boolean = true
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = false
 
-        expect(result).toEqual(expected)
+            expect(result).toEqual(expected)
+        })
+
+        test('White kingside controlled by oppoenent', () => {
+            
+            // Define colour to move
+            const colour: ColourPlayers = 'white'
+            const differentColour: ColourPlayers = 'black' 
+
+            // Define pieces
+            const king: ChessPiece = new King(colour, new Position('e1'))
+            const rook: ChessPiece = new Rook(colour, new Position('h1'))
+
+            const enemy: ChessPiece = new Knight(differentColour, new Position('e3'))
+
+            // King moves to end position
+            const endPosition: Position = new Position('g1')
+
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook,
+                enemy
+            ]
+
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
+
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = false
+
+            expect(result).toEqual(expected)
+        })
+
+        test('Black kingside controlled by oppoenent', () => {
+            
+            // Define colour to move
+            const colour: ColourPlayers = 'black'
+            const differentColour: ColourPlayers = 'white' 
+
+            // Define pieces
+            const king: ChessPiece = new King(colour, new Position('e8'))
+            const rook: ChessPiece = new Rook(colour, new Position('h8'))
+
+            const enemy: ChessPiece = new Queen(differentColour, new Position('g5'))
+
+            // King moves to end position
+            const endPosition: Position = new Position('g8')
+
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook,
+                enemy
+            ]
+
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
+
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = false
+
+            expect(result).toEqual(expected)
+        })
+
+        test('Black queenside controlled by oppoenent', () => {
+            
+            // Define colour to move
+            const colour: ColourPlayers = 'black'
+            const differentColour: ColourPlayers = 'white' 
+
+            // Define pieces
+            const king: ChessPiece = new King(colour, new Position('e8'))
+            const rook: ChessPiece = new Rook(colour, new Position('a8'))
+
+            const enemy: ChessPiece = new Queen(differentColour, new Position('c3'))
+
+            // King moves to end position
+            const endPosition: Position = new Position('c8')
+
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook,
+                enemy
+            ]
+
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
+
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = false
+
+            expect(result).toEqual(expected)
+        })
+
+    })
+
+    describe('Castling in check', () => {
+
+        test('King can not castle during check', () => {
+
+            // Define colour to move
+            const colour: ColourPlayers = 'black'
+            const differentColour: ColourPlayers = 'white' 
+
+            // Define pieces
+            const king: ChessPiece = new King(colour, new Position('e8'))
+            const rook: ChessPiece = new Rook(colour, new Position('h8'))
+
+            const enemy: ChessPiece = new Rook(differentColour, new Position('e2'))
+
+            // King moves to end position
+            const endPosition: Position = new Position('g8')
+
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook,
+                enemy
+            ]
+
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
+
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = false
+
+            expect(result).toEqual(expected)
+        })
+    })
+
+
+    describe('Castling no other pieces', () => {
+
+        test('Simple castle kingside black',() => {
+
+            // Define colour to move
+            const colour: ColourPlayers = 'black'
+
+            // Define king and rook
+            const king: ChessPiece = new King(colour, new Position('e8'))
+            const rook: ChessPiece = new Rook(colour, new Position('h8'))
+
+            const endPosition: Position = new Position('g8')
+
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook
+            ]
+
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
+
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = true
+
+            expect(result).toEqual(expected)
+        })
+
+        test('Simple castle kingside white',() => {
+
+            // Define colour to move
+            const colour: ColourPlayers = 'white'
+
+            // Define king and rook
+            const king: ChessPiece = new King(colour, new Position('e1'))
+            const rook: ChessPiece = new Rook(colour, new Position('h1'))
+
+            const endPosition: Position = new Position('g1')
+
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook
+            ]
+
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
+
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = true
+
+            expect(result).toEqual(expected)
+        })
+
+        test('Simple castle queenside black',() => {
+
+            // Define colour to move
+            const colour: ColourPlayers = 'black'
+
+            // Define king and rook
+            const king: ChessPiece = new King(colour, new Position('e8'))
+            const rook: ChessPiece = new Rook(colour, new Position('a8'))
+
+            const endPosition: Position = new Position('c8')
+
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook
+            ]
+
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
+
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = true
+
+            expect(result).toEqual(expected)
+        })
+
+        test('Simple castle kingside white',() => {
+
+            // Define colour to move
+            const colour: ColourPlayers = 'white'
+
+            // Define king and rook
+            const king: ChessPiece = new King(colour, new Position('e1'))
+            const rook: ChessPiece = new Rook(colour, new Position('a1'))
+
+            const endPosition: Position = new Position('c1')
+
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook
+            ]
+
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
+
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = true
+
+            expect(result).toEqual(expected)
+        })
+
+    })
+
+    describe('Castling blocked by piece same colour', () => {
+
+        test('Castle blocked kingside black',() => {
+
+            // Define colour to move
+            const colour: ColourPlayers = 'black'
+            
+            // Define king and rook
+            const king: ChessPiece = new King(colour, new Position('e8'))
+            const rook: ChessPiece = new Rook(colour, new Position('h8'))
+            const blockingPiece: ChessPiece = new Bishop(colour, new Position('f8'))
+
+            const endPosition: Position = new Position('g8')
+
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook,
+                blockingPiece
+            ]
+
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
+
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = false
+
+            expect(result).toEqual(expected)
+        })
+
+        test('Castle blocked kingside white',() => {
+
+            // Define colour to move
+            const colour: ColourPlayers = 'white'
+
+            // Define king and rook
+            const king: ChessPiece = new King(colour, new Position('e1'))
+            const rook: ChessPiece = new Rook(colour, new Position('h1'))
+            const blockingPiece: ChessPiece = new Knight(colour, new Position('g1'))
+
+            const endPosition: Position = new Position('g1')
+
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook,
+                blockingPiece
+            ]
+
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
+
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = false
+
+            expect(result).toEqual(expected)
+        })
+
+        test('Castle blocked queenside black',() => {
+
+            // Define colour to move
+            const colour: ColourPlayers = 'black'
+
+            // Define king and rook
+            const king: ChessPiece = new King(colour, new Position('e8'))
+            const rook: ChessPiece = new Rook(colour, new Position('a8'))
+            const blockingPiece: ChessPiece = new Queen(colour, new Position('d8'))
+
+            const endPosition: Position = new Position('c8')
+
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook,
+                blockingPiece
+            ]
+
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
+
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = false
+
+            expect(result).toEqual(expected)
+        })
+
+        test('Castle blocked kingside white',() => {
+
+            // Define colour to move
+            const colour: ColourPlayers = 'white'
+
+            // Define king and rook
+            const king: ChessPiece = new King(colour, new Position('e1'))
+            const rook: ChessPiece = new Rook(colour, new Position('a1'))
+            const blockingPiece: ChessPiece = new Bishop(colour, new Position('c1'))
+
+            const endPosition: Position = new Position('c1')
+
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook,
+                blockingPiece
+            ]
+
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
+
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = false
+
+            expect(result).toEqual(expected)
+        })
+
+    })
+
+    describe('Castling blocked by piece different colour', () => {
+
+        test('Castle blocked kingside black',() => {
+
+            // Define colour to move
+            const colour: ColourPlayers = 'black'
+            const differentColour: ColourPlayers = 'white'
+
+            // Define king and rook
+            const king: ChessPiece = new King(colour, new Position('e8'))
+            const rook: ChessPiece = new Rook(colour, new Position('h8'))
+            const blockingPiece: ChessPiece = new Bishop(differentColour, new Position('f8'))
+
+            const endPosition: Position = new Position('g8')
+
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook,
+                blockingPiece
+            ]
+
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
+
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = false
+
+            expect(result).toEqual(expected)
+        })
+
+        test('Castle blocked kingside white',() => {
+
+            // Define colour to move
+            const colour: ColourPlayers = 'white'
+            const differentColour: ColourPlayers = 'white'
+
+            // Define king and rook
+            const king: ChessPiece = new King(colour, new Position('e1'))
+            const rook: ChessPiece = new Rook(colour, new Position('h1'))
+            const blockingPiece: ChessPiece = new Knight(differentColour, new Position('g1'))
+
+            const endPosition: Position = new Position('g1')
+
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook,
+                blockingPiece
+            ]
+
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
+
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = false
+
+            expect(result).toEqual(expected)
+        })
+
+        test('Castle blocked queenside black',() => {
+
+            // Define colour to move
+            const colour: ColourPlayers = 'black'
+            const differentColour: ColourPlayers = 'white'
+
+            // Define king and rook
+            const king: ChessPiece = new King(colour, new Position('e8'))
+            const rook: ChessPiece = new Rook(colour, new Position('a8'))
+            const blockingPiece: ChessPiece = new Knight(differentColour, new Position('d8'))
+
+            const endPosition: Position = new Position('c8')
+
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook,
+                blockingPiece
+            ]
+
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
+
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = false
+
+            expect(result).toEqual(expected)
+        })
+
+        test('Castle blocked kingside white',() => {
+
+            // Define colour to move
+            const colour: ColourPlayers = 'white'
+            const differentColour: ColourPlayers = 'white'
+
+            // Define king and rook
+            const king: ChessPiece = new King(colour, new Position('e1'))
+            const rook: ChessPiece = new Rook(colour, new Position('a1'))
+            const blockingPiece: ChessPiece = new Bishop(differentColour, new Position('c1'))
+
+            const endPosition: Position = new Position('c1')
+
+            // Define starting pieces on board
+            const pieces: ChessPiece[] = [
+                king,
+                rook,
+                blockingPiece
+            ]
+
+            // Init game
+            const chess: ChessGame = new ChessGame(pieces)
+
+            // Test
+            const result: boolean = chess.legalCastles(king, endPosition)
+            const expected: boolean = false
+
+            expect(result).toEqual(expected)
+        })
+
     })
 
 

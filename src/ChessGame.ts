@@ -64,8 +64,6 @@ export class ChessGame {
                 console.log(error)
             }
         }
-
-        this.history.push(move)
     }
 
 
@@ -142,6 +140,9 @@ export class ChessGame {
             this.board.movePiece(piece, end)
         }
         
+
+        this.history.push(move)
+
         // The move was successful
         return true
     }
@@ -188,6 +189,9 @@ export class ChessGame {
                 return false
             }
         }
+        else{
+            return false
+        }
 
         const king: King = piece as King
 
@@ -214,14 +218,14 @@ export class ChessGame {
         // Mapping to get position where rook should be for castling.
         // The rook position (from second half of UCI notation)
 
-        const madUCItoCastlePosition = new Map();
-        madUCItoCastlePosition.set('g1', 'h1');
-        madUCItoCastlePosition.set('g8', 'h8');
-        madUCItoCastlePosition.set('c1', 'a1');
-        madUCItoCastlePosition.set('c8', 'a8');
+        const rookPreCastlePosition = new Map();
+        rookPreCastlePosition.set('g1', 'h1');
+        rookPreCastlePosition.set('g8', 'h8');
+        rookPreCastlePosition.set('c1', 'a1');
+        rookPreCastlePosition.set('c8', 'a8');
 
         // Get the rook position
-        const rookPosition: Position = new Position(madUCItoCastlePosition.get(endPosition.serialise()))
+        const rookPosition: Position = new Position(rookPreCastlePosition.get(endPosition.serialise()))
         
         // Check that there is a piece at said position
         if (!(this.board.isPieceAt(rookPosition))){
@@ -243,6 +247,13 @@ export class ChessGame {
         }
 
         // 6) Check that rook and king have not been moved.
+
+        // Need to check that the rook and king start on their original squares
+        if ((!(Position.compare(rook.startingPosition, rookPosition))) ||
+            (!(Position.compare(king.startingPosition, kingPosition)))) {
+            return false
+        }
+
         const mustNotHaveMoved: string[] = [rookPosition.serialise(), kingPosition.serialise()]
 
         for (let i = 0; i < this.history.length; i++){

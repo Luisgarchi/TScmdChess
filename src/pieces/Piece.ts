@@ -28,7 +28,7 @@ export abstract class Piece implements PieceInterface{
     _position: Position
     readonly _points: Number
     _movement: PieceMechanics
-
+    _startingPosition: Position
 
     /* Constructor */
 
@@ -46,6 +46,7 @@ export abstract class Piece implements PieceInterface{
         this._position = position
         this._points = points
         this._movement = movement
+        this._startingPosition = position
     }
 
     /* Getters */
@@ -71,6 +72,10 @@ export abstract class Piece implements PieceInterface{
 
     public get movement(): PieceMechanics{
         return this._movement
+    }
+
+    public get startingPosition(): Position{
+        return this._startingPosition
     }
 
     public set updatePosition(newPosition: Position){
