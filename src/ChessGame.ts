@@ -137,34 +137,9 @@ export class ChessGame {
             throw error
         }
 
+        // XXXXXXXXXXXXXXXX  create check chess logic 
 
-        // 
-
-
-        // 6) Check if moving to the end results in capture
-        isCapture = this.board.isPieceAt(end)
         
-        if (isCapture){
-
-            // Get the piece to be captured
-            const capturedPiece : ChessPiece = this.board.getPiece(end)
-
-            // Handle the capture on the board
-            this.board.removePiece(capturedPiece)
-        }
-
-        // 7) handle promotion
-        if (move.length == 5){
-            const promoteSymbol: string = move[4]
-            this.promote(piece, promoteSymbol, end)
-        }
-        // 8) Move piece normally
-        else {
-            this.board.movePiece(piece, end)
-        }
-
-        // The move was successful
-        return true
     }
 
     executeMove(
@@ -179,15 +154,15 @@ export class ChessGame {
 
         // Check for castles
         if (castles){
-            this.executeCastles(piece, endPosition)
+            this.executeCastles(piece as King, endPosition)
         }
         // Check for enpassant
         else if (enpassant){
-            this.executeEnpassant(piece, endPosition)
+            this.executeEnpassant(piece as Pawn, endPosition)
         }
         // Check for promotion
         else if (promotion) {
-            this.executePromotion(piece, endPosition, move)
+            this.executePromotion(piece as Pawn, endPosition, move)
         }
         // otherwise it is just a regular move
         else {
@@ -199,101 +174,43 @@ export class ChessGame {
     }
 
     
-
-    executeCastles(
-        king: ChessPiece,
-        kingEndPosition: Position
-    ){
-        /* Logic
-        1) Get the position the Rook has to move to
-        2) Move the King to the endPosition
-        3) Move the Rook to its end position
-        */
-        
-        // 1) Get the Rook and the rook end position
-
-        // Get Rook start position
-        const rookPreCastlePosition = new Map();
-        rookPreCastlePosition.set('g1', 'h1');
-        rookPreCastlePosition.set('g8', 'h8');
-        rookPreCastlePosition.set('c1', 'a1');
-        rookPreCastlePosition.set('c8', 'a8');
-
-        const rookStartStringPosition = rookPreCastlePosition.get(kingEndPosition.serialise())
-        const rookStartPosition = new Position(rookStartStringPosition)
-
-        // Get rook
-        const rook: ChessPiece = this.board.getPiece(rookStartPosition)
-
-        // Get the rook end position
-        const rookEndPositionFromKing = new Map();
-        rookEndPositionFromKing.set('g1', 'f1');
-        rookEndPositionFromKing.set('g8', 'f8');
-        rookEndPositionFromKing.set('c1', 'd1');
-        rookEndPositionFromKing.set('c8', 'd8');
-
-        const rookEndStringPosition: string = rookEndPositionFromKing.get(kingEndPosition.serialise())
-        const rookEndPosition: Position = new Position(rookEndStringPosition)
-
-
-        // 2) Move the King
-        this.board.movePiece(king, kingEndPosition)
-
-        // 3) Move the Rook
-        this.board.movePiece(rook, rookEndPosition)
-    }
-
-
-    executeEnpassant(
-        pawn: ChessPiece,
-        endPosition: Position
-    ){ 
-        /* Logic
-        1) Get the enemy pawn to be captured
-        2) Capture the enemy pawn
-        3) Move the moving pawn to the end position
-        */
-        const colour: ColourPlayers = pawn.colour
-
-        // 1) 
-
-        // Get the capture position
-        const legalRank: number = (colour == 'white') ? 5 : 4
-        const caputrePosition = new Position(endPosition.file, legalRank)
-
-        // Get the captured pawn
-        const capturedPawn: ChessPiece = this.board.getPiece(caputrePosition)
-
-        // 2) Capture the pawn
-        this.board.removePiece(capturedPawn)
-
-        // 3) Move the capturING pawn
-        this.board.movePiece(pawn, endPosition)
-    }
-
-    executePromotion(
-        piece: ChessPiece,
-        endPosition: Position,
-        move: string
-    ){
-
-        /* Logic
-        1) Check if moving the pawn to the final square results in capture
-        2) Remove piece if captured
-        3) Remove promoting pawn
-        4) Add promoted piece
-        */
-
-        // 1) 
-
-
-    }
-
     executeRegularMove(
         piece: ChessPiece,
         endPosition: Position
     ){
+        /*
+        1) Handle capture if neccessary
+        2) Move piece
+        */
 
+        // 1) Handle capture
+        if (this.isCapture(piece, endPosition)){
+            // Get the piece to be captured
+            const capturePiece: ChessPiece = this.board.getPiece(endPosition)
+
+            // Capture (i.e. remove) the captured piece
+            this.board.removePiece(capturePiece)
+        }
+        
+        // 2) Move piece
+        this.board.movePiece(piece, endPosition)
+    }
+
+    isCapture(capturingPiece: ChessPiece, endPosition: Position){
+
+        // Get piece at positon to check capturelocation
+        const isPiece: boolean = this.board.isPieceAt(endPosition)
+
+        // No piece no capture
+        if(!isPiece){
+            return false
+        }
+
+        // Get the piece at endPosition
+        const potentialCapturedPiece: ChessPiece = this.board.getPiece(endPosition)
+
+        // Check if the capturing and captured piece are of different colour
+        return potentialCapturedPiece.colour != capturingPiece.colour
     }
 
     
@@ -314,6 +231,54 @@ export class ChessGame {
 
         // Make the comparison
        return Position.includes(piecesLegalMoves, endPosition)
+    }
+
+// ---------------------PROMOTION METHODS---------------------
+
+    executePromotion(
+        pawn: Pawn,
+        endPosition: Position,
+        move: string
+    ){
+
+        /* Logic
+        1) Handle any captures
+        2) Remove promoting pawn
+        3) Add promoted piece
+        */
+
+        // 1) Check capture
+        if (this.isCapture(pawn, endPosition)){
+            // Get the piece to be captured
+            const capturePiece: ChessPiece = this.board.getPiece(endPosition)
+
+            // Capture (i.e. remove) the captured piece
+            this.board.removePiece(capturePiece)
+        }
+
+        // 2) Remove pawn
+        this.board.removePiece(pawn)
+
+        // 3) Create and add the piece to be promoted
+        const promotedPiece: ChessPiece = this.makePromotedPiece(pawn.colour, move[4], endPosition)
+        this.board.addPiece(promotedPiece)
+    }
+
+    makePromotedPiece(colour: ColourPlayers, promoteSymbol: string, position: Position): ChessPiece{
+        
+        // creates the new piece on promotion initialising, colour, type of piece and position
+        if (promoteSymbol == 'q'){
+            return new Queen(colour, position)
+        }
+        else if (promoteSymbol == 'r'){
+            return new Rook(colour, position)
+        }
+        else if (promoteSymbol == 'b'){
+            return new Bishop(colour, position)
+        }
+        else if (promoteSymbol == 'n'){
+            return new Knight(colour, position)
+        }
     }
 
     isPromotion(piece: ChessPiece, endPosition: Position){
@@ -339,6 +304,38 @@ export class ChessGame {
         // Piece must me a pawn and on their respective second to last rank before promotion
 
         return ((this.isPromotion(piece, endPosition)) && (move.length == 5))
+    }
+
+
+
+// --------------------- ENPASSANT METHODS---------------------
+
+
+    executeEnpassant(
+        pawn: Pawn,
+        endPosition: Position
+    ){ 
+        /* Logic
+        1) Get the enemy pawn to be captured
+        2) Capture the enemy pawn
+        3) Move the moving pawn to the end position
+        */
+        const colour: ColourPlayers = pawn.colour
+
+        // 1) 
+
+        // Get the capture position
+        const legalRank: number = (colour == 'white') ? 5 : 4
+        const caputrePosition = new Position(endPosition.file, legalRank)
+
+        // Get the captured pawn
+        const capturedPawn: ChessPiece = this.board.getPiece(caputrePosition)
+
+        // 2) Capture the pawn
+        this.board.removePiece(capturedPawn)
+
+        // 3) Move the capturING pawn
+        this.board.movePiece(pawn, endPosition)
     }
 
 
@@ -418,6 +415,54 @@ export class ChessGame {
         // The move is a legal en passant move
         return (lastMove == move)
     }
+
+
+// --------------------- CASTLE METHODS---------------------
+
+
+    executeCastles(
+        king: King,
+        kingEndPosition: Position
+    ){
+        /* Logic
+        1) Get the position the Rook has to move to
+        2) Move the King to the endPosition
+        3) Move the Rook to its end position
+        */
+        
+        // 1) Get the Rook and the rook end position
+
+        // Get Rook start position
+        const rookPreCastlePosition = new Map();
+        rookPreCastlePosition.set('g1', 'h1');
+        rookPreCastlePosition.set('g8', 'h8');
+        rookPreCastlePosition.set('c1', 'a1');
+        rookPreCastlePosition.set('c8', 'a8');
+
+        const rookStartStringPosition = rookPreCastlePosition.get(kingEndPosition.serialise())
+        const rookStartPosition = new Position(rookStartStringPosition)
+
+        // Get rook
+        const rook: ChessPiece = this.board.getPiece(rookStartPosition)
+
+        // Get the rook end position
+        const rookEndPositionFromKing = new Map();
+        rookEndPositionFromKing.set('g1', 'f1');
+        rookEndPositionFromKing.set('g8', 'f8');
+        rookEndPositionFromKing.set('c1', 'd1');
+        rookEndPositionFromKing.set('c8', 'd8');
+
+        const rookEndStringPosition: string = rookEndPositionFromKing.get(kingEndPosition.serialise())
+        const rookEndPosition: Position = new Position(rookEndStringPosition)
+
+
+        // 2) Move the King
+        this.board.movePiece(king, kingEndPosition)
+
+        // 3) Move the Rook
+        this.board.movePiece(rook, rookEndPosition)
+    }
+
 
     legalCastles(piece: ChessPiece, endPosition: Position): boolean {
 
@@ -572,27 +617,8 @@ export class ChessGame {
     }
 
 
-    promote(piece: ChessPiece, promoteSymbol: string, position: Position): void{
+// --------------------- CHECKING METHODS---------------------
 
-        const colour: ColourPlayers = piece.colour
-        let promotePiece: ChessPiece
-
-        if (promoteSymbol == 'q'){
-            promotePiece = new Queen(colour, position)
-        }
-        else if (promoteSymbol == 'r'){
-            promotePiece = new Rook(colour, position)
-        }
-        else if (promoteSymbol == 'b'){
-            promotePiece = new Bishop(colour, position)
-        }
-        else if (promoteSymbol == 'n'){
-            promotePiece = new Knight(colour, position)
-        }
-
-        this.board.removePiece(piece)
-        this.board.addPiece(promotePiece)
-    }
 
     isCheck(colour: ColourPlayers): boolean {
 
@@ -649,7 +675,7 @@ export class ChessGame {
         return !this.canBlockOrCapture(checkingPiece, king)
     }
 
-    
+
 
     canBlockOrCapture(checkingPiece: ChessPiece, kingInCheck: King): boolean {
 
