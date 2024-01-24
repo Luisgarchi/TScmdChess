@@ -1429,9 +1429,291 @@ describe('Method - legalEnpassant', () => {
         expect(result).toEqual(expected)
     })
 
+    test('Correct pieces + random previous move - No en passant for white', () => {
+        
+        // Define colour of king
+        const colour: ColourPlayers = 'white'
+        const differentColour: ColourPlayers = 'black'
+
+        const pawnEnpassant: ChessPiece = new Pawn(colour, new Position('d5'))
+        const endPosition: Position = new Position('e6')
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            new King(differentColour, new Position('a8')),
+            new Pawn(differentColour, new Position('e5')),
+
+            pawnEnpassant
+        ]
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Make a random move
+        const randomMove: string = 'a8b7'
+        chess.makeMove(randomMove, differentColour)
+
+        // Test
+        const enpassantMove: string = 'd5d6'
+
+        const result: boolean = chess.legalEnpassant(pawnEnpassant, endPosition)
+        const expected: boolean = false
+
+        expect(result).toEqual(expected)
+    })
+
+    test('Correct pieces - successful en passant for white', () => {
+        
+        // Define colour of king
+        const colour: ColourPlayers = 'white'
+        const differentColour: ColourPlayers = 'black'
+
+        const pawnEnpassant: ChessPiece = new Pawn(colour, new Position('d5'))
+        const endPosition: Position = new Position('e6')
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            new King(differentColour, new Position('a8')),
+            new Pawn(differentColour, new Position('e7')),
+
+            pawnEnpassant
+        ]
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Make a random move
+        const enpassantPreconditionMove: string = 'e7e5'
+        chess.makeMove(enpassantPreconditionMove, differentColour)
+
+        // Test
+        const enpassantMove: string = 'd5d6'
+
+        const result: boolean = chess.legalEnpassant(pawnEnpassant, endPosition)
+        const expected: boolean = true
+
+        expect(result).toEqual(expected)
+    })
+
+
+    test('Correct pieces + random previous move - No en passant for black', () => {
+        
+        // Define colour of king
+        const colour: ColourPlayers = 'black'
+        const differentColour: ColourPlayers = 'white'
+
+        const pawnEnpassant: ChessPiece = new Pawn(colour, new Position('g4'))
+        const endPosition: Position = new Position('h3')
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            new King(differentColour, new Position('c5')),
+            new Pawn(differentColour, new Position('h2')),
+
+            pawnEnpassant
+        ]
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Make a random move
+        const randomMove: string = 'c5c4'
+        chess.makeMove(randomMove, differentColour)
+
+        // Test
+        const enpassantMove: string = 'g4h3'
+
+        const result: boolean = chess.legalEnpassant(pawnEnpassant, endPosition)
+        const expected: boolean = false
+
+        expect(result).toEqual(expected)
+    })
+
+    test('Correct pieces - successful en passant for black', () => {
+        
+        // Define colour of king
+        const colour: ColourPlayers = 'black'
+        const differentColour: ColourPlayers = 'white'
+
+        const pawnEnpassant: ChessPiece = new Pawn(colour, new Position('g4'))
+        const endPosition: Position = new Position('h3')
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            new King(differentColour, new Position('c5')),
+            new Pawn(differentColour, new Position('h2')),
+
+            pawnEnpassant
+        ]
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Make a random move
+        const enpassantPreconditionMove: string = 'h2h4'
+        chess.makeMove(enpassantPreconditionMove, differentColour)
+
+        // Test
+        const enpassantMove: string = 'g4h3'
+
+        const result: boolean = chess.legalEnpassant(pawnEnpassant, endPosition)
+        const expected: boolean = true
+
+        expect(result).toEqual(expected)
+    })
+
+    test('Can en passant with two different pawns (black)', () => {
+        
+        // Define colour of king
+        const colour: ColourPlayers = 'black'
+        const differentColour: ColourPlayers = 'white'
+
+        const pawnEnpassant_A: ChessPiece = new Pawn(colour, new Position('h4'))
+        const pawnEnpassant_B: ChessPiece = new Pawn(colour, new Position('f4'))
+
+        const endPosition: Position = new Position('g3')
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            new King(differentColour, new Position('c5')),
+            new Pawn(differentColour, new Position('g2')),
+
+            pawnEnpassant_A, pawnEnpassant_B
+        ]
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Make a random move
+        const enpassantPreconditionMove: string = 'g2g4'
+        chess.makeMove(enpassantPreconditionMove, differentColour)
+
+        // Test A
+        const enpassantMove_A: string = 'h4g3'
+
+        const result_A: boolean = chess.legalEnpassant(pawnEnpassant_A, endPosition)
+        const expected_A: boolean = true
+
+        expect(result_A).toEqual(expected_A)
+
+        // Test B
+        const enpassantMove_B: string = 'f4g3'
+
+        const result_B: boolean = chess.legalEnpassant(pawnEnpassant_B, endPosition)
+        const expected_B: boolean = true
+
+        expect(result_B).toEqual(expected_B)
+    })
+
 })
 
+describe('Method - legalPromotion', () => {
 
+
+    test('White legal promotion', () => {
+        
+        // Define colour of king
+        const colour: ColourPlayers = 'white'
+
+        const pawn: ChessPiece = new Pawn(colour, new Position('b7'))
+        const endPosition: Position = new Position('b8')
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            pawn
+        ]
+
+        // Move
+        const move: string = 'b7b8n'
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Test
+        const result: boolean = chess.legalPromotion(pawn, endPosition, move)
+        const expected: boolean = true
+
+        expect(result).toEqual(expected)
+    })
+
+    test('Black legal promotion', () => {
+        
+        // Define colour of king
+        const colour: ColourPlayers = 'black'
+
+        const pawn: ChessPiece = new Pawn(colour, new Position('e2'))
+        const endPosition: Position = new Position('e1')
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            pawn
+        ]
+
+        // Move
+        const move: string = 'e2e1q'
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Test
+        const result: boolean = chess.legalPromotion(pawn, endPosition, move)
+        const expected: boolean = true
+
+        expect(result).toEqual(expected)
+    })
+
+    test('White illegal promotion (no promotional piece specified)', () => {
+        
+        // Define colour of king
+        const colour: ColourPlayers = 'white'
+
+        const pawn: ChessPiece = new Pawn(colour, new Position('b7'))
+        const endPosition: Position = new Position('b8')
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            pawn
+        ]
+
+        // Move
+        const move: string = 'b7b8'
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Test
+        const result: boolean = chess.legalPromotion(pawn, endPosition, move)
+        const expected: boolean = false
+
+        expect(result).toEqual(expected)
+    })
+
+    test('Black illegal promotion (no promotional piece specified)', () => {
+        
+        // Define colour of king
+        const colour: ColourPlayers = 'black'
+
+        const pawn: ChessPiece = new Pawn(colour, new Position('e2'))
+        const endPosition: Position = new Position('e1')
+
+        // Define starting pieces on board
+        const pieces: ChessPiece[] = [
+            pawn
+        ]
+
+        // Move
+        const move: string = 'e2e1'
+
+        // Init game
+        const chess: ChessGame = new ChessGame(pieces)
+
+        // Test
+        const result: boolean = chess.legalPromotion(pawn, endPosition, move)
+        const expected: boolean = false
+
+        expect(result).toEqual(expected)
+    })
+})
 
 
 describe('method - checkingPieces', () => {
