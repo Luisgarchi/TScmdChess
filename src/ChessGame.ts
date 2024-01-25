@@ -136,7 +136,7 @@ export class ChessGame {
             // NB. castles and enpassant allready enforce this
             if (isLegalRegularMove){
 
-                const isPinned: boolean = this.isPinned(start, end)
+                const isPinned: boolean = this.isCheckOnNextMove(start, end)
 
                 if (isPinned){
 
@@ -162,7 +162,7 @@ export class ChessGame {
         return true
     }
 
-    isPinned(startPosition: Position, endPosition: Position){
+    isCheckOnNextMove(startPosition: Position, endPosition: Position){
         /* Logic
         Check that moving the piece to the next position does not result in check
         */
@@ -764,7 +764,7 @@ export class ChessGame {
                     // All thats left to check is if the piece is not pinned
 
                     // Boolean variable checks if move is legal
-                    const isPinned: boolean = this.isPinned(
+                    const isPinned: boolean = this.isCheckOnNextMove(
                         potentialBlockPiecePosition, blockingPositionAlongCheck
                     )
 
@@ -795,7 +795,7 @@ export class ChessGame {
             // Get parse the move 
             const endPosition: Position = allSquares[index]
 
-            const isCheck: boolean = this.isPinned(startPosition, endPosition)
+            const isCheck: boolean = this.isCheckOnNextMove(startPosition, endPosition)
 
             // Remove the current index
             if (isCheck){
