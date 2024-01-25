@@ -73,8 +73,7 @@ export class ChessGame {
         let isLegalRegularMove: boolean 
         let isLegalCastles: boolean
         let isLegalEnpassant: boolean
-        let isLegalPromotion: boolean
-        let isCapture: boolean
+        let isMovePromotion: boolean
         let start: Position
         let end: Position
 
@@ -115,8 +114,8 @@ export class ChessGame {
                 throw new ChessGameError(`Illegal move, ${piece.type} at ${piece.position.serialise()} can not move to ${end.serialise()}`)
             }
             
-            // Check if the move 'promotes'
-            const isMovePromotion: boolean = this.isPromotion(piece, end)
+            // 6) Check if the move 'promotes'
+            isMovePromotion = this.isPromotion(piece, end)
 
             if (isMovePromotion){
 
@@ -132,15 +131,62 @@ export class ChessGame {
                                               ('q' queen, 'n' = knight, 'r' = rook, 'b' = bishop)`)
                 }
             }
+
+            // 7) Check that making a regular move the piece does not walk into check
+            // NB. castles and enpassant allready enforce this
+            if (isLegalRegularMove){
+
+                const isPinned: boolean = this.isPinned(start, end)
+
+                if (isPinned){
+
+                    if(piece instanceof King) {
+                        throw new ChessGameError(`Illegal move. King at ${piece.position.serialise()} 
+                                                    can not walk into Check at ${end.serialise()}`)
+                    }
+                    else {
+                        throw new ChessGameError(`Illegal move. Piece at ${piece.position.serialise()}
+                                                    is pinned`)
+                    }
+                }
+            }
         }
         catch (error) {
             throw error
         }
 
-        // XXXXXXXXXXXXXXXX  create check chess logic 
+        // The move has passed all the checks and can be executed
+        this.executeMove(piece, end, move, isLegalCastles, isLegalEnpassant, isMovePromotion)
 
-        
+        // return true success
+        return true
     }
+
+    isPinned(startPosition: Position, endPosition: Position){
+        /* Logic
+        Check that moving the piece to the next position does not result in check
+        */
+
+        // Create test game
+        const testGame: ChessGame = new ChessGame(this.board.copyPieces(), [... this.history])
+
+        const piece: ChessPiece = testGame.board.getPiece(startPosition)
+
+        // EXECUTE the REGULAR move we want to test
+        testGame.executeRegularMove(piece, endPosition)
+
+        // Check if there is a king on the board. 
+        // Logic follows a piece can only be pined if its king is on the board
+        if (this.board.isKing(piece.colour)){
+            // Return whether the king is in check or not
+            
+            return testGame.isCheck(piece.colour)
+        }
+        else {
+            return false
+        }
+    }
+
 
     executeMove(
         piece: ChessPiece,
@@ -162,15 +208,15 @@ export class ChessGame {
         }
         // Check for promotion
         else if (promotion) {
-            this.executePromotion(piece as Pawn, endPosition, move)
+            this.executePromotion(piece as Pawn, endPosition, move[4])
         }
         // otherwise it is just a regular move
         else {
             this.executeRegularMove(piece, endPosition)
         }
-
-        this.history
-
+        
+        // 3) Save move to history
+        this.history.push(move)
     }
 
     
@@ -238,7 +284,7 @@ export class ChessGame {
     executePromotion(
         pawn: Pawn,
         endPosition: Position,
-        move: string
+        promotionSymbol: string
     ){
 
         /* Logic
@@ -260,7 +306,10 @@ export class ChessGame {
         this.board.removePiece(pawn)
 
         // 3) Create and add the piece to be promoted
-        const promotedPiece: ChessPiece = this.makePromotedPiece(pawn.colour, move[4], endPosition)
+        const promotedPiece: ChessPiece = this.makePromotedPiece(
+            pawn.colour, promotionSymbol, endPosition
+        )
+        
         this.board.addPiece(promotedPiece)
     }
 
@@ -688,7 +737,6 @@ export class ChessGame {
         blockingPositons.push(checkingPiece.position)
 
         // check if any piece can block (piece must not be pinned)
-        kingInCheck
 
         // Get all the pieces of the same colour that can potentially block or capture
         const potentialBlockingPieces: ChessPiece[] = this.board.pieces.filter(
@@ -699,7 +747,9 @@ export class ChessGame {
         // Iterate over all potential blocking pieces
         for (let i = 0; i < potentialBlockingPieces.length; i++){
 
+            // Get the piece and position
             const potentialBlockPiece: ChessPiece = potentialBlockingPieces[i]
+            const potentialBlockPiecePosition: Position = potentialBlockPiece.position
 
             // Get all the positions said piece can move to
             const potentialBlockPositions: Position[] = potentialBlockPiece.movement.findReachablePositions(potentialBlockPiece, this.board)
@@ -711,21 +761,12 @@ export class ChessGame {
                 
                 if (Position.includes(potentialBlockPositions, blockingPositionAlongCheck)){
                     
-                    // All thats left to check is if the pieceis not pinned
-
-                    // Initialise a new test chess game instance
-                    const testGame: ChessGame = new ChessGame(this.board.copyPieces(), [... this.history])
-
-                    // Parse the move 
-                    const startPosition: string = potentialBlockPiece.position.serialise()
-                    const endPosition: string = blockingPositionAlongCheck.serialise()
-                    const move: string = startPosition + endPosition
-
-                    // Make the move
-                    testGame.makeMove(move, kingInCheck.colour)
+                    // All thats left to check is if the piece is not pinned
 
                     // Boolean variable checks if move is legal
-                    const isPinned: boolean = testGame.isCheck(kingInCheck.colour)
+                    const isPinned: boolean = this.isPinned(
+                        potentialBlockPiecePosition, blockingPositionAlongCheck
+                    )
 
                     if (!isPinned){
                         return true
@@ -736,10 +777,7 @@ export class ChessGame {
 
         // No piece was found that can block or capture so return false
         return false
-
-
     }  
-
 
 
     kingCheckLegalSquaresMove(king: King): Position[] {
@@ -747,25 +785,17 @@ export class ChessGame {
         // Get all of the square the king can move to
         const allSquares: Position[] = king.movement.findReachablePositions(king, this.board)
 
-        const startPosition : string = king.position.serialise()
+        const startPosition : Position = king.position
         
         // Iterate over all the positions the king can move to
         let index: number = 0
         
         while(index < allSquares.length){
 
-            // Initialise a new test chess game instance
-            const testGame: ChessGame = new ChessGame(this.board.copyPieces(), [... this.history])
-
             // Get parse the move 
-            const endPosition: string = allSquares[index].serialise()
-            const move: string = startPosition + endPosition
+            const endPosition: Position = allSquares[index]
 
-            // Make the move
-            testGame.makeMove(move, king.colour)
-
-            // Boolean variable checks if move is legal
-            const isCheck: boolean = testGame.isCheck(king.colour)
+            const isCheck: boolean = this.isPinned(startPosition, endPosition)
 
             // Remove the current index
             if (isCheck){
@@ -778,6 +808,9 @@ export class ChessGame {
         }
         return allSquares
     }
+
+
+
 
 
 }

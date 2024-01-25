@@ -3444,7 +3444,7 @@ describe('Method - makeMove', () => {
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
                     new Queen('black', new Position('f5')),
-                    new Bishop('white', new Position('f1'))
+                    new Bishop('white', new Position('f1')),
                 ]
         
                 // Define move and colour of player making the move

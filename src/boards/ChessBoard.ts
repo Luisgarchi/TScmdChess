@@ -184,6 +184,23 @@ export class ChessBoard extends Board{
         return piecesCopy
     }
 
+
+    isKing(colour: ColourPlayers): boolean {
+        
+        // Get the King of the specified colour
+        const king: King | undefined = this.pieces.find(
+            (piece) => (piece instanceof King) && (piece.colour == colour)
+        ) as King
+        
+        // Throw an error if there is no king of that colour
+        if (typeof king === 'undefined'){
+            return false
+        }
+        else {
+            return true
+        }
+    }
+
     getKing(colour: ColourPlayers): King {
         
         // Get the King of the specified colour
