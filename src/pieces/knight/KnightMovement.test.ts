@@ -1,4 +1,4 @@
-import { ChessBoard } from "../../boards/ChessBoard";
+import { ChessBoard } from "../../board/ChessBoard";
 import { Knight } from "./Knight";
 import { Position } from "../../notation/boardNotation/Position";
 

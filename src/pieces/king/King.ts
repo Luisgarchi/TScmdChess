@@ -4,7 +4,7 @@ import { PieceMechanics } from '../../notation/boardNotation/PieceMechanics'
 import { factoryKingMechanics } from './KingMovement'
 import { getChessPieceSymbol } from '../../utils/utf8encodings'
 import { ChessPiece, type ColourPlayers, type NamesOfPieces } from '../../chess_settings'
-import { ChessBoard } from '../../boards/ChessBoard'
+import { ChessBoard } from '../../board/ChessBoard'
 
 
 export class King extends Piece {

@@ -1,7 +1,7 @@
 import { MoveVector } from "../../../notation/boardNotation/MoveVector"
 import { PositionsAlongVector } from "../../../notation/boardNotation/PieceMechanics"
 import { Position } from "../../../notation/boardNotation/Position"
-import { ChessBoard } from "../../../boards/ChessBoard"
+import { ChessBoard } from "../../../board/ChessBoard"
 import { ChessPiece } from "../../../chess_settings"
 import { 
     allVectorPositionsOnBoard, 

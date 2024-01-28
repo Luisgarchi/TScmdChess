@@ -1,20 +1,22 @@
-import { UCI } from "./notation/moveNotation/UCI";
-import { ChessBoard } from "./boards/ChessBoard";
-import { Position } from "./notation/boardNotation/Position";
-import { ChessPiece, ColourPlayers, initialiseStartingChessPieces } from "./chess_settings";
+import { UCI } from "../notation/moveNotation/UCI";
+import { ChessBoard } from "../board/ChessBoard";
+import { Position } from "../notation/boardNotation/Position";
+import { ChessPiece, ColourPlayers, initialiseStartingChessPieces } from "../chess_settings";
 import PromptSync from "prompt-sync";
 
-import ChessGameError from "./errors/ChessGameError";
-import { Piece } from "./pieces/Piece";
+import ChessGameError from "../errors/ChessGameError";
 
-import { Knight } from "./pieces/knight/Knight";
-import { Bishop } from "./pieces/bishop/Bishop";
-import { Queen } from "./pieces/queen/Queen";
-import { Rook } from "./pieces/rook/Rook";
-import { King } from "./pieces/king/King";
-import { Pawn } from "./pieces/pawn/Pawn";
+import { Knight } from "../pieces/knight/Knight";
+import { Bishop } from "../pieces/bishop/Bishop";
+import { Queen } from "../pieces/queen/Queen";
+import { Rook } from "../pieces/rook/Rook";
+import { King } from "../pieces/king/King";
+import { Pawn } from "../pieces/pawn/Pawn";
 
-import { fileToNum, numToFile } from "./utils/notation";
+import { fileToNum, numToFile } from "../utils/notation";
+
+
+import { islegalEnpassant } from "./enpassant";
 
 export class ChessGame {
 
@@ -105,8 +107,7 @@ export class ChessGame {
             // 5) Check if moving piece to end position is a legal move
             isLegalRegularMove = this.legalRegularMove(piece, end)
             isLegalCastles = this.legalCastles(piece, end)
-            isLegalEnpassant = this.legalEnpassant(piece, end)
-            
+            isLegalEnpassant = islegalEnpassant(piece, end, this.board, this.history)
 
             const isLegalMove: boolean = isLegalRegularMove || isLegalCastles || isLegalEnpassant
 
@@ -383,84 +384,6 @@ export class ChessGame {
 
         // 3) Move the capturING pawn
         this.board.movePiece(pawn, endPosition)
-    }
-
-
-    legalEnpassant(piece: ChessPiece, endPosition: Position){
-
-        const colour: ColourPlayers = piece.colour
-
-        // 1) Check that the moving piece is a Pawn
-        if (!(piece instanceof Pawn)){
-            return false
-        }
-
-
-        // 2) Check piece is on correct rank
-        const legalRank: number = (colour == 'white') ? 5 : 4
-        if (legalRank != piece.position.rank){
-            return false
-        }
-
-
-        // 3) Check endPosition is correct
-        const currentFileNum: number = fileToNum(piece.position.file)
-
-        // Get the adjacent files and filter incase off the board
-        const fileNumbers: number[] = [currentFileNum + 1, currentFileNum -1].filter(
-            (file) => ((file > 0) && (file <= 8))
-        )
-        
-        // convert back to string
-        const files: string[] = fileNumbers.map((file) => numToFile(file))
-        
-        // Get the allowed end rank of the moving pawn
-        const endRank: number =  (colour == 'white') ? 6 : 3
-        
-        // construct the end positions of potential enpassant
-        const enpassantEndPositions: Position[] = files.map(
-            (file) => new Position(file, endRank)
-        )
-        
-        // return false if end Position is not one of the allowed enpassant positions
-        if (!(Position.includes(enpassantEndPositions, endPosition))){
-            return false
-        }
-
-
-        // 4) Check that there is a pawn on CAPTURE position
-        const caputrePosition = new Position(endPosition.file, legalRank)
-
-        const isPiece: Boolean = this.board.isPieceAt(caputrePosition)
-
-        // no piece at the end position
-        if(!(isPiece)){
-            return false
-        }
-
-        // Get piece
-        const potentialPawn: ChessPiece = this.board.getPiece(caputrePosition)
-
-        // Check piece is a pawn and of opposite colour
-        if ((!(potentialPawn instanceof Pawn)) || (potentialPawn.colour == colour) ){
-            return false
-        }
-
-
-        // 5) Check that the last move made was the opponents pawn from the pawns start rank
-
-        // Get the starting position of enemy pawn the previous move for legal en passant
-        const startRank: number = (colour != 'white') ? 2 : 7
-        const startPosition: Position = new Position(endPosition.file, startRank)
-
-        // Parse the UCI move for enemy pawn to reach capturing position
-        const move: string = startPosition.serialise() + caputrePosition.serialise()
-
-        // Check if the last move in the board history is the necessary one for a legal en passant
-        const lastMove: string = this.history.slice(-1)[0]
-
-        // The move is a legal en passant move
-        return (lastMove == move)
     }
 
 
