@@ -26,7 +26,6 @@ const positionPropertyTest = function(position: Position){
 }
 
 
-
 describe('kingCheckLegalSquaresMove', () => {
 
     test('Only 3 legal moves', () => {
@@ -2612,6 +2611,100 @@ describe('Method - makeMove', () => {
             })
 
         })
+
+        describe('Enpassant', () => {
+
+            test('Normal enpassant white', () => {
+
+                // Define colour of king
+                const colour: ColourPlayers = 'white'
+                const differentColour: ColourPlayers = 'black'
+
+                const pawnEnpassant: ChessPiece = new Pawn(colour, new Position('d5'))
+
+                // Define starting pieces on board
+                const pieces: ChessPiece[] = [
+                    new King(differentColour, new Position('a8')),
+                    new Pawn(differentColour, new Position('e7')),
+
+                    pawnEnpassant
+                ]
+
+                // Init game
+                const chess: ChessGame = new ChessGame(pieces)
+
+                // Make enpassant move
+                const enpassantPreconditionMove: string = 'e7e5'
+                chess.makeMove(enpassantPreconditionMove, differentColour)
+
+                // Test
+                const enpassantMove: string = 'd5e6'
+                chess.makeMove(enpassantMove, colour)
+
+
+                // Define expected pieces after enpassant
+                const piecesResult: ChessPiece[] = [
+                    new King(differentColour, new Position('a8')),
+                    new Pawn(colour, new Position('e6')),
+                ]
+                const capturedPiecesResult: ChessPiece[] = [
+                    new Pawn(differentColour, new Position('e5')),
+                ]
+
+        
+                // Test 
+                expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
+                expect(chess.board.pieces.length).toEqual(piecesResult.length)
+
+                expect(chess.board.capturedPieces).toEqual(expect.arrayContaining(capturedPiecesResult.map(piecePropertiesTest)))
+                expect(chess.board.capturedPieces.length).toEqual(capturedPiecesResult.length)
+            })
+
+
+            test('Normal enpassant black', () => {
+
+                // Define colour of king
+                const colour: ColourPlayers = 'black'
+                const differentColour: ColourPlayers = 'white'
+
+                const pawnEnpassant: ChessPiece = new Pawn(colour, new Position('h4'))
+
+                // Define starting pieces on board
+                const pieces: ChessPiece[] = [
+                    new Pawn(differentColour, new Position('g2')),
+                    pawnEnpassant
+                ]
+
+                // Init game
+                const chess: ChessGame = new ChessGame(pieces)
+
+                // Make enpassant move
+                const enpassantPreconditionMove: string = 'g2g4'
+                chess.makeMove(enpassantPreconditionMove, differentColour)
+
+                // Test
+                const enpassantMove: string = 'h4g3'
+                chess.makeMove(enpassantMove, colour)
+
+
+                // Define expected pieces after enpassant
+                const piecesResult: ChessPiece[] = [
+                    new Pawn(colour, new Position('g3')),
+                ]
+                const capturedPiecesResult: ChessPiece[] = [
+                    new Pawn(differentColour, new Position('g4')),
+                ]
+
+        
+                // Test 
+                expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
+                expect(chess.board.pieces.length).toEqual(piecesResult.length)
+
+                expect(chess.board.capturedPieces).toEqual(expect.arrayContaining(capturedPiecesResult.map(piecePropertiesTest)))
+                expect(chess.board.capturedPieces.length).toEqual(capturedPiecesResult.length)
+            })
+
+        })
     })
     
 
@@ -3826,6 +3919,138 @@ describe('Method - makeMove', () => {
                 
                 // Test
                 expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+            })
+        })
+
+        describe('Castles', () => {
+
+            test('White castles king side', () => {
+
+                // Define starting pieces on board
+
+                const colour: ColourPlayers = 'white'
+
+                const pieces: ChessPiece[] = [
+                    new King(colour, new Position('e1')),
+                    new Rook(colour, new Position('h1'))
+                ]
+        
+                // Define move and colour of player making the move
+                const move: string = 'e1g1'
+
+        
+                // Init game
+                const chess: ChessGame = new ChessGame(pieces)
+        
+                // Define expected pieces after move
+                const piecesResult: ChessPiece[] = [
+                    new King(colour, new Position('g1')),
+                    new Rook(colour, new Position('f1'))
+                ]
+        
+                // Make move
+                chess.makeMove(move, colour)
+                
+                // Test
+                expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
+                expect(chess.board.pieces.length).toEqual(piecesResult.length)
+            })
+
+
+            test('White castles queen side', () => {
+                // Define starting pieces on board
+
+                const colour: ColourPlayers = 'white'
+
+                const pieces: ChessPiece[] = [
+                    new King(colour, new Position('e1')),
+                    new Rook(colour, new Position('a1'))
+                ]
+        
+                // Define move and colour of player making the move
+                const move: string = 'e1c1'
+
+        
+                // Init game
+                const chess: ChessGame = new ChessGame(pieces)
+        
+                // Define expected pieces after move
+                const piecesResult: ChessPiece[] = [
+                    new King(colour, new Position('c1')),
+                    new Rook(colour, new Position('d1'))
+                ]
+        
+                // Make move
+                chess.makeMove(move, colour)
+                
+                // Test
+                expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
+                expect(chess.board.pieces.length).toEqual(piecesResult.length)
+            })
+
+
+            
+            test('Black castles king side', () => {
+                // Define starting pieces on board
+
+                const colour: ColourPlayers = 'black'
+
+                const pieces: ChessPiece[] = [
+                    new King(colour, new Position('e8')),
+                    new Rook(colour, new Position('h8'))
+                ]
+        
+                // Define move and colour of player making the move
+                const move: string = 'e8g8'
+
+        
+                // Init game
+                const chess: ChessGame = new ChessGame(pieces)
+        
+                // Define expected pieces after move
+                const piecesResult: ChessPiece[] = [
+                    new King(colour, new Position('g8')),
+                    new Rook(colour, new Position('f8'))
+                ]
+        
+                // Make move
+                chess.makeMove(move, colour)
+                
+                // Test
+                expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
+                expect(chess.board.pieces.length).toEqual(piecesResult.length)
+            })
+
+            
+            test('Black castles queen side', () => {
+                // Define starting pieces on board
+
+                const colour: ColourPlayers = 'black'
+
+                const pieces: ChessPiece[] = [
+                    new King(colour, new Position('e8')),
+                    new Rook(colour, new Position('a8'))
+                ]
+        
+                // Define move and colour of player making the move
+                const move: string = 'e8c8'
+
+        
+                // Init game
+                const chess: ChessGame = new ChessGame(pieces)
+        
+                // Define expected pieces after move
+                const piecesResult: ChessPiece[] = [
+                    new King(colour, new Position('c8')),
+                    new Rook(colour, new Position('d8'))
+                ]
+        
+                // Make move
+                chess.makeMove(move, colour)
+                
+                // Test
+                expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
+                expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
         })
     })

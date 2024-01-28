@@ -134,20 +134,18 @@ export class ChessGame {
 
             // 7) Check that making a regular move the piece does not walk into check
             // NB. castles and enpassant allready enforce this
-            if (isLegalRegularMove){
 
-                const isPinned: boolean = this.isCheckOnNextMove(start, end)
+            const isPinned: boolean = this.isCheckOnNextMove(start, end)
 
-                if (isPinned){
+            if (isPinned){
 
-                    if(piece instanceof King) {
-                        throw new ChessGameError(`Illegal move. King at ${piece.position.serialise()} 
-                                                    can not walk into Check at ${end.serialise()}`)
-                    }
-                    else {
-                        throw new ChessGameError(`Illegal move. Piece at ${piece.position.serialise()}
-                                                    is pinned`)
-                    }
+                if(piece instanceof King) {
+                    throw new ChessGameError(`Illegal move. King at ${piece.position.serialise()} 
+                                                can not walk into Check at ${end.serialise()}`)
+                }
+                else {
+                    throw new ChessGameError(`Illegal move. Piece at ${piece.position.serialise()}
+                                                is pinned`)
                 }
             }
         }

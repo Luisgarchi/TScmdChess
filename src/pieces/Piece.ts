@@ -36,17 +36,17 @@ export abstract class Piece implements PieceInterface{
         type: NamesOfPieces,
         colour: ColourPlayers, 
         pieceSymbol: string, 
-        position: Position, 
+        position: Position | string, 
         points: Number,
         movement: PieceMechanics
     ){
         this._type = type
         this._colour = colour
         this._symbol = pieceSymbol
-        this._position = position
+        this._position = (position instanceof Position) ? position : new Position(position[0], Number(position[1]))
         this._points = points
         this._movement = movement
-        this._startingPosition = position
+        this._startingPosition = this._position
     }
 
     /* Getters */

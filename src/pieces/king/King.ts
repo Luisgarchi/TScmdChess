@@ -10,7 +10,7 @@ import { ChessBoard } from '../../boards/ChessBoard'
 export class King extends Piece {
 
     /* Constructor */
-    constructor(colour: ColourPlayers, position: Position){
+    constructor(colour: ColourPlayers, position: Position | string){
 
         /* King Properties */
 

@@ -27,29 +27,29 @@ export function initialiseStartingChessPieces(): ChessPiece[] {
     const pieces = []
 
     // Initialize white's Pawns on the second rank
-    const whitePawns = [new Pawn("white", new Position('a', 2)), new Pawn("white", new Position('b', 2)), 
-                        new Pawn("white", new Position('c', 2)), new Pawn("white", new Position('d', 2)), 
-                        new Pawn("white", new Position('e', 2)), new Pawn("white", new Position('f', 2)), 
-                        new Pawn("white", new Position('g', 2)), new Pawn("white", new Position('h', 2))]
+    const whitePawns = [new Pawn("white", 'a2'), new Pawn("white", 'b2'), 
+                        new Pawn("white", 'c2'), new Pawn("white", 'd2'), 
+                        new Pawn("white", 'e2'), new Pawn("white", 'f2'), 
+                        new Pawn("white", 'g2'), new Pawn("white", 'h2')]
     
     // Initialize black's Pawns on the seventh rank
-    const blackPawns = [new Pawn("black", new Position('a', 7)), new Pawn("black", new Position('b', 7)), 
-                        new Pawn("black", new Position('c', 7)), new Pawn("black", new Position('d', 7)), 
-                        new Pawn("black", new Position('e', 7)), new Pawn("black", new Position('f', 7)), 
-                        new Pawn("black", new Position('g', 7)), new Pawn("black", new Position('h', 7))]
+    const blackPawns = [new Pawn("black", 'a7'), new Pawn("black", 'b7'), 
+                        new Pawn("black", 'c7'), new Pawn("black", 'd7'), 
+                        new Pawn("black", 'e7'), new Pawn("black", 'f7'), 
+                        new Pawn("black", 'g7'), new Pawn("black", 'h7')]
     
     
     // Initialize white's Minor and Major Pieces on the first rank 
-    const whiteMajorMinor =    [new Rook("white", new Position('a', 1)), new Knight("white", new Position('b', 1)), 
-                                new Bishop("white", new Position('c', 1)), new Queen("white", new Position('d', 1)), 
-                                new King("white", new Position('e', 1)), new Bishop("white", new Position('f', 1)), 
-                                new Knight("white", new Position('g', 1)), new Rook("white", new Position('h', 1))]
+    const whiteMajorMinor =    [new Rook("white", 'a1'), new Knight("white", 'b1'), 
+                                new Bishop("white", 'c1'), new Queen("white", 'd1'), 
+                                new King("white", 'e1'), new Bishop("white", 'f1'), 
+                                new Knight("white", 'g1'), new Rook("white", 'h1')]
 
     // Initialize black's Minor and Major Pieces on the eigth rank 
-    const blackMajorMinor =    [new Rook("black", new Position('a', 8)), new Knight("black", new Position('b', 8)), 
-                                new Bishop("black", new Position('c', 8)), new Queen("black", new Position('d', 8)), 
-                                new King("black", new Position('e', 8)), new Bishop("black", new Position('f', 8)), 
-                                new Knight("black", new Position('g', 8)), new Rook("black", new Position('h', 8))]
+    const blackMajorMinor =    [new Rook("black", 'a8'), new Knight("black", 'b8'), 
+                                new Bishop("black", 'c8'), new Queen("black", 'd8'), 
+                                new King("black", 'e8'), new Bishop("black", 'f8'), 
+                                new Knight("black", 'g8'), new Rook("black", 'h8')]
     
     // Save the initialized pieces
     pieces.push(... whitePawns)

@@ -9,7 +9,7 @@ import { type ColourPlayers, type NamesOfPieces } from '../../chess_settings'
 export class Pawn extends Piece {
 
     /* Constructor */
-    constructor(colour: ColourPlayers, position: Position){
+    constructor(colour: ColourPlayers, position: Position | string){
 
         /* Pawn Properties */
 
