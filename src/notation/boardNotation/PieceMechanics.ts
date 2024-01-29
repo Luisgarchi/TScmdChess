@@ -36,34 +36,15 @@ export type VectorMechanics = [
 export class PieceMechanics {
 
     /* Properties*/
-    private _moveMechanics: VectorMechanics[]
+    private _mechanics: VectorMechanics[]
     
     /* Constructor */
     constructor(moveMechanics){
-        this._moveMechanics = moveMechanics
+        this._mechanics = moveMechanics
     }
 
     /* Methods */
 
-    /*
-    initializeVectorMechanics(piece: ChessPiece, board: ChessBoard){
-
-        for(let i = 0; i < this._moveMechanics.length; i++){
-            this.initializeVector(this._moveMechanics[i], piece, board)
-        }
-    }
-
-    initializeVector(vectorMechanics: VectorMechanics, piece: ChessPiece, board: ChessBoard){
-
-        // Get the vector and configureVector callback function.
-        const vector = vectorMechanics[0]
-        const configureVector = vectorMechanics[1]
-
-        // Configure the vector based on the piece and board.
-        configureVector(vector, piece, board)
-    }
-
-*/
     findReachablePositions(piece: ChessPiece, board: ChessBoard): Position[] {
 
         /* Return the positions a piece can move to in a move */
@@ -75,7 +56,7 @@ export class PieceMechanics {
         const allPositions = []
 
         // Filter for only active vectors
-        const activeVectors: VectorMechanics[] = this._moveMechanics.filter(
+        const activeVectors: VectorMechanics[] = this._mechanics.filter(
             (mechanics) => mechanics[0].activated
         )
 
@@ -83,10 +64,10 @@ export class PieceMechanics {
         for (let i = 0; i < activeVectors.length; i++){
 
             // get the vector
-            const vector: MoveVector = this._moveMechanics[i][0]
+            const vector: MoveVector = this._mechanics[i][0]
 
             // get the associated function used to find positions along said vector
-            const findPositions: PositionsAlongVector = this._moveMechanics[i][1]
+            const findPositions: PositionsAlongVector = this._mechanics[i][1]
 
             // find the positions along vector for the current piece on the board
             const positionsVector: Position[] = findPositions(vector, piece, board)
@@ -98,30 +79,33 @@ export class PieceMechanics {
         return allPositions
     }
 
-    findCheckingVectorPositions(piece: ChessPiece, endPosition: Position, board: ChessBoard): Position[] {
+    findSquaresForVectorContainingPosition(piece: ChessPiece, position: Position, board: ChessBoard): Position[] {
         
-        const activeVectors: VectorMechanics[] = this._moveMechanics.filter(
+        const activeVectors: VectorMechanics[] = this._mechanics.filter(
             (mechanics) => mechanics[0].activated
         )
 
         for (let i = 0; i < activeVectors.length; i++){
 
             // get the vector
-            const vector: MoveVector = this._moveMechanics[i][0]
+            const vector: MoveVector = this._mechanics[i][0]
 
             // get the associated function used to find positions along said vector
-            const findPositions: PositionsAlongVector = this._moveMechanics[i][1]
+            const findPositions: PositionsAlongVector = this._mechanics[i][1]
 
             // find the positions along vector for the current piece on the board
             const positionsVector: Position[] = findPositions(vector, piece, board)
 
-            if (Position.includes(positionsVector, endPosition)){
+            if (Position.includes(positionsVector, position)){
                 return positionsVector
             }
 
         }
-        throw new Error(`Can not find the positions along a vector that indlude ${endPosition.serialise()}`)
+        throw new Error(`Can not find the positions along a vector that indlude ${position.serialise()}`)
     }
 
+    get mechanics(){
+        return this._mechanics
+    }
 
 }

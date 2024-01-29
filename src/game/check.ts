@@ -7,7 +7,7 @@ import { Move } from "../notation/moveNotation/Move"
 import { ChessBoard } from "../board/ChessBoard"
 
 
-export function isCheck(colour: ColourPlayers, chessInstance: ChessGame): boolean {
+export const isCheck = function(colour: ColourPlayers, chessInstance: ChessGame): boolean {
     
     /**
      * Function that checks if the king of specified colour is in check.
@@ -52,8 +52,7 @@ export function isCheck(colour: ColourPlayers, chessInstance: ChessGame): boolea
 }
 
 
-
-const findCheckingPieces = function(colour: ColourPlayers, chessInstance: ChessGame): ChessPiece[]{
+export const findCheckingPieces = function(colour: ColourPlayers, chessInstance: ChessGame): ChessPiece[]{
 
     /**
      * Function that returns an array of all pieces checking the king of specified colour.
@@ -77,7 +76,7 @@ const findCheckingPieces = function(colour: ColourPlayers, chessInstance: ChessG
     // 2)
     // filter for opposite coloured pieces
     const diffColourPieces: ChessPiece[] = chessInstance.board.pieces.filter(
-        (piece) => piece.colour != this.colour)
+        (piece) => piece.colour != colour)
 
     // 3)
     // Init empty array
@@ -103,9 +102,7 @@ const findCheckingPieces = function(colour: ColourPlayers, chessInstance: ChessG
 }
 
 
-
-
-const isCheckMate = function(colour: ColourPlayers, chessInstance: ChessGame): boolean {
+export const isCheckMate = function(colour: ColourPlayers, chessInstance: ChessGame): boolean {
 
     /**
      * Function that checks if the "colour" king is in checkmate.
@@ -120,7 +117,7 @@ const isCheckMate = function(colour: ColourPlayers, chessInstance: ChessGame): b
 
     // 1)
     // Get the 'colour' king 
-    const king: King = this.board.getKing(colour)
+    const king: King = chessInstance.board.getKing(colour)
 
     // 2)
     // Check that the king in question is in check
@@ -160,9 +157,7 @@ const isCheckMate = function(colour: ColourPlayers, chessInstance: ChessGame): b
 }
 
 
-
-
-const findKingLegalPositions = function(king: King, chessInstance: ChessGame): Position[] {
+export const findKingLegalPositions = function(king: King, chessInstance: ChessGame): Position[] {
 
     /**
      * Function that returns an array of all the legal positions the provided king can move to.
@@ -212,8 +207,7 @@ const findKingLegalPositions = function(king: King, chessInstance: ChessGame): P
 }
 
 
-
-const isCheckOnNextMove = function(move: Move, chessInstance: ChessGame){
+export const isCheckOnNextMove = function(move: Move, chessInstance: ChessGame){
     
     /**
      * Function that checks if executing "move" results in the king being in check.
@@ -268,7 +262,7 @@ const isCheckOnNextMove = function(move: Move, chessInstance: ChessGame){
 }
 
 
-const findBlockCapturePositions = function(
+export const findBlockCapturePositions = function(
     attackingPiece: ChessPiece,
     defendPiece: ChessPiece, 
     board: ChessBoard
@@ -311,9 +305,11 @@ const findBlockCapturePositions = function(
 }
 
 
-
-
-const canBlockOrCapture = function(checkingPiece: ChessPiece, kingInCheck: King, chessInstance: ChessGame): boolean {
+export const canBlockOrCapture = function(
+    checkingPiece: ChessPiece, 
+    kingInCheck: King, 
+    chessInstance: ChessGame): 
+    boolean {
 
     /**
      * Function that checks if a player has any pieces that can block the "checkingPiece"
