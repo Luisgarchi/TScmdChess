@@ -4,7 +4,7 @@ import { ChessPiece } from "../chess_settings"
 import { King } from "../pieces/king/King"
 import { Position } from "../notation/boardNotation/Position"
 import { Move } from "../notation/moveNotation/Move"
-
+import { ChessBoard } from "../board/ChessBoard"
 
 
 export function isCheck(colour: ColourPlayers, chessInstance: ChessGame): boolean {
@@ -268,53 +268,103 @@ const isCheckOnNextMove = function(move: Move, chessInstance: ChessGame){
 }
 
 
+const findBlockCapturePositions = function(
+    attackingPiece: ChessPiece,
+    defendPiece: ChessPiece, 
+    board: ChessBoard
+    ): Position[] {
+    
+
+    /**
+     * Function that returns an array of Positions between an "attackingPiece" and a piece 
+     * to defend ("defendPiece") that can be used to block or capture the attackingPiece.
+     * 
+     * Step 1) Get the position to defend
+     * Step 2) Get all the other positions the enemy piece controls along the vector
+     *         between the attacking piece and the defending piece
+     * Step 3) Remove the position equal to the defending piece square (A defending
+     *         defend on this square since two pieces would be on the same square)
+     * Step 4) Add the position equal to the attacking piece square (A defending piece
+     *         is able to defend the defending piece by capturing the attacking piece)
+     */
+    
+    // 0) abrieviate names
+    const AP = attackingPiece
+    const DP = defendPiece
+
+    // 1)
+    // Get position to defend
+    const DPPosition: Position = DP.position
+    
+    // 2) Get all the square the enemy piece is controlling along the attacking vector
+    const blockAndCapture: Position[] = 
+        AP.movement.findSquaresForVectorContainingPosition(AP, DPPosition, board)
+    
+
+    // 3) Remove defend square
+    blockAndCapture.splice(blockAndCapture.length - 1, 1)
+
+    // 4) Add capture square of attacking piece
+    blockAndCapture.push(attackingPiece.position)
+    
+    return blockAndCapture
+}
+
+
+
 
 const canBlockOrCapture = function(checkingPiece: ChessPiece, kingInCheck: King, chessInstance: ChessGame): boolean {
 
     /**
-     * Function
+     * Function that checks if a player has any pieces that can block the "checkingPiece"
+     * from checking the "KingInCheck".
      * 
-     * Step 1)
+     * Step 1) Get the positions that can block or capture the checking piece
+     * Step 2) Get the chess pieces of the player who's king is in check´
+     * Step 3) Check if any of the pieces can block by moving to one of blocking or capturing square
+     *         - Said piece must not be pinned. 
      */
+    
 
-    const blockingPositons: Position[] = checkingPiece.movement.findCheckingVectorPositions(checkingPiece, kingInCheck.position, this.board)
+    // 1)
+    const board: ChessBoard = chessInstance.board
+    const blockAndCapture: Position[] = findBlockCapturePositions(checkingPiece, kingInCheck, board)
 
-    // remove the last position because it is the positon of the king
-    blockingPositons.splice(blockingPositons.length - 1, 1)
-
-    // Add the starting position of the checking piece since it can be captured
-    blockingPositons.push(checkingPiece.position)
-
-    // check if any piece can block (piece must not be pinned)
-
+    // 2)
     // Get all the pieces of the same colour that can potentially block or capture
-    const potentialBlockingPieces: ChessPiece[] = this.board.pieces.filter(
-        (piece) =>  (piece.colour == kingInCheck.colour) && 
-                    (!(piece instanceof King))
+    const potentialBlockingPieces: ChessPiece[] = board.pieces.filter(
+        (piece) =>  (piece.colour == kingInCheck.colour)
     )
+
+    // 3)
+    // check if any piece can block (piece must not be pinned)
 
     // Iterate over all potential blocking pieces
     for (let i = 0; i < potentialBlockingPieces.length; i++){
 
-        // Get the piece and position
+        // Get the potential blocking piece and its position
         const potentialBlockPiece: ChessPiece = potentialBlockingPieces[i]
         const potentialBlockPiecePosition: Position = potentialBlockPiece.position
 
         // Get all the positions said piece can move to
-        const potentialBlockPositions: Position[] = potentialBlockPiece.movement.findReachablePositions(potentialBlockPiece, this.board)
+        const potentialBlockPositions: Position[] = potentialBlockPiece.movement.findReachablePositions(potentialBlockPiece, board)
 
-        // Check if the any of the reachable positions is one along the blocking vector 
-        for (let j = 0; j < blockingPositons.length; j++){
+        // Check if any of the reachable positions is also one in "blockAndCapture"
+        for (let j = 0; j < blockAndCapture.length; j++){
 
-            const blockingPositionAlongCheck: Position = blockingPositons[j]
+            const blockingPositionAlongCheck: Position = blockAndCapture[j]
             
             if (Position.includes(potentialBlockPositions, blockingPositionAlongCheck)){
                 
-                // All thats left to check is if the piece is not pinned
+                // Check that the piece is not pinned
+                
+                // Parse the move
+
+                const blockingMove: Move = new Move(potentialBlockPiecePosition, blockingPositionAlongCheck)
 
                 // Boolean variable checks if move is legal
-                const isPinned: boolean = this.isCheckOnNextMove(
-                    potentialBlockPiecePosition, blockingPositionAlongCheck
+                const isPinned: boolean = isCheckOnNextMove(
+                    blockingMove, chessInstance
                 )
 
                 if (!isPinned){
@@ -327,31 +377,3 @@ const canBlockOrCapture = function(checkingPiece: ChessPiece, kingInCheck: King,
     // No piece was found that can block or capture so return false
     return false
 }  
-
-
-
-
-isCheckOnNextMove(startPosition: Position, endPosition: Position, chessInstance: ChessGame){
-    /* Logic
-    Check that moving the piece to the next position does not result in check
-    */
-
-    // Create test game
-    const testGame: ChessGame = new ChessGame(this.board.copyPieces(), [... this.history])
-
-    const piece: ChessPiece = testGame.board.getPiece(startPosition)
-
-    // EXECUTE the REGULAR move we want to test
-    testGame.executeRegularMove(piece, endPosition)
-
-    // Check if there is a king on the board. 
-    // Logic follows a piece can only be pined if its king is on the board
-    if (this.board.isKing(piece.colour)){
-        // Return whether the king is in check or not
-        
-        return testGame.isCheck(piece.colour)
-    }
-    else {
-        return false
-    }
-}
