@@ -16,7 +16,7 @@ import { Pawn } from "../pieces/pawn/Pawn";
 import { fileToNum, numToFile } from "../utils/notation";
 
 
-import { islegalEnpassant } from "./enpassant";
+import { isEnpassant } from "./enpassant";
 
 export class ChessGame {
 
@@ -107,7 +107,7 @@ export class ChessGame {
             // 5) Check if moving piece to end position is a legal move
             isLegalRegularMove = this.legalRegularMove(piece, end)
             isLegalCastles = this.legalCastles(piece, end)
-            isLegalEnpassant = islegalEnpassant(piece, end, this.board, this.history)
+            isLegalEnpassant = isEnpassant(piece, end, this)
 
             const isLegalMove: boolean = isLegalRegularMove || isLegalCastles || isLegalEnpassant
 

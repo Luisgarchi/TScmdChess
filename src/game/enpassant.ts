@@ -4,11 +4,16 @@ import { ColourPlayers } from "../chess_settings"
 import { Pawn } from "../pieces/pawn/Pawn"
 import { fileToNum, numToFile } from "../utils/notation"
 import { ChessBoard } from "../board/ChessBoard"
+import { ChessGame } from "./ChessGame"
 
 
 
 
-export function islegalEnpassant(piece: ChessPiece, endPosition: Position, board: ChessBoard, history: string[]):  boolean {
+export function isEnpassant(piece: ChessPiece, endPosition: Position, chessInstance: ChessGame):  boolean {
+
+    
+    const board: ChessBoard = chessInstance.board
+    const moveHistory: string[] = chessInstance.history
 
     // Get the colour of the pawn we want to 
     const colour: ColourPlayers = piece.colour
@@ -21,7 +26,7 @@ export function islegalEnpassant(piece: ChessPiece, endPosition: Position, board
         correctRank(piece, legalRank) && 
         correctEndPosition(piece, endPosition) && 
         isEnemyPawnOnCapture(colour, legalRank, endPosition, board) &&
-        enemyPawnLastMove(colour,legalRank, endPosition, history) 
+        enemyPawnLastMove(colour,legalRank, endPosition, moveHistory) 
     )
 
 }
@@ -107,7 +112,7 @@ const enemyPawnLastMove = function(
     colour: ColourPlayers,
     legalRank: number, 
     endPosition: Position,
-    history: string[]
+    moveHistory: string[]
     ) : boolean {
 
     // Check that the previous move made by the opponent was from the start rank to the capture position
@@ -125,7 +130,7 @@ const enemyPawnLastMove = function(
     const move: string = startPosition.serialise() + caputrePosition.serialise()
 
     // Check if the last move in the board history is the necessary one for a legal en passant
-    const lastMove: string = history.slice(-1)[0]
+    const lastMove: string = moveHistory.slice(-1)[0]
 
     // The move is a legal en passant move
     return (lastMove == move)
