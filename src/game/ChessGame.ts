@@ -161,6 +161,13 @@ export class ChessGame {
         return true
     }
 
+    createGameCopy(): ChessGame {
+        const piecesCopy: ChessPiece[] = this.board.copyPieces()
+        const moveHistoryCopy: string[] = [... this.history]
+
+        return new ChessGame(piecesCopy, moveHistoryCopy)
+    }
+
     isCheckOnNextMove(startPosition: Position, endPosition: Position){
         /* Logic
         Check that moving the piece to the next position does not result in check
