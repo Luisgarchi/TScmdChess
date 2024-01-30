@@ -23,10 +23,10 @@ export function isEnpassant(piece: ChessPiece, endPosition: Position, chessInsta
 
     return (
         isPawn(piece) && 
-        correctRank(piece, legalRank) && 
-        correctEndPosition(piece, endPosition) && 
-        isEnemyPawnOnCapture(colour, legalRank, endPosition, board) &&
-        enemyPawnLastMove(colour,legalRank, endPosition, moveHistory) 
+        isCorrectEnpassantRank(piece, legalRank) && 
+        isCorrectEnpassantEndPosition(piece, endPosition) && 
+        isEnemyPawnOnEnpassantCapture(colour, legalRank, endPosition, board) &&
+        isEnpassantEnemyPawnLastMove(colour,legalRank, endPosition, moveHistory) 
     )
 
 }
@@ -40,7 +40,7 @@ const isPawn = function(piece: ChessPiece): boolean {
 
 
 
-const correctRank = function(piece: ChessPiece, legalRank: number): boolean {
+const isCorrectEnpassantRank = function(piece: ChessPiece, legalRank: number): boolean {
 
     // Check if piece's rank matches the necessary for enpassant
     return (legalRank == piece.position.rank)
@@ -48,7 +48,7 @@ const correctRank = function(piece: ChessPiece, legalRank: number): boolean {
 
 
 
-const correctEndPosition = function(piece: ChessPiece, endPosition: Position): boolean {
+const isCorrectEnpassantEndPosition = function(piece: ChessPiece, endPosition: Position): boolean {
 
     // Check endPosition is correct
     const currentFileNum: number = fileToNum(piece.position.file)
@@ -74,14 +74,14 @@ const correctEndPosition = function(piece: ChessPiece, endPosition: Position): b
 
 
 
-const getCapturePosition = function(endPosition:Position, legalRank: number): Position {
+const getEnpassantCapturePosition = function(endPosition:Position, legalRank: number): Position {
 
     return new Position(endPosition.file, legalRank)
 }
 
 
 
-const isEnemyPawnOnCapture = function (
+const isEnemyPawnOnEnpassantCapture = function (
     colour: ColourPlayers, 
     legalRank: number, 
     endPosition: Position, 
@@ -89,7 +89,7 @@ const isEnemyPawnOnCapture = function (
     ): boolean {
 
     // Get the capturing position
-    const caputrePosition = getCapturePosition(endPosition, legalRank)
+    const caputrePosition = getEnpassantCapturePosition(endPosition, legalRank)
 
     // Check if there is a piece on the capturing position
     const isPiece: Boolean = board.isPieceAt(caputrePosition)
@@ -108,7 +108,7 @@ const isEnemyPawnOnCapture = function (
 
 
 
-const enemyPawnLastMove = function(
+const isEnpassantEnemyPawnLastMove = function(
     colour: ColourPlayers,
     legalRank: number, 
     endPosition: Position,
@@ -118,7 +118,7 @@ const enemyPawnLastMove = function(
     // Check that the previous move made by the opponent was from the start rank to the capture position
 
     // Get the capture position
-    const caputrePosition = getCapturePosition(endPosition, legalRank)
+    const caputrePosition = getEnpassantCapturePosition(endPosition, legalRank)
 
     // Check that the last move made was the opponents pawn from the pawns start rank
     const startRank: number = (colour != 'white') ? 2 : 7
