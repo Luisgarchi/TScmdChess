@@ -15,13 +15,13 @@ describe('Method - legalEnpassant', () => {
         const colour: ColourPlayers = 'white'
         const differentColour: ColourPlayers = 'black'
 
-        const notAPawn: ChessPiece = new King(colour, new Position('d5'))
+        const notAPawn: ChessPiece = new King(colour, 'd5')
         const endPosition: Position = new Position('e6')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(differentColour, new Position('d8')),
-            new Pawn(differentColour, new Position('e7')),
+            new King(differentColour,'d8'),
+            new Pawn(differentColour, 'e7'),
 
             notAPawn
         ]
@@ -47,13 +47,13 @@ describe('Method - legalEnpassant', () => {
         const colour: ColourPlayers = 'white'
         const differentColour: ColourPlayers = 'black'
 
-        const myPawn: ChessPiece = new Pawn(colour, new Position('d4'))
+        const myPawn: ChessPiece = new Pawn(colour, 'd4')
         const endPosition: Position = new Position('e6')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(differentColour, new Position('d8')),
-            new Pawn(differentColour, new Position('e7')),
+            new King(differentColour, 'd8'),
+            new Pawn(differentColour, 'e7'),
 
             myPawn
         ]
@@ -79,13 +79,13 @@ describe('Method - legalEnpassant', () => {
         const colour: ColourPlayers = 'black'
         const differentColour: ColourPlayers = 'white'
 
-        const myPawn: ChessPiece = new Pawn(colour, new Position('d4'))
+        const myPawn: ChessPiece = new Pawn(colour, 'd4')
         const endPosition: Position = new Position('e2')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(differentColour, new Position('d1')),
-            new Pawn(differentColour, new Position('e2')),
+            new King(differentColour, 'd1'),
+            new Pawn(differentColour, 'e2'),
 
             myPawn
         ]
@@ -110,13 +110,13 @@ describe('Method - legalEnpassant', () => {
         const colour: ColourPlayers = 'black'
         const differentColour: ColourPlayers = 'white'
 
-        const myPawn: ChessPiece = new Pawn(colour, new Position('d4'))
+        const myPawn: ChessPiece = new Pawn(colour, 'd4')
         const endPosition: Position = new Position('c3')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(differentColour, new Position('d1')),
-            new Pawn(differentColour, new Position('e2')),
+            new King(differentColour, 'd1'),
+            new Pawn(differentColour, 'e2'),
 
             myPawn
         ]
@@ -143,13 +143,13 @@ describe('Method - legalEnpassant', () => {
         const colour: ColourPlayers = 'white'
         const differentColour: ColourPlayers = 'black'
 
-        const pawnEnpassant: ChessPiece = new Pawn(colour, new Position('d5'))
+        const pawnEnpassant: ChessPiece = new Pawn(colour, 'd5')
         const endPosition: Position = new Position('e6')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(differentColour, new Position('d8')),
-            new Pawn(differentColour, new Position('e7')),
+            new King(differentColour, 'd8'),
+            new Pawn(differentColour, 'e7'),
 
             pawnEnpassant
         ]
@@ -176,13 +176,13 @@ describe('Method - legalEnpassant', () => {
         const colour: ColourPlayers = 'black'
         const differentColour: ColourPlayers = 'white'
 
-        const pawnEnpassant: ChessPiece = new Pawn(colour, new Position('d4'))
+        const pawnEnpassant: ChessPiece = new Pawn(colour, 'd4')
         const endPosition: Position = new Position('e3')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(differentColour, new Position('c1')),
-            new Pawn(differentColour, new Position('e2')),
+            new King(differentColour, 'c1'),
+            new Pawn(differentColour, 'e2'),
 
             pawnEnpassant
         ]
@@ -209,13 +209,13 @@ describe('Method - legalEnpassant', () => {
         const colour: ColourPlayers = 'white'
         const differentColour: ColourPlayers = 'black'
 
-        const pawnEnpassant: ChessPiece = new Pawn(colour, new Position('d5'))
+        const pawnEnpassant: ChessPiece = new Pawn(colour, 'd5')
         const endPosition: Position = new Position('e6')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(differentColour, new Position('a8')),
-            new Pawn(differentColour, new Position('e5')),
+            new King(differentColour, 'a8'),
+            new Pawn(differentColour, 'e5'),
 
             pawnEnpassant
         ]
@@ -242,13 +242,13 @@ describe('Method - legalEnpassant', () => {
         const colour: ColourPlayers = 'white'
         const differentColour: ColourPlayers = 'black'
 
-        const pawnEnpassant: ChessPiece = new Pawn(colour, new Position('d5'))
+        const pawnEnpassant: ChessPiece = new Pawn(colour, 'd5')
         const endPosition: Position = new Position('e6')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(differentColour, new Position('a8')),
-            new Pawn(differentColour, new Position('e7')),
+            new King(differentColour, 'a8'),
+            new Pawn(differentColour, 'e7'),
 
             pawnEnpassant
         ]
@@ -276,13 +276,13 @@ describe('Method - legalEnpassant', () => {
         const colour: ColourPlayers = 'black'
         const differentColour: ColourPlayers = 'white'
 
-        const pawnEnpassant: ChessPiece = new Pawn(colour, new Position('g4'))
+        const pawnEnpassant: ChessPiece = new Pawn(colour, 'g4')
         const endPosition: Position = new Position('h3')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(differentColour, new Position('c5')),
-            new Pawn(differentColour, new Position('h2')),
+            new King(differentColour, 'c5'),
+            new Pawn(differentColour, 'h2'),
 
             pawnEnpassant
         ]
@@ -309,13 +309,13 @@ describe('Method - legalEnpassant', () => {
         const colour: ColourPlayers = 'black'
         const differentColour: ColourPlayers = 'white'
 
-        const pawnEnpassant: ChessPiece = new Pawn(colour, new Position('g4'))
+        const pawnEnpassant: ChessPiece = new Pawn(colour, 'g4')
         const endPosition: Position = new Position('h3')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(differentColour, new Position('c5')),
-            new Pawn(differentColour, new Position('h2')),
+            new King(differentColour, 'c5'),
+            new Pawn(differentColour, 'h2'),
 
             pawnEnpassant
         ]
@@ -342,15 +342,15 @@ describe('Method - legalEnpassant', () => {
         const colour: ColourPlayers = 'black'
         const differentColour: ColourPlayers = 'white'
 
-        const pawnEnpassant_A: ChessPiece = new Pawn(colour, new Position('h4'))
-        const pawnEnpassant_B: ChessPiece = new Pawn(colour, new Position('f4'))
+        const pawnEnpassant_A: ChessPiece = new Pawn(colour, 'h4')
+        const pawnEnpassant_B: ChessPiece = new Pawn(colour, 'f4')
 
         const endPosition: Position = new Position('g3')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(differentColour, new Position('c5')),
-            new Pawn(differentColour, new Position('g2')),
+            new King(differentColour, 'c5'),
+            new Pawn(differentColour, 'g2'),
 
             pawnEnpassant_A, pawnEnpassant_B
         ]

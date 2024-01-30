@@ -258,7 +258,7 @@ export const isCheckOnNextMove = function(move: Move, chessInstance: ChessGame){
 
     // 5)
     // Return whether the king is in check or not    
-    return testGame.isCheck(colour)
+    return isCheck(colour, testGame)
 }
 
 

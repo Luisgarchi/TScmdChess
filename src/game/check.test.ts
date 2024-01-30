@@ -1,55 +1,26 @@
-describe('kingCheckLegalSquaresMove', () => {
-
-    test('Only 3 legal moves', () => {
-
-        const king = new King('white', new Position('b2'))
-
-        const pieces: ChessPiece[] = [
-            king,
-            new Queen('black', new Position('c4'))
-        ]
-
-        const chess: ChessGame = new ChessGame(pieces)
-
-        const legalPositions : Position[] = [
-            new Position('a1'),
-            new Position('a3'),
-            new Position('b1'),
-        ]
-
-        const results: Position[] = chess.kingCheckLegalSquaresMove(king)
-
-        expect(results).toEqual(expect.arrayContaining(legalPositions.map(positionPropertyTest)))
-        expect(results.length).toEqual(legalPositions.length)
-    })
-
-    test('Only 1 legal moves', () => {
-
-        const king = new King('black', new Position('f6'))
-
-        const pieces: ChessPiece[] = [
-            king,
-            new Queen('white', new Position('g1')),
-            new Bishop('white', new Position('h7')),
-            new Knight('white', new Position('d8')),
-            new Pawn('white', new Position('f5')),
-            new Pawn('black', new Position('e5'))
-        ]
-
-        const chess: ChessGame = new ChessGame(pieces)
-
-        const legalPositions : Position[] = [
-            new Position('e7'),
-        ]
-
-        const results: Position[] = chess.kingCheckLegalSquaresMove(king)
-
-        expect(results).toEqual(expect.arrayContaining(legalPositions.map(positionPropertyTest)))
-        expect(results.length).toEqual(legalPositions.length)
-    })
+import { ChessPiece, ColourPlayers } from "../chess_settings"
+import { Position } from "../notation/boardNotation/Position"
+import { Bishop } from "../pieces/bishop/Bishop"
+import { King } from "../pieces/king/King"
+import { Knight } from "../pieces/knight/Knight"
+import { Pawn } from "../pieces/pawn/Pawn"
+import { Queen } from "../pieces/queen/Queen"
+import { Rook } from "../pieces/rook/Rook"
+import { ChessGame } from "./ChessGame"
+import { findCheckingPieces, findKingLegalPositions, isCheck, isCheckMate } from "./check"
 
 
-})
+const positionPropertyTest = function(position: Position){
+    return expect.objectContaining({rank: position.rank, file: position.file})
+}
+
+const piecePropertiesTest = function(piece: ChessPiece) {
+    return expect.objectContaining({
+        position: expect.objectContaining({rank: piece.position.rank, file: piece.position.file}), 
+        colour : piece.colour, 
+        type: piece.type})
+} 
+
 
 
 describe('Method - isCheck', () => {
@@ -60,12 +31,12 @@ describe('Method - isCheck', () => {
         const colour: ColourPlayers = 'white'
 
         // Define a king
-        const kingInCheck = new King(colour, new Position('c1'))
+        const kingInCheck = new King(colour, 'c1')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
             kingInCheck,
-            new Rook('black', new Position('c8'))
+            new Rook('black', 'c8')
 
         ]
 
@@ -73,7 +44,7 @@ describe('Method - isCheck', () => {
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: boolean = chess.isCheck(colour)
+        const result: boolean = isCheck(colour, chess)
         const expected: boolean = true
 
         expect(result).toEqual(expected)
@@ -85,13 +56,13 @@ describe('Method - isCheck', () => {
         const colour: ColourPlayers = 'black'
 
         // Define a king
-        const kingInCheck = new King(colour, new Position('d8'))
+        const kingInCheck = new King(colour, 'd8')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
             kingInCheck,
-            new Rook('white', new Position('d3')),
-            new Bishop('white', new Position('f6'))
+            new Rook('white', 'd3'),
+            new Bishop('white', 'f6')
 
         ]
 
@@ -99,7 +70,7 @@ describe('Method - isCheck', () => {
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: boolean = chess.isCheck(colour)
+        const result: boolean = isCheck(colour, chess)
         const expected: boolean = true
 
         expect(result).toEqual(expected)
@@ -112,7 +83,7 @@ describe('Method - isCheck', () => {
         const colour: ColourPlayers = 'black'
 
         // Define a king
-        const kingInCheck = new King(colour, new Position('g3'))
+        const kingInCheck = new King(colour, 'g3')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
@@ -123,7 +94,7 @@ describe('Method - isCheck', () => {
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: boolean = chess.isCheck(colour)
+        const result: boolean = isCheck(colour, chess)
         const expected: boolean = false
 
         expect(result).toEqual(expected)
@@ -136,32 +107,88 @@ describe('Method - isCheck', () => {
         const colour: ColourPlayers = 'white'
 
         // Define a king
-        const kingInCheck = new King(colour, new Position('c1'))
+        const kingInCheck = new King(colour, 'c1')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
             kingInCheck,
-            new Rook('black', new Position('c6')),
-            new Rook('black', new Position('d8')),
-            new Queen('black', new Position('a4')),
-            new Bishop('black', new Position('a3')),
-            new Knight('black', new Position('b2')),
-            new Knight('black', new Position('e3')),
-            new Rook('black', new Position('f2')),
-            new Bishop('black', new Position('f5')),
-            new Pawn('white', new Position('c3')),
+            new Rook('black', 'c6'),
+            new Rook('black', 'd8'),
+            new Queen('black', 'a4'),
+            new Bishop('black', 'a3'),
+            new Knight('black', 'b2'),
+            new Knight('black', 'e3'),
+            new Rook('black', 'f2'),
+            new Bishop('black', 'f5'),
+            new Pawn('white', 'c3'),
         ]
 
         // Init game
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: boolean = chess.isCheck(colour)
+        const result: boolean = isCheck(colour, chess)
         const expected: boolean = false
 
         expect(result).toEqual(expected)
     })
 })
+
+
+describe('kingCheckLegalSquaresMove', () => {
+
+    test('Only 3 legal moves', () => {
+
+        const king = new King('white', 'b2')
+
+        const pieces: ChessPiece[] = [
+            king,
+            new Queen('black', 'c4')
+        ]
+
+        const chess: ChessGame = new ChessGame(pieces)
+
+        const legalPositions : Position[] = [
+            new Position('a1'),
+            new Position('a3'),
+            new Position('b1'),
+        ]
+
+        const results: Position[] = findKingLegalPositions(king, chess)
+
+        expect(results).toEqual(expect.arrayContaining(legalPositions.map(positionPropertyTest)))
+        expect(results.length).toEqual(legalPositions.length)
+    })
+
+    test('Only 1 legal moves', () => {
+
+        const king = new King('black', 'f6')
+
+        const pieces: ChessPiece[] = [
+            king,
+            new Queen('white', 'g1'),
+            new Bishop('white', 'h7'),
+            new Knight('white', 'd8'),
+            new Pawn('white', 'f5'),
+            new Pawn('black', 'e5')
+        ]
+
+        const chess: ChessGame = new ChessGame(pieces)
+
+        const legalPositions : Position[] = [
+            new Position('e7'),
+        ]
+
+        const results: Position[] = findKingLegalPositions(king, chess)
+
+        expect(results).toEqual(expect.arrayContaining(legalPositions.map(positionPropertyTest)))
+        expect(results.length).toEqual(legalPositions.length)
+    })
+
+
+})
+
+
 
 describe('Method - isCheckMate', () => {
 
@@ -172,14 +199,14 @@ describe('Method - isCheckMate', () => {
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(colour, new Position('f2')),
+            new King(colour, 'f2'),
         ]
 
         // Init game
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: boolean = chess.isCheckMate(colour)
+        const result: boolean = isCheckMate(colour, chess)
         const expected: boolean = false
 
         expect(result).toEqual(expected)
@@ -195,9 +222,9 @@ describe('Method - isCheckMate', () => {
         const pieces: ChessPiece[] = [
             new King(colour, new Position('f2')),
 
-            new Queen(oppositeColour, new Position('f3')),
-            new Rook(oppositeColour, new Position('a1')),
-            new Knight(oppositeColour, new Position('d4')),
+            new Queen(oppositeColour, 'f3'),
+            new Rook(oppositeColour, 'a1'),
+            new Knight(oppositeColour, 'd4'),
 
         ]
 
@@ -205,7 +232,7 @@ describe('Method - isCheckMate', () => {
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: boolean = chess.isCheckMate(colour)
+        const result: boolean = isCheckMate(colour, chess)
         const expected: boolean = true
 
         expect(result).toEqual(expected)
@@ -219,17 +246,17 @@ describe('Method - isCheckMate', () => {
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(colour, new Position('c2')),
+            new King(colour, 'c2'),
 
-            new Queen(oppositeColour, new Position('b2')),
-            new Rook(oppositeColour, new Position('b1')),
+            new Queen(oppositeColour, 'b2'),
+            new Rook(oppositeColour, 'b1'),
         ]
 
         // Init game
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: boolean = chess.isCheckMate(colour)
+        const result: boolean = isCheckMate(colour, chess)
         const expected: boolean = false
 
         expect(result).toEqual(expected)
@@ -243,19 +270,19 @@ describe('Method - isCheckMate', () => {
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(colour, new Position('f2')),
-            new Bishop(colour, new Position('h8')),
+            new King(colour, 'f2'),
+            new Bishop(colour, 'h8'),
 
-            new Queen(oppositeColour, new Position('f4')),
-            new Rook(oppositeColour, new Position('a1')),
-            new Knight(oppositeColour, new Position('d4')),
+            new Queen(oppositeColour, 'f4'),
+            new Rook(oppositeColour, 'a1'),
+            new Knight(oppositeColour, 'd4'),
         ]
 
         // Init game
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: boolean = chess.isCheckMate(colour)
+        const result: boolean = isCheckMate(colour, chess)
         const expected: boolean = false
 
         expect(result).toEqual(expected)
@@ -270,19 +297,19 @@ describe('Method - isCheckMate', () => {
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(colour, new Position('f2')),
-            new Bishop(colour, new Position('c3')),
+            new King(colour, 'f2'),
+            new Bishop(colour, 'c3'),
 
-            new Queen(oppositeColour, new Position('f4')),
-            new Rook(oppositeColour, new Position('a1')),
-            new Knight(oppositeColour, new Position('d4')),
+            new Queen(oppositeColour, 'f4'),
+            new Rook(oppositeColour, 'a1'),
+            new Knight(oppositeColour, 'd4'),
         ]
 
         // Init game
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: boolean = chess.isCheckMate(colour)
+        const result: boolean = isCheckMate(colour, chess)
         const expected: boolean = false
 
         expect(result).toEqual(expected)
@@ -296,19 +323,19 @@ describe('Method - isCheckMate', () => {
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(colour, new Position('b8')),
+            new King(colour, 'b8'),
 
-            new Pawn(oppositeColour, new Position('a7')),
-            new Pawn(oppositeColour, new Position('b7')),
-            new Queen(oppositeColour, new Position('b6')),
-            new Rook(oppositeColour, new Position('c1')),
+            new Pawn(oppositeColour, 'a7'),
+            new Pawn(oppositeColour, 'b7'),
+            new Queen(oppositeColour, 'b6'),
+            new Rook(oppositeColour,'c1'),
         ]
 
         // Init game
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: boolean = chess.isCheckMate(colour)
+        const result: boolean = isCheckMate(colour, chess)
         const expected: boolean = true
 
         expect(result).toEqual(expected)
@@ -322,17 +349,17 @@ describe('Method - isCheckMate', () => {
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(colour, new Position('d6')),
+            new King(colour, 'd6'),
 
-            new Knight(oppositeColour, new Position('f6')),
-            new Pawn(oppositeColour, new Position('g3')),
+            new Knight(oppositeColour, 'f6'),
+            new Pawn(oppositeColour, 'g3'),
         ]
 
         // Init game
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: boolean = chess.isCheckMate(colour)
+        const result: boolean = isCheckMate(colour, chess)
         const expected: boolean = false
 
         expect(result).toEqual(expected)
@@ -347,17 +374,17 @@ describe('Method - isCheckMate', () => {
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(colour, new Position('d6')),
+            new King(colour, 'd6'),
 
-            new Knight(oppositeColour, new Position('f6')),
-            new Pawn(oppositeColour, new Position('g3')),
+            new Knight(oppositeColour, 'f6'),
+            new Pawn(oppositeColour, 'g3'),
         ]
 
         // Init game
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: boolean = chess.isCheckMate(colour)
+        const result: boolean = isCheckMate(colour, chess)
         const expected: boolean = false
 
         expect(result).toEqual(expected)
@@ -372,18 +399,18 @@ describe('Method - isCheckMate', () => {
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(colour, new Position('a4')),
-            new Rook(colour, new Position('f5')),
+            new King(colour, 'a4'),
+            new Rook(colour, 'f5'),
 
-            new Queen(oppositeColour, new Position('a8')),
-            new Rook(oppositeColour, new Position('b1')),
+            new Queen(oppositeColour, 'a8'),
+            new Rook(oppositeColour, 'b1'),
         ]
 
         // Init game
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: boolean = chess.isCheckMate(colour)
+        const result: boolean = isCheckMate(colour, chess)
         const expected: boolean = false
 
         expect(result).toEqual(expected)
@@ -398,20 +425,20 @@ describe('Method - isCheckMate', () => {
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(colour, new Position('g8')),
-            new Rook(colour, new Position('f8')),
-            new Pawn(colour, new Position('f7')),
-            new Pawn(colour, new Position('g7')),
-            new Knight(colour, new Position('f6')),
-            new Queen(oppositeColour, new Position('h7')),
-            new Bishop(oppositeColour, new Position('d3')),
+            new King(colour, 'g8'),
+            new Rook(colour, 'f8'),
+            new Pawn(colour, 'f7'),
+            new Pawn(colour, 'g7'),
+            new Knight(colour, 'f6'),
+            new Queen(oppositeColour, 'h7'),
+            new Bishop(oppositeColour, 'd3'),
         ]
 
         // Init game
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: boolean = chess.isCheckMate(colour)
+        const result: boolean = isCheckMate(colour, chess)
         const expected: boolean = false
 
         expect(result).toEqual(expected)
@@ -428,21 +455,21 @@ describe('Method - isCheckMate', () => {
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
-            new King(colour, new Position('f8')),
-            new Bishop(colour, new Position('e8')),
-            new Pawn(colour, new Position('f7')),
-            new Knight(colour, new Position('g8')),
+            new King(colour, 'f8'),
+            new Bishop(colour, 'e8'),
+            new Pawn(colour, 'f7'),
+            new Knight(colour, 'g8'),
 
-            new Knight(oppositeColour, new Position('e6')),
-            new Bishop(oppositeColour, new Position('h4')),
-            new Rook(oppositeColour, new Position('f1')),
+            new Knight(oppositeColour, 'e6'),
+            new Bishop(oppositeColour, 'h4'),
+            new Rook(oppositeColour, 'f1'),
         ]
 
         // Init game
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: boolean = chess.isCheckMate(colour)
+        const result: boolean = isCheckMate(colour, chess)
         const expected: boolean = true
 
         expect(result).toEqual(expected)
@@ -460,7 +487,7 @@ describe('method - checkingPieces', () => {
         const colour: ColourPlayers = 'black'
 
         // Define a king
-        const king= new King(colour, new Position('g3'))
+        const king= new King(colour, 'g3')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
@@ -471,7 +498,7 @@ describe('method - checkingPieces', () => {
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: ChessPiece[] = chess.checkingPieces(colour)
+        const result: ChessPiece[] = findCheckingPieces(colour, chess)
 
         expect(result).toHaveLength(0)
     })
@@ -483,9 +510,9 @@ describe('method - checkingPieces', () => {
         const colour: ColourPlayers = 'white'
 
         // Define a king
-        const king = new King(colour, new Position('g1'))
+        const king = new King(colour, 'g1')
 
-        const checkingPiece = new Knight('black', new Position('e2'))
+        const checkingPiece = new Knight('black', 'e2')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
@@ -501,7 +528,7 @@ describe('method - checkingPieces', () => {
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: ChessPiece[] = chess.checkingPieces(colour)
+        const result: ChessPiece[] = findCheckingPieces(colour, chess)
         
         expect(result).toEqual(expect.arrayContaining(checkingPieces.map(piecePropertiesTest)))
         expect(result.length).toEqual(checkingPieces.length)
@@ -513,10 +540,10 @@ describe('method - checkingPieces', () => {
         const colour: ColourPlayers = 'black'
 
         // Define a king
-        const king = new King(colour, new Position('h5'))
+        const king = new King(colour, 'h5')
 
-        const checkingPieceA= new Queen('white', new Position('h4'))
-        const checkingPieceB= new Bishop('white', new Position('f3'))
+        const checkingPieceA= new Queen('white', 'h4')
+        const checkingPieceB= new Bishop('white', 'f3')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
@@ -534,7 +561,7 @@ describe('method - checkingPieces', () => {
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: ChessPiece[] = chess.checkingPieces(colour)
+        const result: ChessPiece[] = findCheckingPieces(colour, chess)
         
         expect(result).toEqual(expect.arrayContaining(checkingPieces.map(piecePropertiesTest)))
         expect(result.length).toEqual(checkingPieces.length)
@@ -547,13 +574,13 @@ describe('method - checkingPieces', () => {
         const colour: ColourPlayers = 'white'
 
         // Define a king
-        const king = new King(colour, new Position('d4'))
+        const king = new King(colour, 'd4')
 
-        const checkingPieceA = new Queen('black', new Position('d1'))
-        const checkingPieceB = new Rook('black', new Position('a4'))
-        const checkingPieceC = new Pawn('black', new Position('c5'))
-        const checkingPieceD = new Knight('black', new Position('e2'))
-        const checkingPieceE = new Bishop('black', new Position('h8'))
+        const checkingPieceA = new Queen('black', 'd1')
+        const checkingPieceB = new Rook('black', 'a4')
+        const checkingPieceC = new Pawn('black', 'c5')
+        const checkingPieceD = new Knight('black', 'e2')
+        const checkingPieceE = new Bishop('black', 'h8')
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
@@ -577,7 +604,7 @@ describe('method - checkingPieces', () => {
         const chess: ChessGame = new ChessGame(pieces)
 
         // Test
-        const result: ChessPiece[] = chess.checkingPieces(colour)
+        const result: ChessPiece[] = findCheckingPieces(colour, chess)
         
         expect(result).toEqual(expect.arrayContaining(checkingPieces.map(piecePropertiesTest)))
         expect(result.length).toEqual(checkingPieces.length)
