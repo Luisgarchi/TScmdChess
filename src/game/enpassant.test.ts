@@ -7,6 +7,7 @@ import { King } from "../pieces/king/King"
 
 import { isEnpassant } from "./enpassant"
 
+
 describe('Method - legalEnpassant', () => {
 
     test('Not pawn move - no en passant ', () => {
