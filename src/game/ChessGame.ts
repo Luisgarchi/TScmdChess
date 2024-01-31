@@ -18,6 +18,8 @@ import { fileToNum, numToFile } from "../utils/notation";
 
 import { isEnpassant } from "./enpassant";
 import { isCheck } from "./check";
+import { isCastles } from "./castles";
+import { Move } from "../notation/moveNotation/Move";
 
 export class ChessGame {
 
@@ -107,7 +109,7 @@ export class ChessGame {
 
             // 5) Check if moving piece to end position is a legal move
             isLegalRegularMove = this.legalRegularMove(piece, end)
-            isLegalCastles = this.legalCastles(piece, end)
+            isLegalCastles = isCastles(new Move(move), this)
             isLegalEnpassant = isEnpassant(piece, end, this)
 
             const isLegalMove: boolean = isLegalRegularMove || isLegalCastles || isLegalEnpassant
@@ -440,159 +442,5 @@ export class ChessGame {
         // 3) Move the Rook
         this.board.movePiece(rook, rookEndPosition)
     }
-
-
-    legalCastles(piece: ChessPiece, endPosition: Position): boolean {
-
-        // 1) Check that the start piece is a king
-        if (!(piece instanceof King)){
-            return false
-        }
-
-        // 2) Check that the king is in the starting position
-        const kingPosition: Position = (piece.colour == 'white') ? new Position('e1') : new Position('e8')
-        
-        if (this.board.isPieceAt(kingPosition)){
-
-            const potentialKing: ChessPiece = this.board.getPiece(kingPosition)
-
-            // Check that piece is a king of correct colour
-            if (!(
-                (potentialKing instanceof King) || 
-                (potentialKing.colour == piece.colour)
-                )){
-                return false
-            }
-        }
-        else{
-            return false
-        }
-
-        const king: King = piece as King
-
-        // 3) Check that the king is not in check
-        if (isCheck(king.colour, this)){
-            return false
-        }
-
-    
-        // 4) Check for the correct castling notation 
-        // king side castle is on g file, queen side castle is c file
-        if (king.colour == 'white'){
-            if (!['g1', 'c1'].includes(endPosition.serialise())){
-                return false
-            }
-        }
-        else {
-            if (!['g8', 'c8'].includes(endPosition.serialise())){
-                return false
-            }
-        }
-
-        // 5) Check that rook is in starting position
-        // Mapping to get position where rook should be for castling.
-        // The rook position (from second half of UCI notation)
-
-        const rookPreCastlePosition = new Map();
-        rookPreCastlePosition.set('g1', 'h1');
-        rookPreCastlePosition.set('g8', 'h8');
-        rookPreCastlePosition.set('c1', 'a1');
-        rookPreCastlePosition.set('c8', 'a8');
-
-        // Get the rook position
-        const rookPosition: Position = new Position(rookPreCastlePosition.get(endPosition.serialise()))
-        
-        // Check that there is a piece at said position
-        if (!(this.board.isPieceAt(rookPosition))){
-            return false
-        }
-
-        // check that said piece is a rook
-        const potentialRook: ChessPiece = this.board.getPiece(rookPosition)
-
-        if (!(potentialRook instanceof Rook)){
-            return false
-        }
-
-        // Check that rook is the starting rook
-        const rook: Rook = potentialRook as Rook
-
-        if (!(Position.compare(rook.startingPosition, rookPosition))){
-            return false
-        }
-
-        // 6) Check that rook and king have not been moved.
-
-        // Need to check that the rook and king start on their original squares
-        if ((!(Position.compare(rook.startingPosition, rookPosition))) ||
-            (!(Position.compare(king.startingPosition, kingPosition)))) {
-            return false
-        }
-
-        const mustNotHaveMoved: string[] = [rookPosition.serialise(), kingPosition.serialise()]
-
-        for (let i = 0; i < this.history.length; i++){
-
-            const movingPiecePosition: string = this.history[i].slice(0,2)
-            if (mustNotHaveMoved.includes(movingPiecePosition)){
-                return false
-            }
-        }
-
-        // 7) Check that no pieces blocks the positions between the king and the rook
-        // - get the positions inbetween the king and rook
-        const rank: number = king.position.rank
-
-        const kingFile: number = fileToNum(king.position.file)
-        const rookFile: number = fileToNum(rook.position.file)
-
-        const small: number = (kingFile > rookFile) ? rookFile : kingFile
-        const big: number = (kingFile > rookFile) ? kingFile : rookFile
-
-        const files: number[] = []
-
-        const n: number = big - small
-        for (let i = 1; i < n; i++){
-            files.push(small + i)
-        }
-
-        const positionsInbetween: Position[] = files.map((x) => new Position(numToFile(x), rank))
-
-        // Check to see if any pieces are on these positions
-        const allPieces: ChessPiece[] = this.board.pieces
-
-        for (let i = 0; i < allPieces.length; i++){
-
-            const potentialBlockPiecePosition: Position = allPieces[i].position
-            if (Position.includes(positionsInbetween, potentialBlockPiecePosition)){
-                return false
-            }
-        }
-
-        // 8) Check that no pieces control the positions between teh king and the rook
-
-        // filter for opposite coloured pieces
-        const diffColourPieces: ChessPiece[] = this.board.pieces.filter(
-            (piece) => piece.colour != king.colour)
-        
-        // check for each piece all the positions it controls
-        for (let i = 0; i < diffColourPieces.length; i++){
-
-            const checkPiece: ChessPiece = diffColourPieces[i]
-            const allPositions: Position[] = checkPiece.movement.findReachablePositions(checkPiece, this.board)
-            
-            // Check if any of those positions are inbetween the king and the rook
-            for (let j = 0; j < positionsInbetween.length; j++){
-                const individualInbetween: Position = positionsInbetween[j]
-                if (Position.includes(allPositions, individualInbetween)){
-                    return false
-                }                
-            }
-        }
-    
-        // 9) All the conditions have been met and so castling is a legal move
-        return true
-    }
-
 
 }
