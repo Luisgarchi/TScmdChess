@@ -1,5 +1,4 @@
 import { ChessPiece, ColourPlayers } from "../chess_settings"
-import { Position } from "../notation/boardNotation/Position"
 import { Move } from "../notation/moveNotation/Move"
 import { Bishop } from "../pieces/bishop/Bishop"
 import { King } from "../pieces/king/King"
@@ -10,7 +9,6 @@ import { Rook } from "../pieces/rook/Rook"
 import { ChessGame } from "./ChessGame"
 import { 
     isCastles,
-    castleColour, 
     isCastlesUCIMove, 
     getRookStartCastle, 
     isKingInstance, 
@@ -29,8 +27,8 @@ describe('isCastles', () => {
 
             const answer: boolean = true
 
-            const move: Move = new Move('e8g8')
             const colour: ColourPlayers = 'black'
+            const move: Move = new Move('e8g8', colour)
             const differentColour: ColourPlayers = 'white'
 
             // Define starting pieces on board
@@ -55,9 +53,8 @@ describe('isCastles', () => {
         test('Can castle white queenside', () => {
 
             const answer: boolean = true
-
-            const move: Move = new Move('e1c1')
             const colour: ColourPlayers = 'white'
+            const move: Move = new Move('e1c1', colour)
             const differentColour: ColourPlayers = 'black'
 
             // Define starting pieces on board
@@ -101,12 +98,12 @@ describe('isCastles', () => {
             const chess: ChessGame = new ChessGame(pieces)
 
             // Test kingside castles (check)
-            const move: Move = new Move('e8g8')
+            const move: Move = new Move('e8g8', colour)
             const result: boolean = isCastles(move, chess)
             expect(result).toEqual(answer)
 
             // Test queensides castles (no rook queenside)
-            const move_2: Move = new Move('e8c8')
+            const move_2: Move = new Move('e8c8', colour)
             const result_2: boolean = isCastles(move_2, chess)
             expect(result_2).toEqual(answer)
         })
@@ -130,8 +127,8 @@ describe('isCastles', () => {
             // Init game
             const chess: ChessGame = new ChessGame(pieces)
 
-            const kingSideCastle: Move = new Move('e1g1')
-            const queenSideCastle: Move = new Move('e1c1')
+            const kingSideCastle: Move = new Move('e1g1', colour)
+            const queenSideCastle: Move = new Move('e1c1', colour)
 
             // Can castle initially both sides
             expect(isCastles(kingSideCastle, chess)).toEqual(true)
@@ -159,12 +156,28 @@ describe('isCastles', () => {
 
 describe('isCastlesUCIMove', () => {
 
-    test('All allowed castling moves are true UCI notation', () => {
+    test('White allowed castling moves are true UCI notation', () => {
 
         const answer: boolean = true
-        
-        const movesStr: string[] = ['e1g1', 'e8g8', 'e1c1', 'e8c8']
-        const testMoves: Move[] = movesStr.map((move)=> new Move(move))
+        const colour: ColourPlayers = 'white'
+
+        const movesStr: string[] = ['e1g1', 'e1c1']
+
+        const testMoves: Move[] = movesStr.map((move)=> new Move(move, colour))
+
+        for(let i = 0; i < testMoves.length; i++){
+            expect(isCastlesUCIMove(testMoves[i])).toBe(answer)
+        }
+    })
+
+    test('Black allowed castling moves are true UCI notation', () => {
+
+        const answer: boolean = true
+        const colour: ColourPlayers = 'black'
+
+        const movesStr: string[] = ['e8g8', 'e8c8']
+
+        const testMoves: Move[] = movesStr.map((move)=> new Move(move, colour))
 
         for(let i = 0; i < testMoves.length; i++){
             expect(isCastlesUCIMove(testMoves[i])).toBe(answer)
@@ -175,55 +188,22 @@ describe('isCastlesUCIMove', () => {
 
         const answer: boolean = false
 
-        const movesStr: string[] = ['e1f1', 'e7g8', 'f1c1', 'e8d8']
-        const testMoves: Move[] = movesStr.map((move)=> new Move(move))
+        const movesStrWhite: string[] = ['e1f1', 'e7g8', 'f1c1', 'e8d8']
+        const testMovesWhite: Move[] = movesStrWhite.map((move)=> new Move(move, 'white'))
 
-        for(let i = 0; i < testMoves.length; i++){
-            expect(isCastlesUCIMove(testMoves[i])).toBe(answer)
+        for(let i = 0; i < testMovesWhite.length; i++){
+            expect(isCastlesUCIMove(testMovesWhite[i])).toBe(answer)
+        }
+
+        const movesStrBlack: string[] = ['e1f1', 'e7g8', 'f1c1', 'e8d8']
+        const testMovesBlack: Move[] = movesStrBlack.map((move)=> new Move(move, 'black'))
+
+        for(let i = 0; i < testMovesBlack.length; i++){
+            expect(isCastlesUCIMove(testMovesBlack[i])).toBe(answer)
         }
     })
 })
 
-
-describe('castleColour', () => {
-
-    test('Colour is white', () => {
-
-        const answer: ColourPlayers = 'white'
-
-        const whiteCastlesStr: string[] = [
-            'e1g1',         // kingside
-            'e1c1'          // queenside
-        ]
-        const testMoves: Move[]  = whiteCastlesStr.map((move)=> new Move(move))
-
-        for(let i = 0; i < testMoves.length; i++){
-            expect(castleColour(testMoves[i])).toBe(answer)
-        }
-    })
-    
-    test('Colour is black', () => {
-
-        const answer: ColourPlayers = 'black'
-
-        const blackCastlesStr: string[] = [
-            'e8g8',         // kingside
-            'e8c8'          // queenside
-        ]
-        const testMoves: Move[]  = blackCastlesStr.map((move)=> new Move(move))
-
-        for(let i = 0; i < testMoves.length; i++){
-            expect(castleColour(testMoves[i])).toBe(answer)
-        }
-    })
-
-    test('Throw error for move UCI castle notation', () => {
-        expect(
-            () => {castleColour(new Move('a1b1'))}
-        ).toThrow(Error)
-    })
-
-})
 
 
 describe('getRookStartCastle', () => {
@@ -231,25 +211,39 @@ describe('getRookStartCastle', () => {
 
     test('All positions', () => {
 
-        const movesStr: string[] = [
-            'e1g1',         // white kingside
-            'e8g8',         // black kingside
+        const movesStrWhite: string[] = [
+            'e1g1',         // white kingside 
             'e1c1',         // white queenside
-            'e8c8'          // black queenside
         ]
-        const testMoves: Move[] = movesStr.map((move)=> new Move(move))
+        const testMovesWhite: Move[] = movesStrWhite.map((move)=> new Move(move, 'white'))
 
-        const answersStr = [
+        const answersStrWhite = [
             'h1',       // white kingside
-            'h8',       // black kingside
             'a1',       // white queenside
-            'a8'        // black queenside
         ]
 
-        for(let i = 0; i < testMoves.length; i++){
+        for(let i = 0; i < testMovesWhite.length; i++){
             expect(
-                getRookStartCastle(testMoves[i]).serialise()
-            ).toBe(answersStr[i])
+                getRookStartCastle(testMovesWhite[i]).serialise()
+            ).toBe(answersStrWhite[i])
+        }
+
+        const movesStrBlack: string[] = [
+        'e8g8',         // black kingside
+        'e8c8'          // black queenside
+        ]
+
+        const testMovesBlack: Move[] = movesStrBlack.map((move)=> new Move(move, 'black'))
+
+        const answersStrBlack = [
+        'h8',       // black kingside
+        'a8'        // black queenside
+        ]
+
+        for(let i = 0; i < testMovesBlack.length; i++){
+            expect(
+                getRookStartCastle(testMovesBlack[i]).serialise()
+            ).toBe(answersStrBlack[i])
         }
     })
 
@@ -300,8 +294,8 @@ describe('isCastlesBoardCorrect', () => {
             
             const answer: boolean = true
             
-            const move: Move = new Move('e1g1')
             const colour: ColourPlayers = 'white'
+            const move: Move = new Move('e1g1', colour)
 
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
@@ -321,8 +315,8 @@ describe('isCastlesBoardCorrect', () => {
             
             const answer: boolean = true
             
-            const move: Move = new Move('e1c1')
             const colour: ColourPlayers = 'white'
+            const move: Move = new Move('e1c1', colour)
 
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
@@ -341,8 +335,8 @@ describe('isCastlesBoardCorrect', () => {
             
             const answer: boolean = true
             
-            const move: Move = new Move('e8g8')
             const colour: ColourPlayers = 'black'
+            const move: Move = new Move('e8g8', colour)
 
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
@@ -361,8 +355,10 @@ describe('isCastlesBoardCorrect', () => {
             
             const answer: boolean = true
             
-            const move: Move = new Move('e8c8')
+            
             const colour: ColourPlayers = 'black'
+            const move: Move = new Move('e8c8', colour)
+
 
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
@@ -385,8 +381,8 @@ describe('isCastlesBoardCorrect', () => {
             
             const answer: boolean = false
             
-            const move: Move = new Move('e8g8')
             const colour: ColourPlayers = 'black'
+            const move: Move = new Move('e8g8', colour)
 
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
@@ -404,9 +400,10 @@ describe('isCastlesBoardCorrect', () => {
         test('No Rook on board', () => {
             
             const answer: boolean = false
-            
-            const move: Move = new Move('e1g1')
+        
             const colour: ColourPlayers = 'white'
+            const move: Move = new Move('e1g1', colour)
+
 
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
@@ -423,9 +420,10 @@ describe('isCastlesBoardCorrect', () => {
         test('King not on start square', () => {
             
             const answer: boolean = false
-            
-            const move: Move = new Move('e1c1')
+        
             const colour: ColourPlayers = 'white'
+
+            const move: Move = new Move('e1c1', colour)
 
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
@@ -444,8 +442,9 @@ describe('isCastlesBoardCorrect', () => {
             
             const answer: boolean = false
             
-            const move: Move = new Move('e8c8')
             const colour: ColourPlayers = 'black'
+
+            const move: Move = new Move('e8c8', colour)
 
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
@@ -467,8 +466,9 @@ describe('isCastlesBoardCorrect', () => {
         test('King has moved (wrong start square)', () => {
             const answer: boolean = false
             
-            const move: Move = new Move('e8c8')
             const colour: ColourPlayers = 'black'
+
+            const move: Move = new Move('e8c8', colour)
 
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
@@ -479,7 +479,7 @@ describe('isCastlesBoardCorrect', () => {
             // Init game
             const chess: ChessGame = new ChessGame(pieces)
 
-            const kingMove: Move = new Move('e7e8')
+            const kingMove: Move = new Move('e7e8', colour)
 
             // Make a random move
             chess.makeMove(kingMove.serialise(), colour)
@@ -491,9 +491,9 @@ describe('isCastlesBoardCorrect', () => {
         test('Rook has moved (wrong start square)', () => {
 
             const answer: boolean = false
-            
-            const move: Move = new Move('e1g1')
+        
             const colour: ColourPlayers = 'white'
+            const move: Move = new Move('e1g1', colour)
 
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
@@ -504,7 +504,7 @@ describe('isCastlesBoardCorrect', () => {
             // Init game
             const chess: ChessGame = new ChessGame(pieces)
 
-            const rookMove: Move = new Move('h7h1')
+            const rookMove: Move = new Move('h7h1', colour)
 
             // Make a random move
             chess.makeMove(rookMove.serialise(), colour)
@@ -517,8 +517,8 @@ describe('isCastlesBoardCorrect', () => {
 
             const answer: boolean = false
             
-            const move: Move = new Move('e1c1')
             const colour: ColourPlayers = 'white'
+            const move: Move = new Move('e1c1', colour)
 
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
@@ -529,8 +529,8 @@ describe('isCastlesBoardCorrect', () => {
             // Init game
             const chess: ChessGame = new ChessGame(pieces)
 
-            const kingMove: Move = new Move('e1e2')
-            const kingMoveBack: Move = new Move('e2e1')
+            const kingMove: Move = new Move('e1e2', colour)
+            const kingMoveBack: Move = new Move('e2e1', colour)
 
             // Make a random move
             chess.makeMove(kingMove.serialise(), colour)
@@ -544,10 +544,10 @@ describe('isCastlesBoardCorrect', () => {
         test('King has moved (correct start square)', () => {
 
             const answer: boolean = false
-            
-            const move: Move = new Move('e8c8')
-            const colour: ColourPlayers = 'black'
 
+            const colour: ColourPlayers = 'black'
+            
+            const move: Move = new Move('e8c8', colour)
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
                 new King(colour, 'e8'),
@@ -557,8 +557,8 @@ describe('isCastlesBoardCorrect', () => {
             // Init game
             const chess: ChessGame = new ChessGame(pieces)
 
-            const kingMove: Move = new Move('a8a7')
-            const kingMoveBack: Move = new Move('a7a8')
+            const kingMove: Move = new Move('a8a7', colour)
+            const kingMoveBack: Move = new Move('a7a8', colour)
 
             // Make a random move
             chess.makeMove(kingMove.serialise(), colour)
@@ -583,9 +583,10 @@ describe('isNoOtherPieceBlocking', () => {
 
             const answer: boolean = false
 
-            const move: Move = new Move('e8g8')
             const colour: ColourPlayers = 'black'
-            
+
+            const move: Move = new Move('e8g8', colour)      
+
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
                 new King(colour, 'e8'),
@@ -604,9 +605,10 @@ describe('isNoOtherPieceBlocking', () => {
         test('Castle blocked kingside white',() => {
 
             const answer: boolean = false
-
-            const move: Move = new Move('e1g1')
+            
             const colour: ColourPlayers = 'white'
+
+            const move: Move = new Move('e1g1', colour)
             
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
@@ -626,10 +628,9 @@ describe('isNoOtherPieceBlocking', () => {
         test('Castle blocked queenside black',() => {
 
             const answer: boolean = false
-
-            const move: Move = new Move('e8c8')
             const colour: ColourPlayers = 'black'
-            
+            const move: Move = new Move('e8c8', colour)         
+
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
                 new King(colour, 'e8'),
@@ -649,9 +650,9 @@ describe('isNoOtherPieceBlocking', () => {
 
             const answer: boolean = false
 
-            const move: Move = new Move('e1c1')
             const colour: ColourPlayers = 'white'
-            
+            const move: Move = new Move('e1c1', colour)
+        
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
                 new King(colour, 'e1'),
@@ -673,10 +674,11 @@ describe('isNoOtherPieceBlocking', () => {
         test('Castle blocked kingside black',() => {
 
             const answer: boolean = false
-
-            const move: Move = new Move('e8g8')
             const colour: ColourPlayers = 'black'
+
+
             const differentColour: ColourPlayers = 'white'
+            const move: Move = new Move('e8g8', colour)
 
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
@@ -697,9 +699,10 @@ describe('isNoOtherPieceBlocking', () => {
 
             const answer: boolean = false
 
-            const move: Move = new Move('e1g1')
             const colour: ColourPlayers = 'white'
             const differentColour: ColourPlayers = 'black'
+
+            const move: Move = new Move('e1g1', colour)
 
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
@@ -720,9 +723,10 @@ describe('isNoOtherPieceBlocking', () => {
 
             const answer: boolean = false
 
-            const move: Move = new Move('e8c8')
             const colour: ColourPlayers = 'black'
             const differentColour: ColourPlayers = 'white'
+
+            const move: Move = new Move('e8c8', colour)
 
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
@@ -743,9 +747,10 @@ describe('isNoOtherPieceBlocking', () => {
 
             const answer: boolean = false
 
-            const move: Move = new Move('e1c1')
             const colour: ColourPlayers = 'white'
             const differentColour: ColourPlayers = 'black'
+
+            const move: Move = new Move('e1c1', colour)
 
             // Define starting pieces on board
             const pieces: ChessPiece[] = [
@@ -771,10 +776,10 @@ describe('isOpponentNotControllingCastleSquares', () => {
     test('White queenside controlled by oppoenent', () => {
         const answer: boolean = false
 
-        const move: Move = new Move('e1c1')
         const colour: ColourPlayers = 'white'
         const differentColour: ColourPlayers = 'black'
 
+        const move: Move = new Move('e1c1', colour)
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
             new King(colour, 'e1'),
@@ -793,11 +798,13 @@ describe('isOpponentNotControllingCastleSquares', () => {
     test('White kingside controlled by oppoenent', () => {
         const answer: boolean = false
 
-        const move: Move = new Move('e1g1')
         const colour: ColourPlayers = 'white'
         const differentColour: ColourPlayers = 'black'
 
+        const move: Move = new Move('e1g1', colour)
+
         // Define starting pieces on board
+
         const pieces: ChessPiece[] = [
             new King(colour, 'e1'),
             new Rook(colour, 'h1'),
@@ -815,9 +822,10 @@ describe('isOpponentNotControllingCastleSquares', () => {
     test('Black queenside controlled by oppoenent', () => {
         const answer: boolean = false
 
-        const move: Move = new Move('e8c8')
         const colour: ColourPlayers = 'black'
         const differentColour: ColourPlayers = 'white'
+
+        const move: Move = new Move('e8c8', colour)
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [
@@ -837,9 +845,10 @@ describe('isOpponentNotControllingCastleSquares', () => {
     test('Black kingside controlled by oppoenent', () => {
         const answer: boolean = false
 
-        const move: Move = new Move('e8g8')
         const colour: ColourPlayers = 'black'
         const differentColour: ColourPlayers = 'white'
+
+        const move: Move = new Move('e8g8', colour)
 
         // Define starting pieces on board
         const pieces: ChessPiece[] = [

@@ -27,7 +27,7 @@ export const isCastles = function(move: Move, chessInstance: ChessGame): boolean
     return (
         isCastlesUCIMove(move) &&
         isCastlesBoardCorrect(move, chessInstance) && 
-        (!isCheck(castleColour(move), chessInstance)) &&
+        (!isCheck(move.colour, chessInstance)) &&
         isNoOtherPieceBlocking(move, chessInstance) &&
         isOpponentNotControllingCastleSquares(move, chessInstance) 
     )
@@ -40,44 +40,21 @@ export const isCastlesUCIMove = function(move: Move): boolean{
      * Function that checks if a move in UCI notation is in the correct notation
      * for either king side or queenside castling for black or white.
      */
-    const allowedCastles: string[] = ['e1g1', 'e8g8', 'e1c1', 'e8c8']
+    const allowedCastlesWhite: string[] = ['e1g1', 'e1c1']
+    const allowedCastlesBlack: string[] = ['e8g8', 'e8c8']
 
     // 1) Get the string representation of the move
     const moveString: string = move.serialise()
 
     // 2) heck if the move is one of the allowed
-    return allowedCastles.includes(moveString)
-}
-
-
-export const castleColour = function(move: Move): ColourPlayers {
-
-    /**
-     * Return whether the castles move is white or black
-     */
-    
-    const whiteCastles: string[] = [
-        'e1g1',         // kingside
-        'e1c1'          // queenside
-    ]
-
-    const blackCastles: string[] = [
-        'e8g8',         // kingside
-        'e8c8'          // queenside
-    ]
-
-    const moveString: string = move.serialise()
-    
-    if (whiteCastles.includes(moveString)){
-        return 'white'
-    }
-    else if (blackCastles.includes(moveString)){
-        return 'black'
+    if (move.colour == 'white'){
+        return allowedCastlesWhite.includes(moveString)
     }
     else{
-        throw new Error('Invalid move for castles')
+        return allowedCastlesBlack.includes(moveString)
     }
 }
+
 
 
 export const isCastlesBoardCorrect = function(move: Move, chessInstance: ChessGame): boolean {
@@ -107,7 +84,7 @@ export const isCastlesBoardCorrect = function(move: Move, chessInstance: ChessGa
     const rook: ChessPiece = chessInstance.board.getPiece(rookPosition)
 
 
-    const colour: ColourPlayers = castleColour(move)
+    const colour: ColourPlayers = move.colour
     // 2)
     return (
         // king checks
@@ -288,7 +265,7 @@ export const isOpponentNotControllingCastleSquares = function(move: Move, chessI
 
     // 2)
     // Get colour
-    const colour: ColourPlayers = castleColour(move)
+    const colour: ColourPlayers = move.colour
 
     // Filter for opposite coloured pieces
     const diffColourPieces: ChessPiece[] = chessInstance.board.pieces.filter(

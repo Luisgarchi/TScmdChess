@@ -5,6 +5,7 @@ import { King } from "../pieces/king/King"
 import { Position } from "../notation/boardNotation/Position"
 import { Move } from "../notation/moveNotation/Move"
 import { ChessBoard } from "../board/ChessBoard"
+import { isEnpassant } from "./enpassant"
 
 
 export const isCheck = function(colour: ColourPlayers, chessInstance: ChessGame): boolean {
@@ -187,8 +188,9 @@ export const findKingLegalPositions = function(king: King, chessInstance: ChessG
         const endPosition: Position = allSquares[index]
 
         // Parse the move
-        const move: Move = new Move(startPosition, endPosition)
-
+        const moveStr: string = startPosition.serialise() + endPosition.serialise()
+        const move: Move = new Move(moveStr, king.colour)
+        
         // Check if moving king results in check
         const isCheckNextMove: boolean = isCheckOnNextMove(move, chessInstance)
 
@@ -236,7 +238,7 @@ export const isCheckOnNextMove = function(move: Move, chessInstance: ChessGame){
     // 1)
     // Get the colour of the player making the move
     // The piece at the start position indicates the colour of the player
-    const colour: ColourPlayers = chessInstance.board.getPiece(startPosition).colour
+    const colour: ColourPlayers = move.colour
 
     // 2)
     // Check if there is a king of said colour on the board. **
@@ -245,7 +247,7 @@ export const isCheckOnNextMove = function(move: Move, chessInstance: ChessGame){
         return false
     }
 
-    // 3
+    // 3)
     // Create test game
     const testGame: ChessGame = chessInstance.createGameCopy()
 
@@ -253,8 +255,14 @@ export const isCheckOnNextMove = function(move: Move, chessInstance: ChessGame){
     // Get the peice
     const movingPiece: ChessPiece = testGame.board.getPiece(startPosition)
 
-    // EXECUTE the REGULAR move we want to test
-    testGame.executeRegularMove(movingPiece, endPosition)
+    // enpassant logic is different
+    if (isEnpassant(movingPiece, endPosition, chessInstance)){
+        testGame.executeEnpassant(movingPiece, endPosition)
+    }
+    else{
+        // EXECUTE the REGULAR move we want to test
+        testGame.executeRegularMove(movingPiece, endPosition)
+    }
 
     // 5)
     // Return whether the king is in check or not    
@@ -323,13 +331,14 @@ export const canBlockOrCapture = function(
     
 
     // 1)
+    const colour: ColourPlayers = kingInCheck.colour
     const board: ChessBoard = chessInstance.board
     const blockAndCapture: Position[] = findBlockCapturePositions(checkingPiece, kingInCheck, board)
 
     // 2)
     // Get all the pieces of the same colour that can potentially block or capture
     const potentialBlockingPieces: ChessPiece[] = board.pieces.filter(
-        (piece) =>  (piece.colour == kingInCheck.colour)
+        (piece) =>  (piece.colour == colour)
     )
 
     // 3)
@@ -355,8 +364,8 @@ export const canBlockOrCapture = function(
                 // Check that the piece is not pinned
                 
                 // Parse the move
-
-                const blockingMove: Move = new Move(potentialBlockPiecePosition, blockingPositionAlongCheck)
+                const moveStr: string = potentialBlockPiecePosition.serialise() + blockingPositionAlongCheck.serialise()
+                const blockingMove: Move = new Move(moveStr, colour)
 
                 // Boolean variable checks if move is legal
                 const isPinned: boolean = isCheckOnNextMove(

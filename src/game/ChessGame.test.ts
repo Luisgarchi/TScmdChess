@@ -1,7 +1,5 @@
 import { ChessGame } from "./ChessGame"
 import { ChessPiece, ColourPlayers } from "../chess_settings"
-import ChessGameError from "../errors/ChessGameError"
-import UCIError from "../errors/UCIError"
 import { Position } from "../notation/boardNotation/Position"
 import { Bishop } from "../pieces/bishop/Bishop"
 import { King } from "../pieces/king/King"
@@ -9,7 +7,6 @@ import { Knight } from "../pieces/knight/Knight"
 import { Pawn } from "../pieces/pawn/Pawn"
 import { Queen } from "../pieces/queen/Queen"
 import { Rook } from "../pieces/rook/Rook"
-
 
 
 
@@ -28,117 +25,6 @@ const positionPropertyTest = function(position: Position){
 
 
 
-
-describe('Method - legalPromotion', () => {
-
-
-    test('White legal promotion', () => {
-        
-        // Define colour of king
-        const colour: ColourPlayers = 'white'
-
-        const pawn: ChessPiece = new Pawn(colour, new Position('b7'))
-        const endPosition: Position = new Position('b8')
-
-        // Define starting pieces on board
-        const pieces: ChessPiece[] = [
-            pawn
-        ]
-
-        // Move
-        const move: string = 'b7b8n'
-
-        // Init game
-        const chess: ChessGame = new ChessGame(pieces)
-
-        // Test
-        const result: boolean = chess.legalPromotion(pawn, endPosition, move)
-        const expected: boolean = true
-
-        expect(result).toEqual(expected)
-    })
-
-    test('Black legal promotion', () => {
-        
-        // Define colour of king
-        const colour: ColourPlayers = 'black'
-
-        const pawn: ChessPiece = new Pawn(colour, new Position('e2'))
-        const endPosition: Position = new Position('e1')
-
-        // Define starting pieces on board
-        const pieces: ChessPiece[] = [
-            pawn
-        ]
-
-        // Move
-        const move: string = 'e2e1q'
-
-        // Init game
-        const chess: ChessGame = new ChessGame(pieces)
-
-        // Test
-        const result: boolean = chess.legalPromotion(pawn, endPosition, move)
-        const expected: boolean = true
-
-        expect(result).toEqual(expected)
-    })
-
-    test('White illegal promotion (no promotional piece specified)', () => {
-        
-        // Define colour of king
-        const colour: ColourPlayers = 'white'
-
-        const pawn: ChessPiece = new Pawn(colour, new Position('b7'))
-        const endPosition: Position = new Position('b8')
-
-        // Define starting pieces on board
-        const pieces: ChessPiece[] = [
-            pawn
-        ]
-
-        // Move
-        const move: string = 'b7b8'
-
-        // Init game
-        const chess: ChessGame = new ChessGame(pieces)
-
-        // Test
-        const result: boolean = chess.legalPromotion(pawn, endPosition, move)
-        const expected: boolean = false
-
-        expect(result).toEqual(expected)
-    })
-
-    test('Black illegal promotion (no promotional piece specified)', () => {
-        
-        // Define colour of king
-        const colour: ColourPlayers = 'black'
-
-        const pawn: ChessPiece = new Pawn(colour, new Position('e2'))
-        const endPosition: Position = new Position('e1')
-
-        // Define starting pieces on board
-        const pieces: ChessPiece[] = [
-            pawn
-        ]
-
-        // Move
-        const move: string = 'e2e1'
-
-        // Init game
-        const chess: ChessGame = new ChessGame(pieces)
-
-        // Test
-        const result: boolean = chess.legalPromotion(pawn, endPosition, move)
-        const expected: boolean = false
-
-        expect(result).toEqual(expected)
-    })
-})
-
-
-
 describe('Method - makeMove', () => {
 
 
@@ -151,8 +37,9 @@ describe('Method - makeMove', () => {
         // Init game with pieces at starting position
         const chess: ChessGame = new ChessGame()
 
+        const result: boolean = chess.makeMove(move, colour)
         // Test
-        expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+        expect(result).toBe(false)
     })
 
     test('b29b4 fail bad UCI notation', () => {
@@ -164,8 +51,9 @@ describe('Method - makeMove', () => {
         // Initialise normal chess board with pieces at starting position
         const chess: ChessGame = new ChessGame()
 
+        const result: boolean = chess.makeMove(move, colour)
         // Test
-        expect(() => chess.makeMove(move, colour)).toThrow(UCIError)
+        expect(result).toBe(false)
     })
 
     
@@ -179,7 +67,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('white', new Position('g2')),
+                    new Pawn('white', 'g2'),
                 ]
         
                 // Define move and colour of player making the move
@@ -191,13 +79,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Pawn('white', new Position('g3')),
+                    new Pawn('white', 'g3'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -207,7 +96,7 @@ describe('Method - makeMove', () => {
         
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('white', new Position('b2')),
+                    new Pawn('white', 'b2'),
                 ]
         
                 // Define move and colour of player making the move
@@ -219,13 +108,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Pawn('white', new Position('b4')),
+                    new Pawn('white', 'b4'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -235,7 +125,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('black', new Position('a5')),
+                    new Pawn('black', 'a5'),
                 ]
         
                 // Define move and colour of player making the move
@@ -247,13 +137,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Pawn('black', new Position('a4')),
+                    new Pawn('black', 'a4'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -263,7 +154,7 @@ describe('Method - makeMove', () => {
         
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('black', new Position('g7')),
+                    new Pawn('black', 'g7'),
                 ]
         
                 // Define move and colour of player making the move
@@ -275,13 +166,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Pawn('black', new Position('g5')),
+                    new Pawn('black', 'g5'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -297,8 +189,8 @@ describe('Method - makeMove', () => {
                 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('white', new Position('c4')),
-                    new Queen('black', new Position('d5')),
+                    new Pawn('white', 'c4'),
+                    new Queen('black', 'd5'),
                 ]
         
                 // Define move and colour of player making the move
@@ -310,13 +202,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Pawn('white', new Position('d5')),
+                    new Pawn('white', 'd5'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -326,8 +219,8 @@ describe('Method - makeMove', () => {
                 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('white', new Position('b2')),
-                    new Knight('black', new Position('a3')),
+                    new Pawn('white', 'b2'),
+                    new Knight('black', 'a3'),
                 ]
         
                 // Define move and colour of player making the move
@@ -339,13 +232,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Pawn('white', new Position('a3')),
+                    new Pawn('white', 'a3'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -354,8 +248,8 @@ describe('Method - makeMove', () => {
                 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('black', new Position('f4')),
-                    new Queen('white', new Position('e3')),
+                    new Pawn('black', 'f4'),
+                    new Queen('white', 'e3'),
                 ]
         
                 // Define move and colour of player making the move
@@ -367,13 +261,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Pawn('black', new Position('e3')),
+                    new Pawn('black', 'e3'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -383,8 +278,8 @@ describe('Method - makeMove', () => {
                 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('black', new Position('c5')),
-                    new Bishop('white', new Position('d4')),
+                    new Pawn('black', 'c5'),
+                    new Bishop('white', 'd4'),
                 ]
         
                 // Define move and colour of player making the move
@@ -396,13 +291,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Pawn('black', new Position('d4')),
+                    new Pawn('black', 'd4'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -416,7 +312,7 @@ describe('Method - makeMove', () => {
                 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('white', new Position('h7')),
+                    new Pawn('white', 'h7')
                 ]
         
                 // Define move and colour of player making the move
@@ -428,13 +324,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Queen('white', new Position('h8')),
+                    new Queen('white', 'h8'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -444,7 +341,7 @@ describe('Method - makeMove', () => {
                 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('white', new Position('f7')),
+                    new Pawn('white', 'f7'),
                 ]
         
                 // Define move and colour of player making the move
@@ -456,13 +353,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Knight('white', new Position('f8')),
+                    new Knight('white', 'f8'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -471,7 +369,7 @@ describe('Method - makeMove', () => {
                 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('white', new Position('c7')),
+                    new Pawn('white', 'c7'),
                 ]
         
                 // Define move and colour of player making the move
@@ -483,13 +381,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Bishop('white', new Position('c8')),
+                    new Bishop('white', 'c8'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -499,7 +398,7 @@ describe('Method - makeMove', () => {
                 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('white', new Position('e7')),
+                    new Pawn('white', 'e7'),
                 ]
         
                 // Define move and colour of player making the move
@@ -511,13 +410,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Rook('white', new Position('e8')),
+                    new Rook('white', 'e8'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -528,7 +428,7 @@ describe('Method - makeMove', () => {
                 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('black', new Position('c2')),
+                    new Pawn('black', 'c2'),
                 ]
         
                 // Define move and colour of player making the move
@@ -540,13 +440,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Queen('black', new Position('c1')),
+                    new Queen('black', 'c1'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -568,13 +469,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Knight('black', new Position('a1')),
+                    new Knight('black', 'a1'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -611,7 +513,7 @@ describe('Method - makeMove', () => {
                 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('black', new Position('f2')),
+                    new Pawn('black', 'f2'),
                 ]
         
                 // Define move and colour of player making the move
@@ -623,13 +525,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Rook('black', new Position('f1')),
+                    new Rook('black', 'f1'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -642,8 +545,8 @@ describe('Method - makeMove', () => {
                 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('white', new Position('f7')),
-                    new Rook('black', new Position('e8')),
+                    new Pawn('white', 'f7'),
+                    new Rook('black', 'e8'),
                 ]
         
                 // Define move and colour of player making the move
@@ -655,13 +558,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Queen('white', new Position('e8')),
+                    new Queen('white', 'e8'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -671,8 +575,8 @@ describe('Method - makeMove', () => {
                 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('black', new Position('c2')),
-                    new Rook('white', new Position('b1')),
+                    new Pawn('black', 'c2'),
+                    new Rook('white', 'b1'),
                 ]
         
                 // Define move and colour of player making the move
@@ -684,13 +588,14 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Knight('black', new Position('b1')),
+                    new Knight('black', 'b1'),
                 ]
         
                 // Make move
-                chess.makeMove(move, colour)
+                const result : boolean = chess.makeMove(move, colour)
                 
                 // Test
+                expect(result).toBe(true)
                 expect(chess.board.pieces).toEqual(expect.arrayContaining(piecesResult.map(piecePropertiesTest)))
                 expect(chess.board.pieces.length).toEqual(piecesResult.length)
             })
@@ -704,8 +609,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('white', new Position('c2')),
-                    new Knight('white', new Position('c3')),
+                    new Pawn('white', 'c2'),
+                    new Knight('white', 'c3'),
                 ]
 
                 // Define move and colour of player making the move
@@ -716,7 +621,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)                
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)      
             })
 
 
@@ -724,8 +630,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('white', new Position('f4')),
-                    new Pawn('black', new Position('f5')),
+                    new Pawn('white', 'f4'),
+                    new Pawn('black', 'f5'),
                 ]
 
                 // Define move and colour of player making the move
@@ -736,15 +642,16 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)                
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)   
             })
 
             test('Blocked black, same colour - h4h3', ()=>{
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('black', new Position('h4')),
-                    new Pawn('black', new Position('h3')),
+                    new Pawn('black', 'h4'),
+                    new Pawn('black', 'h3'),
                 ]
 
                 // Define move and colour of player making the move
@@ -755,7 +662,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)                
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)              
             })
 
 
@@ -763,8 +671,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('black', new Position('b6')),
-                    new Bishop('white', new Position('b5')),
+                    new Pawn('black', 'b6'),
+                    new Bishop('white', 'b5'),
                 ]
 
                 // Define move and colour of player making the move
@@ -775,7 +683,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)                
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)                 
             })
 
             
@@ -783,8 +692,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('white', new Position('e6')),
-                    new King('white', new Position('d7')),
+                    new Pawn('white', 'e6'),
+                    new King('white', 'd7'),
                 ]
 
                 // Define move and colour of player making the move
@@ -795,7 +704,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)                
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)            
             })
 
 
@@ -803,8 +713,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('black', new Position('f4')),
-                    new King('black', new Position('e3')),
+                    new Pawn('black', 'f4'),
+                    new King('black', 'e3'),
                 ]
 
                 // Define move and colour of player making the move
@@ -815,7 +725,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)                
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)               
             })
         })
 
@@ -826,7 +737,7 @@ describe('Method - makeMove', () => {
         
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('white', new Position('b2')),
+                    new Pawn('white', 'b2'),
                 ]
                 // Define move
                 const move: string = 'b2b4'
@@ -838,14 +749,15 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)   
             })
 
             test('Wrong colour - f3f2 (black)', () => {
         
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('black', new Position('f3')),
+                    new Pawn('black', 'f3'),
                 ]
                 // Define move
                 const move: string = 'f3f2'
@@ -857,7 +769,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)   
             })
         
         
@@ -866,7 +779,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('white', new Position('d3')),
+                    new Pawn('white', 'd3'),
                 ]
 
                 // Define move and colour of player making the move
@@ -877,14 +790,15 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)   
             })
 
             test('Illegal move black - h6h7', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn('black', new Position('h6')),
+                    new Pawn('black', 'h6'),
                 ]
 
                 // Define move and colour of player making the move
@@ -895,7 +809,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)   
             })
 
         })
@@ -908,13 +823,12 @@ describe('Method - makeMove', () => {
                 const colour: ColourPlayers = 'white'
                 const differentColour: ColourPlayers = 'black'
 
-                const pawnEnpassant: ChessPiece = new Pawn(colour, new Position('d5'))
+                const pawnEnpassant: ChessPiece = new Pawn(colour, 'd5')
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new King(differentColour, new Position('a8')),
-                    new Pawn(differentColour, new Position('e7')),
-
+                    new King(differentColour, 'a8'),
+                    new Pawn(differentColour, 'e7'),
                     pawnEnpassant
                 ]
 
@@ -932,11 +846,11 @@ describe('Method - makeMove', () => {
 
                 // Define expected pieces after enpassant
                 const piecesResult: ChessPiece[] = [
-                    new King(differentColour, new Position('a8')),
-                    new Pawn(colour, new Position('e6')),
+                    new King(differentColour, 'a8'),
+                    new Pawn(colour, 'e6'),
                 ]
                 const capturedPiecesResult: ChessPiece[] = [
-                    new Pawn(differentColour, new Position('e5')),
+                    new Pawn(differentColour, 'e5'),
                 ]
 
         
@@ -955,11 +869,11 @@ describe('Method - makeMove', () => {
                 const colour: ColourPlayers = 'black'
                 const differentColour: ColourPlayers = 'white'
 
-                const pawnEnpassant: ChessPiece = new Pawn(colour, new Position('h4'))
+                const pawnEnpassant: ChessPiece = new Pawn(colour, 'h4')
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Pawn(differentColour, new Position('g2')),
+                    new Pawn(differentColour, 'g2'),
                     pawnEnpassant
                 ]
 
@@ -977,10 +891,10 @@ describe('Method - makeMove', () => {
 
                 // Define expected pieces after enpassant
                 const piecesResult: ChessPiece[] = [
-                    new Pawn(colour, new Position('g3')),
+                    new Pawn(colour, 'g3'),
                 ]
                 const capturedPiecesResult: ChessPiece[] = [
-                    new Pawn(differentColour, new Position('g4')),
+                    new Pawn(differentColour, 'g4'),
                 ]
 
         
@@ -1005,7 +919,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Knight('white', new Position('d4')),
+                    new Knight('white', 'd4'),
                 ]
         
                 // Define move and colour of player making the move
@@ -1017,7 +931,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Knight('white', new Position('f3')),
+                    new Knight('white', 'f3'),
                 ]
         
                 // Make move
@@ -1033,7 +947,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Knight('black', new Position('c6')),
+                    new Knight('black', 'c6'),
                 ]
         
                 // Define move and colour of player making the move
@@ -1045,7 +959,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Knight('black', new Position('e5')),
+                    new Knight('black', 'e5'),
                 ]
         
                 // Make move
@@ -1064,8 +978,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Knight('white', new Position('e4')),
-                    new Pawn('black', new Position('f6'))
+                    new Knight('white', 'e4'),
+                    new Pawn('black', 'f6')
                 ]
         
                 // Define move and colour of player making the move
@@ -1077,7 +991,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Knight('white', new Position('f6')),
+                    new Knight('white', 'f6'),
                 ]
         
                 // Make move
@@ -1092,8 +1006,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Knight('black', new Position('c2')),
-                    new Knight('white', new Position('b4'))
+                    new Knight('black', 'c2'),
+                    new Knight('white', 'b4')
                 ]
         
                 // Define move and colour of player making the move
@@ -1105,7 +1019,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Knight('black', new Position('b4')),
+                    new Knight('black', 'b4'),
                 ]
         
                 // Make move
@@ -1123,8 +1037,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Knight('white', new Position('g7')),
-                    new Rook('white', new Position('f5')),
+                    new Knight('white', 'g7'),
+                    new Rook('white', 'f5'),
                 ]
 
                 // Define move and colour of player making the move
@@ -1135,15 +1049,16 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)     
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
 
             test('Black blocked (same colour)', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Knight('black', new Position('e5')),
-                    new Pawn('black', new Position('c4')),
+                    new Knight('black', 'e5'),
+                    new Pawn('black', 'c4'),
                 ]
 
                 // Define move and colour of player making the move
@@ -1154,7 +1069,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)     
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
         })
 
@@ -1164,7 +1080,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Knight('white', new Position('b4')),
+                    new Knight('white', 'b4'),
                 ]
 
                 // Define move and colour of player making the move
@@ -1175,7 +1091,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
             
 
@@ -1183,7 +1100,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Knight('black', new Position('g7')),
+                    new Knight('black', 'g7'),
                 ]
 
                 // Define move and colour of player making the move
@@ -1194,14 +1111,15 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
 
             test('Wrong Colour - c5e4 (white)', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Knight('white', new Position('c5')),
+                    new Knight('white', 'c5'),
                 ]
                 // Define move
                 const move: string = 'c5e4'
@@ -1213,14 +1131,15 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
 
             test('Wrong Colour (black)', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Knight('black', new Position('h4')),
+                    new Knight('black', 'h4'),
                 ]
                 // Define move
                 const move: string = 'h4f3'
@@ -1232,7 +1151,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
 
         })
@@ -1249,7 +1169,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Bishop('white', new Position('c6')),
+                    new Bishop('white', 'c6'),
                 ]
         
                 // Define move and colour of player making the move
@@ -1261,7 +1181,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Bishop('white', new Position('f3')),
+                    new Bishop('white', 'f3'),
                 ]
         
                 // Make move
@@ -1277,7 +1197,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Bishop('black', new Position('d4')),
+                    new Bishop('black', 'd4'),
                 ]
         
                 // Define move and colour of player making the move
@@ -1289,7 +1209,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Bishop('black', new Position('g7')),
+                    new Bishop('black', 'g7'),
                 ]
         
                 // Make move
@@ -1308,8 +1228,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Bishop('white', new Position('c8')),
-                    new Knight('black', new Position('f5'))
+                    new Bishop('white', 'c8'),
+                    new Knight('black', 'f5')
                 ]
         
                 // Define move and colour of player making the move
@@ -1321,7 +1241,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Bishop('white', new Position('f5')),
+                    new Bishop('white', 'f5'),
                 ]
         
                 // Make move
@@ -1336,8 +1256,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Bishop('black', new Position('d3')),
-                    new Queen('white', new Position('c4'))
+                    new Bishop('black', 'd3'),
+                    new Queen('white', 'c4')
                 ]
         
                 // Define move and colour of player making the move
@@ -1349,7 +1269,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Bishop('black', new Position('c4')),
+                    new Bishop('black', 'c4'),
                 ]
         
                 // Make move
@@ -1367,8 +1287,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Bishop('white', new Position('c4')),
-                    new Rook('white', new Position('d5')),
+                    new Bishop('white', 'c4'),
+                    new Rook('white', 'd5'),
                 ]
 
                 // Define move and colour of player making the move
@@ -1379,15 +1299,16 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)     
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)        
             })
 
             test('Black blocked (same colour)', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Bishop('black', new Position('g7')),
-                    new Rook('black', new Position('f8')),
+                    new Bishop('black', 'g7'),
+                    new Rook('black', 'f8'),
                 ]
 
                 // Define move and colour of player making the move
@@ -1398,7 +1319,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)     
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)      
             })
         })
 
@@ -1408,7 +1330,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Bishop('white', new Position('e5')),
+                    new Bishop('white', 'e5'),
                 ]
 
                 // Define move and colour of player making the move
@@ -1419,7 +1341,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
             
 
@@ -1427,7 +1350,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Bishop('black', new Position('a3')),
+                    new Bishop('black', 'a3'),
                 ]
 
                 // Define move and colour of player making the move
@@ -1438,14 +1361,15 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
 
             test('Wrong Colour - d7f5 (white)', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Bishop('white', new Position('d7')),
+                    new Bishop('white', 'd7')
                 ]
                 // Define move
                 const move: string = 'd7f5'
@@ -1457,14 +1381,15 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
 
             test('Wrong Colour (black)', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Bishop('black', new Position('h6')),
+                    new Bishop('black', 'h6'),
                 ]
                 // Define move
                 const move: string = 'h6c1'
@@ -1476,7 +1401,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
 
         })
@@ -1492,7 +1418,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Rook('white', new Position('a1')),
+                    new Rook('white', 'a1'),
                 ]
         
                 // Define move and colour of player making the move
@@ -1504,7 +1430,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Rook('white', new Position('h1')),
+                    new Rook('white', 'h1'),
                 ]
         
                 // Make move
@@ -1520,7 +1446,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Rook('black', new Position('d6')),
+                    new Rook('black', 'd6'),
                 ]
         
                 // Define move and colour of player making the move
@@ -1532,7 +1458,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Rook('black', new Position('d3')),
+                    new Rook('black', 'd3'),
                 ]
         
                 // Make move
@@ -1551,8 +1477,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Rook('white', new Position('g2')),
-                    new Rook('black', new Position('g6'))
+                    new Rook('white', 'g2'),
+                    new Rook('black', 'g6')
                 ]
         
                 // Define move and colour of player making the move
@@ -1564,7 +1490,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Rook('white', new Position('g6')),
+                    new Rook('white', 'g6'),
                 ]
         
                 // Make move
@@ -1579,8 +1505,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Rook('black', new Position('f7')),
-                    new Pawn('white', new Position('a7'))
+                    new Rook('black', 'f7'),
+                    new Pawn('white', 'a7')
                 ]
         
                 // Define move and colour of player making the move
@@ -1592,7 +1518,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Rook('black', new Position('a7')),
+                    new Rook('black', 'a7'),
                 ]
         
                 // Make move
@@ -1610,8 +1536,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Rook('white', new Position('b5')),
-                    new Bishop('white', new Position('e5')),
+                    new Rook('white', 'b5'),
+                    new Bishop('white', 'e5'),
                 ]
 
                 // Define move and colour of player making the move
@@ -1622,15 +1548,16 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)     
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)     
             })
 
             test('Black blocked (same colour)', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Rook('black', new Position('e3')),
-                    new Knight('black', new Position('e4')),
+                    new Rook('black', 'e3'),
+                    new Knight('black', 'e4'),
                 ]
 
                 // Define move and colour of player making the move
@@ -1641,7 +1568,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)     
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)     
             })
         })
 
@@ -1651,7 +1579,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Rook('white', new Position('b5')),
+                    new Rook('white', 'b5'),
                 ]
 
                 // Define move and colour of player making the move
@@ -1662,7 +1590,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
             
 
@@ -1670,7 +1599,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Rook('black', new Position('e3')),
+                    new Rook('black', 'e3'),
                 ]
 
                 // Define move and colour of player making the move
@@ -1681,14 +1610,15 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
 
             test('Wrong Colour - d7f5 (white)', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Rook('white', new Position('d7')),
+                    new Rook('white', 'd7'),
                 ]
                 // Define move
                 const move: string = 'd7d5'
@@ -1700,14 +1630,15 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
 
             test('Wrong Colour (black)', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Rook('black', new Position('a2')),
+                    new Rook('black', 'a2'),
                 ]
                 // Define move
                 const move: string = 'a2h2'
@@ -1719,7 +1650,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
 
         })
@@ -1737,7 +1669,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Queen('white', new Position('g3')),
+                    new Queen('white','g3'),
                 ]
         
                 // Define move and colour of player making the move
@@ -1749,7 +1681,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Queen('white', new Position('c3')),
+                    new Queen('white', 'c3'),
                 ]
         
                 // Make move
@@ -1765,7 +1697,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Queen('black', new Position('e7')),
+                    new Queen('black', 'e7'),
                 ]
         
                 // Define move and colour of player making the move
@@ -1777,7 +1709,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Queen('black', new Position('h4')),
+                    new Queen('black', 'h4'),
                 ]
         
                 // Make move
@@ -1796,8 +1728,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Queen('white', new Position('e4')),
-                    new Pawn('black', new Position('c2'))
+                    new Queen('white', 'e4'),
+                    new Pawn('black', 'c2')
                 ]
         
                 // Define move and colour of player making the move
@@ -1809,7 +1741,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Queen('white', new Position('c2')),
+                    new Queen('white', 'c2'),
                 ]
         
                 // Make move
@@ -1824,8 +1756,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Queen('black', new Position('f5')),
-                    new Bishop('white', new Position('f1')),
+                    new Queen('black', 'f5'),
+                    new Bishop('white', 'f1'),
                 ]
         
                 // Define move and colour of player making the move
@@ -1837,7 +1769,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new Queen('black', new Position('f1')),
+                    new Queen('black', 'f1'),
                 ]
         
                 // Make move
@@ -1855,8 +1787,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Queen('white', new Position('b5')),
-                    new Pawn('white', new Position('c5')),
+                    new Queen('white', 'b5'),
+                    new Pawn('white', 'c5'),
                 ]
 
                 // Define move and colour of player making the move
@@ -1867,15 +1799,16 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)     
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
 
             test('Black blocked (same colour)', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Queen('black', new Position('e3')),
-                    new Knight('black', new Position('c6')),
+                    new Queen('black', 'e3'),
+                    new Knight('black', 'c6'),
                 ]
 
                 // Define move and colour of player making the move
@@ -1886,7 +1819,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)     
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
         })
 
@@ -1896,7 +1830,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Queen('white', new Position('b5')),
+                    new Queen('white', 'b5'),
                 ]
 
                 // Define move and colour of player making the move
@@ -1907,7 +1841,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
             
 
@@ -1915,7 +1850,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Queen('black', new Position('g2')),
+                    new Queen('black','g2'),
                 ]
 
                 // Define move and colour of player making the move
@@ -1926,14 +1861,15 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
 
             test('Wrong Colour - d7f5 (white)', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Queen('white', new Position('d7')),
+                    new Queen('white', 'd7'),
                 ]
                 // Define move
                 const move: string = 'd7d5'
@@ -1945,14 +1881,15 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
 
             test('Wrong Colour (black)', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new Queen('black', new Position('a2')),
+                    new Queen('black', 'a2'),
                 ]
                 // Define move
                 const move: string = 'a2h2'
@@ -1964,7 +1901,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
         })
     })
@@ -1979,7 +1917,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new King('white', new Position('b1')),
+                    new King('white', 'b1'),
                 ]
         
                 // Define move and colour of player making the move
@@ -1991,7 +1929,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new King('white', new Position('a1')),
+                    new King('white', 'a1'),
                 ]
         
                 // Make move
@@ -2007,7 +1945,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new King('black', new Position('f5')),
+                    new King('black', 'f5'),
                 ]
         
                 // Define move and colour of player making the move
@@ -2019,7 +1957,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new King('black', new Position('g6')),
+                    new King('black', 'g6'),
                 ]
         
                 // Make move
@@ -2038,8 +1976,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new King('white', new Position('e2')),
-                    new Queen('black', new Position('e3'))
+                    new King('white', 'e2'),
+                    new Queen('black','e3')
                 ]
         
                 // Define move and colour of player making the move
@@ -2051,7 +1989,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new King('white', new Position('e3')),
+                    new King('white', 'e3'),
                 ]
         
                 // Make move
@@ -2066,8 +2004,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new King('black', new Position('b7')),
-                    new Rook('white', new Position('c6'))
+                    new King('black', 'b7'),
+                    new Rook('white', 'c6')
                 ]
         
                 // Define move and colour of player making the move
@@ -2079,7 +2017,7 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new King('black', new Position('c6')),
+                    new King('black', 'c6'),
                 ]
         
                 // Make move
@@ -2097,8 +2035,8 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new King('white', new Position('d4')),
-                    new Pawn('white', new Position('d5')),
+                    new King('white', 'd4'),
+                    new Pawn('white', 'd5'),
                 ]
 
                 // Define move and colour of player making the move
@@ -2109,15 +2047,16 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)     
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
 
             test('Black blocked (same colour)', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new King('black', new Position('f6')),
-                    new Knight('black', new Position('e7')),
+                    new King('black', 'f6'),
+                    new Knight('black', 'e7'),
                 ]
 
                 // Define move and colour of player making the move
@@ -2128,7 +2067,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)     
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)      
             })
         })
 
@@ -2138,7 +2078,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new King('white', new Position('b5')),
+                    new King('white', 'b5'),
                 ]
 
                 // Define move and colour of player making the move
@@ -2147,9 +2087,10 @@ describe('Method - makeMove', () => {
                 
                 // Init game with pieces at starting position
                 const chess: ChessGame = new ChessGame(pieces)
-                
+
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
             
 
@@ -2157,7 +2098,7 @@ describe('Method - makeMove', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new King('black', new Position('d7')),
+                    new King('black', 'd7'),
                 ]
 
                 // Define move and colour of player making the move
@@ -2168,14 +2109,15 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
 
             test('Wrong Colour - h6g6 (white)', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new King('white', new Position('h6')),
+                    new King('white', 'h6'),
                 ]
                 // Define move
                 const move: string = 'h6g6'
@@ -2187,14 +2129,15 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
 
             test('Wrong Colour (black)', () => {
 
                 // Define starting pieces on board
                 const pieces: ChessPiece[] = [
-                    new King('black', new Position('f3')),
+                    new King('black', 'f3'),
                 ]
                 // Define move
                 const move: string = 'f3f4'
@@ -2206,7 +2149,8 @@ describe('Method - makeMove', () => {
                 const chess: ChessGame = new ChessGame(pieces)
                 
                 // Test
-                expect(() => chess.makeMove(move, colour)).toThrow(ChessGameError)
+                const result : boolean = chess.makeMove(move, colour)
+                expect(result).toBe(false)    
             })
         })
 
@@ -2219,8 +2163,8 @@ describe('Method - makeMove', () => {
                 const colour: ColourPlayers = 'white'
 
                 const pieces: ChessPiece[] = [
-                    new King(colour, new Position('e1')),
-                    new Rook(colour, new Position('h1'))
+                    new King(colour, 'e1'),
+                    new Rook(colour, 'h1')
                 ]
         
                 // Define move and colour of player making the move
@@ -2232,8 +2176,8 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new King(colour, new Position('g1')),
-                    new Rook(colour, new Position('f1'))
+                    new King(colour, 'g1'),
+                    new Rook(colour, 'f1')
                 ]
         
                 // Make move
@@ -2251,8 +2195,8 @@ describe('Method - makeMove', () => {
                 const colour: ColourPlayers = 'white'
 
                 const pieces: ChessPiece[] = [
-                    new King(colour, new Position('e1')),
-                    new Rook(colour, new Position('a1'))
+                    new King(colour, 'e1'),
+                    new Rook(colour, 'a1')
                 ]
         
                 // Define move and colour of player making the move
@@ -2264,8 +2208,8 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new King(colour, new Position('c1')),
-                    new Rook(colour, new Position('d1'))
+                    new King(colour, 'c1'),
+                    new Rook(colour, 'd1')
                 ]
         
                 // Make move
@@ -2284,8 +2228,8 @@ describe('Method - makeMove', () => {
                 const colour: ColourPlayers = 'black'
 
                 const pieces: ChessPiece[] = [
-                    new King(colour, new Position('e8')),
-                    new Rook(colour, new Position('h8'))
+                    new King(colour, 'e8'),
+                    new Rook(colour, 'h8')
                 ]
         
                 // Define move and colour of player making the move
@@ -2297,8 +2241,8 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new King(colour, new Position('g8')),
-                    new Rook(colour, new Position('f8'))
+                    new King(colour, 'g8'),
+                    new Rook(colour, 'f8')
                 ]
         
                 // Make move
@@ -2316,8 +2260,8 @@ describe('Method - makeMove', () => {
                 const colour: ColourPlayers = 'black'
 
                 const pieces: ChessPiece[] = [
-                    new King(colour, new Position('e8')),
-                    new Rook(colour, new Position('a8'))
+                    new King(colour, 'e8'),
+                    new Rook(colour,'a8')
                 ]
         
                 // Define move and colour of player making the move
@@ -2329,8 +2273,8 @@ describe('Method - makeMove', () => {
         
                 // Define expected pieces after move
                 const piecesResult: ChessPiece[] = [
-                    new King(colour, new Position('c8')),
-                    new Rook(colour, new Position('d8'))
+                    new King(colour, 'c8'),
+                    new Rook(colour, 'd8')
                 ]
         
                 // Make move

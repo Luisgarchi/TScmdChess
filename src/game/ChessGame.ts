@@ -4,7 +4,6 @@ import { Position } from "../notation/boardNotation/Position";
 import { ChessPiece, ColourPlayers, initialiseStartingChessPieces } from "../chess_settings";
 import PromptSync from "prompt-sync";
 
-import ChessGameError from "../errors/ChessGameError";
 
 import { Knight } from "../pieces/knight/Knight";
 import { Bishop } from "../pieces/bishop/Bishop";
@@ -17,32 +16,22 @@ import { fileToNum, numToFile } from "../utils/notation";
 
 
 import { isEnpassant } from "./enpassant";
-import { isCheck } from "./check";
+import { isCheck, isCheckOnNextMove } from "./check";
 import { isCastles } from "./castles";
 import { Move } from "../notation/moveNotation/Move";
+import { validateMove, isCapture, validatorResponse } from "./moveValidator";
 
 export class ChessGame {
 
-    /* 
-    
-    1) Start the game
-    2) Get user input
-    3) Validate move
-    4) Make move
-    5) 
-    */
-
     public board: ChessBoard
     public history: string[]
-    public UCI: UCI
 
 
     constructor(startingPieces?: ChessPiece[], history?: string[]){
 
         const pieces: ChessPiece[] = (typeof startingPieces === 'undefined') ? initialiseStartingChessPieces() : startingPieces
-
+        
         this.board = new ChessBoard(pieces)
-        this.UCI = new UCI()
         this.history = (typeof history === 'undefined') ? [] : history
     }
 
@@ -55,113 +44,31 @@ export class ChessGame {
         const prompt = PromptSync();
 
         let isValidMove: boolean = false
-        
         let move: string
 
         while (!isValidMove){
-
             move = prompt("Enter move: ")
-
-            try {
-                isValidMove = this.makeMove(move, colour)
-            }
-            catch (error){
-                console.log(error)
-            }
+            isValidMove = this.makeMove(move, colour)
         }
     }
 
 
     makeMove(move: string, colour: ColourPlayers): boolean{
 
-        let piece: ChessPiece
-        let isLegalRegularMove: boolean 
-        let isLegalCastles: boolean
-        let isLegalEnpassant: boolean
-        let isMovePromotion: boolean
-        let start: Position
-        let end: Position
 
+        const responObj: validatorResponse = validateMove(move, colour, this)
 
-        // 1) Wrap everything in a try catch
-        try{
-            // 2) Check if the UCI notation is valid 
-            this.UCI.validate(move)
-
-            // Get start and end position
-            start = new Position(move.slice(0,2))
-            end = new Position(move.slice(2, 4))
-
-            // 3) Check that there is a piece at start Position
-            const isPieceAt: boolean = this.board.isPieceAt(start)
-            if (!isPieceAt){
-                throw new ChessGameError(`Can not get piece at position ${start.serialise()}. No piece found.`)
-            }
-            
-            // Get the piece
-            piece = this.board.getPiece(start)
-
-            // 4) Check if the piece is the same colour as the player
-            const isMovePieceColour: boolean = this.isPiecePlayers(piece, colour) 
-            if(!isMovePieceColour){
-                throw new ChessGameError(`${colour} Player can not move a ${piece.colour} piece`)
-            }
-
-            // 5) Check if moving piece to end position is a legal move
-            isLegalRegularMove = this.legalRegularMove(piece, end)
-            isLegalCastles = isCastles(new Move(move), this)
-            isLegalEnpassant = isEnpassant(piece, end, this)
-
-            const isLegalMove: boolean = isLegalRegularMove || isLegalCastles || isLegalEnpassant
-
-            if(!isLegalMove){
-                throw new ChessGameError(`Illegal move, ${piece.type} at ${piece.position.serialise()} can not move to ${end.serialise()}`)
-            }
-            
-            // 6) Check if the move 'promotes'
-            isMovePromotion = this.isPromotion(piece, end)
-
-            if (isMovePromotion){
-
-                // If it does then check that the promotion is 'legal'
-
-                const isLegalPromotion: boolean = this.legalPromotion(piece, end, move)
-
-                if (!isLegalPromotion){
-                    // throw error if illegal
-                    throw new ChessGameError(`Illegal UCI syntax for promotional move, ${piece.type} at ${piece.position.serialise()}. 
-                                              Can not promote without specifying the piece to promote to.
-                                              Please specify as the 3rd argument (5th letter) in the UCI syntax 
-                                              ('q' queen, 'n' = knight, 'r' = rook, 'b' = bishop)`)
-                }
-            }
-
-            // 7) Check that making a regular move the piece does not walk into check
-            // NB. castles and enpassant allready enforce this
-
-            const isPinned: boolean = this.isCheckOnNextMove(start, end)
-
-            if (isPinned){
-
-                if(piece instanceof King) {
-                    throw new ChessGameError(`Illegal move. King at ${piece.position.serialise()} 
-                                                can not walk into Check at ${end.serialise()}`)
-                }
-                else {
-                    throw new ChessGameError(`Illegal move. Piece at ${piece.position.serialise()}
-                                                is pinned`)
-                }
-            }
+        if (responObj.isValidMove){
+            // The move has passed all the checks and can be executed
+            this.executeMove(responObj)
+            return true
         }
-        catch (error) {
-            throw error
+        else{
+            for (let i = 0; i < responObj.errorMessages.length; i++) {
+                console.log(responObj.errorMessages[i])
+            }
+            return false
         }
-
-        // The move has passed all the checks and can be executed
-        this.executeMove(piece, end, move, isLegalCastles, isLegalEnpassant, isMovePromotion)
-
-        // return true success
-        return true
     }
 
     createGameCopy(): ChessGame {
@@ -171,61 +78,28 @@ export class ChessGame {
         return new ChessGame(piecesCopy, moveHistoryCopy)
     }
 
-    isCheckOnNextMove(startPosition: Position, endPosition: Position){
-        /* Logic
-        Check that moving the piece to the next position does not result in check
-        */
-
-        // Create test game
-        const testGame: ChessGame = new ChessGame(this.board.copyPieces(), [... this.history])
-
-        const piece: ChessPiece = testGame.board.getPiece(startPosition)
-
-        // EXECUTE the REGULAR move we want to test
-        testGame.executeRegularMove(piece, endPosition)
-
-        // Check if there is a king on the board. 
-        // Logic follows a piece can only be pined if its king is on the board
-        if (this.board.isKing(piece.colour)){
-            // Return whether the king is in check or not
-            
-            return isCheck(piece.colour, testGame)
-        }
-        else {
-            return false
-        }
-    }
-
-
-    executeMove(
-        piece: ChessPiece,
-        endPosition: Position,
-        move: string,
-        castles: boolean,
-        enpassant: boolean,
-        promotion: boolean
-    ){
+    executeMove(responObject: validatorResponse){
         // Check special moves first, otherwise it will be a regular move
 
         // Check for castles
-        if (castles){
-            this.executeCastles(piece as King, endPosition)
+        if (responObject.isCastles){
+            this.executeCastles(responObject.piece as King, responObject.move.end)
         }
         // Check for enpassant
-        else if (enpassant){
-            this.executeEnpassant(piece as Pawn, endPosition)
+        else if (responObject.isEnpassant){
+            this.executeEnpassant(responObject.piece as Pawn, responObject.move.end)
         }
         // Check for promotion
-        else if (promotion) {
-            this.executePromotion(piece as Pawn, endPosition, move[4])
+        else if (responObject.isPromotion) {
+            this.executePromotion(responObject.piece as Pawn, responObject.move.end, responObject.move.promote)
         }
         // otherwise it is just a regular move
         else {
-            this.executeRegularMove(piece, endPosition)
+            this.executeRegularMove(responObject.piece, responObject.move.end)
         }
         
         // 3) Save move to history
-        this.history.push(move)
+        this.history.push(responObject.move.serialise())
     }
 
     
@@ -239,7 +113,7 @@ export class ChessGame {
         */
 
         // 1) Handle capture
-        if (this.isCapture(piece, endPosition)){
+        if (isCapture(piece, endPosition, this)){
             // Get the piece to be captured
             const capturePiece: ChessPiece = this.board.getPiece(endPosition)
 
@@ -249,43 +123,6 @@ export class ChessGame {
         
         // 2) Move piece
         this.board.movePiece(piece, endPosition)
-    }
-
-    isCapture(capturingPiece: ChessPiece, endPosition: Position){
-
-        // Get piece at positon to check capturelocation
-        const isPiece: boolean = this.board.isPieceAt(endPosition)
-
-        // No piece no capture
-        if(!isPiece){
-            return false
-        }
-
-        // Get the piece at endPosition
-        const potentialCapturedPiece: ChessPiece = this.board.getPiece(endPosition)
-
-        // Check if the capturing and captured piece are of different colour
-        return potentialCapturedPiece.colour != capturingPiece.colour
-    }
-
-    
-    isPiecePlayers(piece: ChessPiece, colour: ColourPlayers) : boolean {
-
-        if (piece.colour == colour){
-            return true
-        }
-        else {
-            return false
-        }
-    }
-
-    legalRegularMove(piece: ChessPiece, endPosition: Position): boolean {
-        
-        // Get all the positions a piece can move to
-        const piecesLegalMoves: Position[] = piece.movement.findReachablePositions(piece, this.board)
-
-        // Make the comparison
-       return Position.includes(piecesLegalMoves, endPosition)
     }
 
 // ---------------------PROMOTION METHODS---------------------
@@ -303,7 +140,7 @@ export class ChessGame {
         */
 
         // 1) Check capture
-        if (this.isCapture(pawn, endPosition)){
+        if (isCapture(pawn, endPosition, this)){
             // Get the piece to be captured
             const capturePiece: ChessPiece = this.board.getPiece(endPosition)
 
@@ -338,33 +175,6 @@ export class ChessGame {
             return new Knight(colour, position)
         }
     }
-
-    isPromotion(piece: ChessPiece, endPosition: Position){
-
-        // Piece must me a pawn and on their respective second to last rank before promotion
-
-        if(!(piece instanceof Pawn)){
-            return false
-        }
-        const piece_rank: number = piece.position.rank
-        const rank_for_promotion: number = (piece.colour == 'white') ? 7 : 2
-
-        if (piece_rank != rank_for_promotion){
-            return false
-        }
-
-        // promotion pawn must move have at leat one regular move forward
-        return this.legalRegularMove(piece, endPosition)
-    }
-
-    legalPromotion(piece: ChessPiece, endPosition: Position, move: string){
-
-        // Piece must me a pawn and on their respective second to last rank before promotion
-
-        return ((this.isPromotion(piece, endPosition)) && (move.length == 5))
-    }
-
-
 
 // --------------------- ENPASSANT METHODS---------------------
 

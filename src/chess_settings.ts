@@ -19,6 +19,9 @@ export const SQUARE_BOARD_SIZE: number = 8
 export const START_FILE : string = 'a'
 export const START_RANK : number = 1
 
+// Regex for UCI move notation
+export const regexUCI: RegExp = /^[a-h][1-8][a-h][1-8][nqbr]?$/
+
 // Starting Pieces
 
 export function initialiseStartingChessPieces(): ChessPiece[] {

@@ -1,4 +1,8 @@
+import { ColourPlayers } from "../../chess_settings"
 import { Position } from "../boardNotation/Position"
+import { regexUCI } from "../../chess_settings"
+
+
 
 export class Move {
 
@@ -7,27 +11,15 @@ export class Move {
     private _start: Position
     private _end: Position
     private _promote: string | undefined
-
+    private _colour: ColourPlayers
 
     /* Constructor */ 
 
-    constructor(UCImove_start: string | Position, end?: string | Position, promote?:string){
-
-        // Construct move for UCI string
-        if ((typeof end === 'undefined') && (typeof end === 'undefined')) {
-            
-            const move: string = UCImove_start as string
-
-            this._start = new Position(move.slice(0,2))
-            this._end = new Position(move.slice(2, 4))
-            this._promote = (move.length == 5) ? move[4]: undefined
-        }
-        // Arguments for start and end position have been supplief separately
-        else {
-            this._start = (UCImove_start instanceof Position) ? UCImove_start : new Position(UCImove_start as string)
-            this._end = (end instanceof Position) ? end : new Position(end as string)
-            this._promote = promote
-        }
+    constructor(UCImove: string, colour: ColourPlayers){
+        this._start = new Position(UCImove.slice(0,2))
+        this._end = new Position(UCImove.slice(2, 4))
+        this._promote = (UCImove.length == 5) ? UCImove[4]: undefined
+        this._colour = colour
     }
 
     /* Getters */
@@ -41,6 +33,10 @@ export class Move {
 
     get promote() {
         return this._promote
+    }
+
+    get colour() {
+        return this._colour
     }
         
     serialise(): string {
