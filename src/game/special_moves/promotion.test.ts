@@ -1,9 +1,9 @@
-import { ChessPiece, ColourPlayers } from "../chess_settings"
-import ChessGameError from "../errors/ChessGameError"
-import { Position } from "../notation/boardNotation/Position"
-import { Move } from "../notation/moveNotation/Move"
-import { Pawn } from "../pieces/pawn/Pawn"
-import { ChessGame } from "./ChessGame"
+import { ChessPiece, ColourPlayers } from "../../chess_settings"
+import ChessGameError from "../../errors/ChessGameError"
+import { Position } from "../../notation/boardNotation/Position"
+import { Move } from "../../notation/moveNotation/Move"
+import { Pawn } from "../../pieces/pawn/Pawn"
+import { ChessGame } from "../ChessGame"
 import { isPromotion } from "./promotion"
 
 

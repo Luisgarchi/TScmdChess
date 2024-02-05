@@ -5,10 +5,11 @@ import { Move } from "../notation/moveNotation/Move";
 import { UCI} from "../notation/moveNotation/UCI";
 import { King } from "../pieces/king/King";
 import { ChessGame } from "./ChessGame";
-import { isCastles } from "./castles";
+import { isCastles } from "./special_moves/castles";
 import { isCheckOnNextMove } from "./check";
-import { isEnpassant } from "./enpassant";
-import {isPromotion } from "./promotion";
+import { isEnpassant } from "./special_moves/enpassant";
+import {isPromotion } from "./special_moves/promotion";
+import { capitalizeFirstLetter } from "../utils/capitalise";
 
 
 export type validatorResponse = {
@@ -72,7 +73,7 @@ export const validateMove = function(moveStr: string, colour: ColourPlayers, che
 
     // Catch errors appending to object and returning object
     }catch (error){
-        validateObj.errorMessages.push(error.msg)
+        validateObj.errorMessages.push(error.message)
         return validateObj
     }
 
@@ -82,8 +83,15 @@ export const validateMove = function(moveStr: string, colour: ColourPlayers, che
     const normalMove: boolean = legalRegularMove(piece, move.end, chessInstance)
 
     // Special moves not included in normal piece move
-    const castles = isCastles(move, chessInstance)
-    const enpassant = isEnpassant(piece, move.end, chessInstance)
+    const castles: boolean = isCastles(move, chessInstance)
+    const enpassant: boolean = isEnpassant(piece, move.end, chessInstance)
+
+    if (!(normalMove || castles || enpassant)){
+        validateObj.errorMessages.push(
+            `${capitalizeFirstLetter(piece.colour)} ${piece.type} at ${piece.position.serialise()} can not move to position ${move.end.serialise()}`
+        )
+        return validateObj
+    }
 
     // Promotion is a special case of a regular move
     let promotion: boolean
@@ -91,7 +99,7 @@ export const validateMove = function(moveStr: string, colour: ColourPlayers, che
         promotion = isPromotion(piece, move, chessInstance)
     // Error is thrown if pawn should promote but does include promoting piece in move
     }catch (error){
-        validateObj.errorMessages.push(error.msg)
+        validateObj.errorMessages.push(error.message)
         return validateObj
     }
 
@@ -103,7 +111,7 @@ export const validateMove = function(moveStr: string, colour: ColourPlayers, che
         legalMove = legalMoveNotCheck(move, piece, chessInstance)
     }
     catch (error){
-        validateObj.errorMessages.push(error.msg)
+        validateObj.errorMessages.push(error.message)
         return validateObj
     }
 
@@ -133,7 +141,7 @@ export function checkCorrectColour(move: Move, piece: ChessPiece): void {
     if (move.colour == piece.colour){
         return
     }
-    throw new ChessGameError(`${move.colour} Player can not move a ${piece.colour} piece`)
+    throw new ChessGameError(`Player ${move.colour} can not move a ${piece.colour} piece`)
 }
 
 

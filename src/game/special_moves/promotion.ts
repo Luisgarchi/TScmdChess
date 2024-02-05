@@ -1,11 +1,11 @@
-import { ChessPiece } from "../chess_settings"
-import { Position } from "../notation/boardNotation/Position"
-import { Move } from "../notation/moveNotation/Move"
-import { Pawn } from "../pieces/pawn/Pawn"
-import { ChessGame } from "./ChessGame"
-import { BOARD_DIMENSIONS } from "../utils/notation"
-import ChessGameError from "../errors/ChessGameError"
-import { legalRegularMove } from "./moveValidator"
+import { ChessPiece } from "../../chess_settings"
+import { Position } from "../../notation/boardNotation/Position"
+import { Move } from "../../notation/moveNotation/Move"
+import { Pawn } from "../../pieces/pawn/Pawn"
+import { ChessGame } from "../ChessGame"
+import { BOARD_DIMENSIONS } from "../../utils/notation"
+import ChessGameError from "../../errors/ChessGameError"
+import { legalRegularMove } from "../moveValidator"
 
 
 export const isPawnInstance = function(piece: ChessPiece): piece is Pawn {

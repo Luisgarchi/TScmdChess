@@ -197,11 +197,16 @@ export class Board {
         this.addCharacter(symbol,  endRow, endColumn)
     }
 
-
+    // Reset Visual Board
+    resetVisualBoard(): void {
+        this._visualBoard = []
+    }
 
     // PRINT THE BOARD TO THE CMD 
 
     display(){
+        this.resetVisualBoard()
+        this.buildBoard()
         // print the visual representation of the board to the console
         for (let i = 0; i < this._visualBoard.length; i++) {
             console.log(this._visualBoard[i])

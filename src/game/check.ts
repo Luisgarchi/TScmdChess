@@ -5,7 +5,7 @@ import { King } from "../pieces/king/King"
 import { Position } from "../notation/boardNotation/Position"
 import { Move } from "../notation/moveNotation/Move"
 import { ChessBoard } from "../board/ChessBoard"
-import { isEnpassant } from "./enpassant"
+import { isEnpassant } from "./special_moves/enpassant"
 
 
 export const isCheck = function(colour: ColourPlayers, chessInstance: ChessGame): boolean {

@@ -1,9 +1,7 @@
-import { UCI } from "../notation/moveNotation/UCI";
 import { ChessBoard } from "../board/ChessBoard";
 import { Position } from "../notation/boardNotation/Position";
 import { ChessPiece, ColourPlayers, initialiseStartingChessPieces } from "../chess_settings";
 import PromptSync from "prompt-sync";
-
 
 import { Knight } from "../pieces/knight/Knight";
 import { Bishop } from "../pieces/bishop/Bishop";
@@ -12,14 +10,11 @@ import { Rook } from "../pieces/rook/Rook";
 import { King } from "../pieces/king/King";
 import { Pawn } from "../pieces/pawn/Pawn";
 
-import { fileToNum, numToFile } from "../utils/notation";
-
-
-import { isEnpassant } from "./enpassant";
-import { isCheck, isCheckOnNextMove } from "./check";
-import { isCastles } from "./castles";
-import { Move } from "../notation/moveNotation/Move";
 import { validateMove, isCapture, validatorResponse } from "./moveValidator";
+import { isCheckMate } from "./check";
+
+
+
 
 export class ChessGame {
 
@@ -35,8 +30,29 @@ export class ChessGame {
         this.history = (typeof history === 'undefined') ? [] : history
     }
 
+    public playGame():void{
 
-    // Create Player classes
+        let isWHiteTurn: boolean = true
+        let currentPlayer: ColourPlayers = (isWHiteTurn == true) ? 'white' : 'black'
+
+        while(!isCheckMate(currentPlayer, this)){
+            
+            // Display the board
+            this.board.display()
+
+            // Player must make a valid move
+            this.playerMove(currentPlayer)
+
+            // Switch the player turn 
+            isWHiteTurn = !isWHiteTurn
+            currentPlayer = (isWHiteTurn == true) ? 'white' : 'black'
+        }
+
+        // Display the winner
+        this.board.display()
+        const winner: ColourPlayers = (currentPlayer == 'white') ? 'black' : 'white'
+        console.log(`Checkmate! ${winner} wins!`)
+    }
 
 
     playerMove(colour: ColourPlayers): void {
@@ -47,7 +63,7 @@ export class ChessGame {
         let move: string
 
         while (!isValidMove){
-            move = prompt("Enter move: ")
+            move = prompt(`Enter move ${colour} player: `)
             isValidMove = this.makeMove(move, colour)
         }
     }

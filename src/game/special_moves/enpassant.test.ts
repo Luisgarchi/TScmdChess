@@ -1,9 +1,9 @@
-import { Position } from "../notation/boardNotation/Position"
-import { ColourPlayers } from "../chess_settings"
-import { ChessGame } from "./ChessGame"
-import { ChessPiece } from "../chess_settings"
-import { Pawn } from "../pieces/pawn/Pawn"
-import { King } from "../pieces/king/King"
+import { Position } from "../../notation/boardNotation/Position"
+import { ColourPlayers } from "../../chess_settings"
+import { ChessGame } from "../ChessGame"
+import { ChessPiece } from "../../chess_settings"
+import { Pawn } from "../../pieces/pawn/Pawn"
+import { King } from "../../pieces/king/King"
 
 import { isEnpassant } from "./enpassant"
 

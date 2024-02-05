@@ -1,12 +1,12 @@
-import { ChessPiece, ColourPlayers } from "../chess_settings"
-import { Move } from "../notation/moveNotation/Move"
-import { Bishop } from "../pieces/bishop/Bishop"
-import { King } from "../pieces/king/King"
-import { Knight } from "../pieces/knight/Knight"
-import { Pawn } from "../pieces/pawn/Pawn"
-import { Queen } from "../pieces/queen/Queen"
-import { Rook } from "../pieces/rook/Rook"
-import { ChessGame } from "./ChessGame"
+import { ChessPiece, ColourPlayers } from "../../chess_settings"
+import { Move } from "../../notation/moveNotation/Move"
+import { Bishop } from "../../pieces/bishop/Bishop"
+import { King } from "../../pieces/king/King"
+import { Knight } from "../../pieces/knight/Knight"
+import { Pawn } from "../../pieces/pawn/Pawn"
+import { Queen } from "../../pieces/queen/Queen"
+import { Rook } from "../../pieces/rook/Rook"
+import { ChessGame } from "../ChessGame"
 import { 
     isCastles,
     isCastlesUCIMove, 

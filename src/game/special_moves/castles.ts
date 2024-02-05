@@ -1,11 +1,11 @@
-import { ChessPiece, ColourPlayers } from "../chess_settings"
-import { Position } from "../notation/boardNotation/Position"
-import { Move } from "../notation/moveNotation/Move"
-import { King } from "../pieces/king/King"
-import { Rook } from "../pieces/rook/Rook"
-import { fileToNum, numToFile } from "../utils/notation"
-import { ChessGame } from "./ChessGame"
-import { isCheck } from "./check"
+import { ChessPiece, ColourPlayers } from "../../chess_settings"
+import { Position } from "../../notation/boardNotation/Position"
+import { Move } from "../../notation/moveNotation/Move"
+import { King } from "../../pieces/king/King"
+import { Rook } from "../../pieces/rook/Rook"
+import { fileToNum, numToFile } from "../../utils/notation"
+import { ChessGame } from "../ChessGame"
+import { isCheck } from "../check"
 
 
 
