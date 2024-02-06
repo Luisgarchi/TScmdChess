@@ -2,7 +2,7 @@
 Welcome to TypeScript chess. A project illustrating OOP principles where you can play a game of chess on the command line. To install and set up the project refer to Section 1. For instructions on how to play chess using UCI notation refer to Section 2. For future work on the project refer to Section 3.
 
 <p align = "center">
-    <img src="./media/ScholarsMate.gif" width=350></video>
+    <img src="./media/ScholarsMate.gif" ></video>
 </p>
 
 ## 1. Set up
