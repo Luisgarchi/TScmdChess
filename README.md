@@ -97,7 +97,7 @@ Example: e7e8q for a pawn promotion to Queen (white).
 
 ## 3. Future work
 
-### 3.1. Functionality - Draw (Stalemate + 3 fold repetition)
+### 3.1. Functionality
 
 The only functionality not included in the current version involved the posibility of a game resuting in a draw between both players. This occurs when either player is in stalemate, or during 3 fold repetition.
 
@@ -113,4 +113,4 @@ The current implementation ties movement mechanics directly to individual chess 
 
 ### 3.3. User Experience
 
-Introducing files and ranks surrounding the board representation would simplify position calculation for users. Additionally, incorporating a checkerboard pattern onto the board interface would facilitate easier identification of square positions for users, thereby enhancing the overall usability of the application.
+Introducing files and ranks surrounding the board representation would simplify position calculation for users. Additionally, incorporating a checkerboard pattern onto the board interface would facilitate easier identification of square positions for users, thereby enhancing the overall usability of the application. Lastly, including a "quit" command that the user(s) can type to exit the application prematurely.
