@@ -2,7 +2,7 @@
 Welcome to TypeScript chess. A project illustrating OOP principles where you can play a game of chess on the command line. To install and set up the project refer to Section 1. For instructions on how to play chess using UCI notation refer to Section 2. For future work on the project refer to Section 3.
 
 <p align = "center">
-    <img src="./media/ScholarsMate.gif" ></video>
+    <img src="./media/ScholarsMate.gif" width = "500" ></video>
 </p>
 
 ## 1. Set up
@@ -66,6 +66,7 @@ The game is played by typing a player's move into the terminal. To do this the a
 <p align = "center">
     <img src="./media/AlgebraicNotation.svg" width="300" >
 </p>
+
 ### 2.1. Castling
 
 In order to castle using UCI notation the departure square of the king and that of arrival are used. This results in 4 castling moves in UCI notation:
