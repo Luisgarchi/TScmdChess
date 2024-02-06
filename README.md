@@ -18,7 +18,7 @@ npx node@20.8.0
 ```
 
 ### 1. Cloning the repository
-To get started you will first need to clone the repository to your local machine. This can be done by running `git clone` + `THIS_REPOSITORY_URL`. Open your terminal or command prompt and run the following command:
+To get started you will first need to clone the repository on to your local machine. This can be done by running `git clone` + `THIS_REPOSITORY_URL`. Open your terminal or command prompt and run the following command:
 
 ```
 git clone https://github.com/Luisgarchi/TScmdChess.git
@@ -49,7 +49,7 @@ Optional: This project uses Jest for testing. You can run the tests with:
 ```
 npm test
 ```
-Once built, you can start the application by running. This command will execute the compiled Main.js file located in the dist directory.
+Once built, you can run the the application using the start command. This command will execute the compiled Main.js file located in the dist directory.
 
 ```
 npm start
@@ -57,7 +57,9 @@ npm start
 
 ## How to play + UCI notation
 
-The game is played by typing a player's move into the terminal. To do this it uses a version of chess notation called [UCI which stands for Universal Chess Interface](https://en.wikipedia.org/wiki/Universal_Chess_Interface). UCI is a version of [long algebraic notation](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)#Long_algebraic_notation) where both the starting and ending squares are specified. Since the starting square is specified there is no need to include the piece before the square.
+The game is played by typing a player's move into the terminal. To do this the application uses a version of chess notation called [UCI which stands for Universal Chess Interface](https://en.wikipedia.org/wiki/Universal_Chess_Interface). UCI is a version of [long algebraic notation](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)#Long_algebraic_notation) where both the starting and ending squares are specified (since the starting square is specified there is no need to include the piece before the square). Each square on the board has a unique coordinate pair consisting of a letter and a number known as files and ranks respectively. Files refer to the vertical columns of the board labeled *a* through *h* starting from the queenside of the board to the kingside. Similarly ranks refer to the vertical rows and are labeled *1* through *8* starting from the white side of the board.
+
+![SCD_algebraic_notation](https://github.com/Luisgarchi/Dissertation-News-Bias/assets/77748839/d070d0eb-349b-43a5-8b6e-136b39fd47bd)
 
 ### Castling
 
@@ -67,7 +69,7 @@ In order to castle using UCI notation the departure square of the king and that 
 3. The **white** King castling **queenside** is "**e1c1**"
 3. The **black** King castling **queenside** is "**e8c8**"
 
-The same rules for castling apply: 1) the castling King and Rook have not moved 2) the King does not leave, cross over, or finish on a square attacked by an enemy piece.
+The same rules for castling apply: 1. the castling King and Rook have not moved 2. the King does not leave, cross over, or finish on a square attacked by an enemy piece.
 
 ### Promotion
 
