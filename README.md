@@ -1,5 +1,8 @@
 # Welcome to TypeScript Chess
 
+<p align = "center">
+    <video src="./media/TScmdChess Scholars Mate.mp4" width=350>
+</p>
 
 ## Set up
 
@@ -59,8 +62,9 @@ npm start
 
 The game is played by typing a player's move into the terminal. To do this the application uses a version of chess notation called [UCI which stands for Universal Chess Interface](https://en.wikipedia.org/wiki/Universal_Chess_Interface). UCI is a version of [long algebraic notation](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)#Long_algebraic_notation) where both the starting and ending squares are specified (since the starting square is specified there is no need to include the piece before the square). Each square on the board has a unique coordinate pair consisting of a letter and a number known as files and ranks respectively. Files refer to the vertical columns of the board labeled *a* through *h* starting from the queenside of the board to the kingside. Similarly ranks refer to the vertical rows and are labeled *1* through *8* starting from the white side of the board.
 
-![SCD_algebraic_notation](https://github.com/Luisgarchi/Dissertation-News-Bias/assets/77748839/d070d0eb-349b-43a5-8b6e-136b39fd47bd)
-
+<p align = "center">
+    <img src="./media/AlgebraicNotation.svg" width="300" >
+</p>
 ### Castling
 
 In order to castle using UCI notation the departure square of the king and that of arrival are used. This results in 4 castling moves in UCI notation:
