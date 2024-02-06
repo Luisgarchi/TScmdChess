@@ -61,7 +61,15 @@ npm start
 
 ## 2. How to play + UCI notation
 
-The game is played by typing a player's move into the terminal. To do this the application uses a version of chess notation called [UCI which stands for Universal Chess Interface](https://en.wikipedia.org/wiki/Universal_Chess_Interface). UCI is a version of [long algebraic notation](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)#Long_algebraic_notation) where both the starting and ending squares are specified (since the starting square is specified there is no need to include the piece before the square). Each square on the board has a unique coordinate pair consisting of a letter and a number known as files and ranks respectively. Files refer to the vertical columns of the board labeled *a* through *h* starting from the queenside of the board to the kingside. Similarly ranks refer to the vertical rows and are labeled *1* through *8* starting from the white side of the board.
+The game is played by typing a player's move into the terminal. To do this the application uses a version of chess notation called [UCI which stands for Universal Chess Interface](https://en.wikipedia.org/wiki/Universal_Chess_Interface). UCI is a version of [long algebraic notation](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)#Long_algebraic_notation) where both the starting and ending squares are specified. To make a move a player's peice must be in the starting. For example, to move the white pawn in the image below at "e2" to "e4" you would write the UCI move "e2e4".
+
+<p align = "center">
+    <img src="./media/StartPosition.PNG" width="310" >
+</p>
+
+### Note on Algebraic Notation
+
+Each square on the board has a unique coordinate pair consisting of a letter and a number known as files and ranks respectively. Files refer to the vertical columns of the board labeled *a* through *h* starting from the queenside of the board to the kingside. Similarly ranks refer to the vertical rows and are labeled *1* through *8* starting from the white side of the board. All the square on the chess board can be mapped to a file rank pair as illustrated below.
 
 <p align = "center">
     <img src="./media/AlgebraicNotation.svg" width="300" >
@@ -79,14 +87,30 @@ The same rules for castling apply: 1. the castling King and Rook have not moved 
 
 ### 2.2. Promotion
 
-In this case, the notation changes to 5 characters, the letter of the piece is added at the end.
+In this case, the notation changes to 5 characters, the letter of the piece is added at the end. The allowed letters are: 
+- **q** for Queen 
+- **b** for Bishop 
+- **n** for Knight
+- **r** for Rook
 
-The allowed letters are: Q for Queen, B for Bishop, N for Knight, and R for Rook.
-
-Example: e7e8q for a pawn promotion to Queen (white)
+Example: e7e8q for a pawn promotion to Queen (white).
 
 ## 3. Future work
 
-### 3.1. Draw (Stalemate + 3 fold repetition)
+### 3.1. Functionality - Draw (Stalemate + 3 fold repetition)
+
+The only functionality not included in the current version involved the posibility of a game resuting in a draw between both players. This occurs when either player is in stalemate, or during 3 fold repetition.
+
+#### Stalemate
+When either player, whose turn it is to move, has no legal moves available and their king is not in check.
+
+#### Three-fold repetition 
+When the same position occurs on the board three times. The positions don't need to occur consecutively but can be interspersed with other moves.
 
 ### 3.2. Refactoring
+
+The current implementation ties movement mechanics directly to individual chess pieces, which utilize a chess board representation to determine legal moves. A more optimal approach would involve integrating these mechanics within the chess board class itself. This adjustment would enable the capture of illegitimate moves through error handling, providing users with feedback regarding the reason for invalidity. Such enhancement not only refines the user experience but also ensures greater consistency within the move validation process.
+
+### 3.3. User Experience
+
+Introducing files and ranks surrounding the board representation would simplify position calculation for users. Additionally, incorporating a checkerboard pattern onto the board interface would facilitate easier identification of square positions for users, thereby enhancing the overall usability of the application.
