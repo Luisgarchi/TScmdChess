@@ -1,7 +1,7 @@
 # Welcome to TypeScript Chess
 
 <p align = "center">
-    <video src="./media/TScmdChess Scholars Mate.mp4" width=350>
+    <video src="./media/TScmdChess Scholars Mate.mp4" width=350></video>
 </p>
 
 ## Set up
